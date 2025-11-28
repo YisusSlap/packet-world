@@ -3,9 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/ActualizacionEnvio.java</file>
             <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/dto/Respuesta.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/dto/RSAutenticacionColaborador.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/Envio.java</file>
             <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/ws/ApplicationConfig.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/Paquete.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/Cliente.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/Sucursal.java</file>
             <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/Colaborador.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/Unidad.java</file>
+            <file>file:/D:/Proyectos/packet-world/backend/PacketWorldAPI/src/java/pojo/HistorialEstatus.java</file>
         </group>
     </open-files>
 </project-private>

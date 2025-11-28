@@ -14,6 +14,7 @@ public class Envio {
     //Direccion Destino
     private String nombreDestinatario;
     private String calleDestino;
+    private String numeroDestino;
     private String coloniaDestino;
     private String codigoPostalDestino;
     private String ciudadDestino;
@@ -28,7 +29,7 @@ public class Envio {
     public Envio() {
     }
 
-    public Envio(String numeroGuia, Integer idCliente, Integer idSucursalOrigen, Integer idSucursalDestino, Integer idConductor, String nombreDestinatario, String calleDestino, String coloniaDestino, String codigoPostalDestino, String ciudadDestino, String estadoDestino, String estatusActual, Double costoTotal, List<Paquete> listaPaquetes, List<HistorialEstatus> historial) {
+    public Envio(String numeroGuia, Integer idCliente, Integer idSucursalOrigen, Integer idSucursalDestino, Integer idConductor, String nombreDestinatario, String calleDestino, String numeroDestino, String coloniaDestino, String codigoPostalDestino, String ciudadDestino, String estadoDestino, String estatusActual, Double costoTotal, List<Paquete> listaPaquetes, List<HistorialEstatus> historial) {
         this.numeroGuia = numeroGuia;
         this.idCliente = idCliente;
         this.idSucursalOrigen = idSucursalOrigen;
@@ -36,6 +37,7 @@ public class Envio {
         this.idConductor = idConductor;
         this.nombreDestinatario = nombreDestinatario;
         this.calleDestino = calleDestino;
+        this.numeroDestino = numeroDestino;
         this.coloniaDestino = coloniaDestino;
         this.codigoPostalDestino = codigoPostalDestino;
         this.ciudadDestino = ciudadDestino;
@@ -102,6 +104,14 @@ public class Envio {
         this.calleDestino = calleDestino;
     }
 
+    public String getNumeroDestino() {
+        return numeroDestino;
+    }
+
+    public void setNumeroDestino(String numeroDestino) {
+        this.numeroDestino = numeroDestino;
+    }
+
     public String getColoniaDestino() {
         return coloniaDestino;
     }
@@ -166,6 +176,5 @@ public class Envio {
         this.historial = historial;
     }
 
-    
-    
+        
 }

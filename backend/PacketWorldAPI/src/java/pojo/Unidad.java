@@ -9,7 +9,7 @@ public class Unidad {
     private String vin;
     private String tipoUnidad;
     private String nii;
-    private String estatus; //Disponible, baja
+    private String estatus;
     private String motivoBaja;
 
     public Unidad() {

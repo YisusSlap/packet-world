@@ -13,12 +13,13 @@ public class Colaborador {
     private String rol;
     private String numeroLicencia;
     private String fotografia;
-    private Integer idSucursal;
+    private Integer idCodigoSucursal;
+    private Integer idUnidadAsignada; 
 
     public Colaborador() {
     }
 
-    public Colaborador(Integer idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correo, String numeroPersonal, String contrasenia, String rol, String numeroLicencia, String fotografia, Integer idSucursal) {
+    public Colaborador(Integer idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correo, String numeroPersonal, String contrasenia, String rol, String numeroLicencia, String fotografia, Integer idCodigoSucursal, Integer idUnidadAsignada) {
         this.idColaborador = idColaborador;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
@@ -30,8 +31,11 @@ public class Colaborador {
         this.rol = rol;
         this.numeroLicencia = numeroLicencia;
         this.fotografia = fotografia;
-        this.idSucursal = idSucursal;
+        this.idCodigoSucursal = idCodigoSucursal;
+        this.idUnidadAsignada = idUnidadAsignada;
     }
+    
+    
 
     public Integer getIdColaborador() {
         return idColaborador;
@@ -122,11 +126,19 @@ public class Colaborador {
     }
 
     public Integer getIdSucursal() {
-        return idSucursal;
+        return idCodigoSucursal;
     }
 
-    public void setIdSucursal(Integer idSucursal) {
-        this.idSucursal = idSucursal;
+    public void setIdCodigoSucursal(Integer idCodigoSucursal) {
+        this.idCodigoSucursal = idCodigoSucursal;
+    }
+
+    public Integer getIdUnidadAsignada() {
+        return idUnidadAsignada;
+    }
+
+    public void setIdUnidadAsignada(Integer idUnidadAsignada) {
+        this.idUnidadAsignada = idUnidadAsignada;
     }
     
     

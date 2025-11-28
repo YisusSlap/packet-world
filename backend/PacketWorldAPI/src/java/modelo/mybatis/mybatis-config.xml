@@ -8,19 +8,15 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED" >
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/escolarMT?serverTimezone=UTC"/>   
-                <property name="username" value="root"/>    
-                <property name="password" value="password2024"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/packet_world_db?serverTimezone=UTC"/>   
+                <property name="username" value="packet_user"/>    
+                <property name="password" value="Integracion2025"/>
                 <property name="poolMaximumActiveConnections" value="50"/>
             </dataSource>
         </environment>
     </environments>
     <mappers>
         <mapper resource="modelo/mybatis/mapper/AutenticacionMapper.xml"/>
-        <mapper resource="modelo/mybatis/mapper/ProfesorMapper.xml"/>
-        <mapper resource="modelo/mybatis/mapper/CatalogoMapper.xml"/>
-        <mapper resource="modelo/mybatis/mapper/AlumnoMapper.xml"/>
-
     </mappers>
 
 </configuration>
