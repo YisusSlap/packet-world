@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace= "autenticacion">
+    <select id="loginColaborador" resultType="pojo.Colaborador">
+    SELECT 
+        numeroPersonal, 
+        nombre, 
+        apellidoPaterno,    apellidoMaterno, 
+        curp, 
+        correoElectronico, 
+        rol, 
+        fotografia, numeroLicencia,
+        idCodigoSucursal, idUnidadAsignada, estatus 
+    FROM tbl_colaboradores  WHERE numeroPersonal = #{numeroPersonal} 
+    AND contrasenia = #{contrasenia}
+    AND estatus = 'activo'
+    </select>
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sucursales">
+
+    <select id="obtenerSucursales" resultType="pojo.Sucursal">
+        SELECT 
+            s.codigoSucursal,
+            s.nombreCorto,
+            s.estatus,
+            s.calle,
+            s.numero,
+            s.idColonia,
+            c.nombre AS nombreColonia,
+            c.codigo_postal AS codigoPostal,
+            m.nombre AS ciudad,
+            e.nombre AS estado
+        FROM tbl_sucursales s
+        INNER JOIN colonias c ON s.idColonia = c.id
+        INNER JOIN municipios m ON c.municipio = m.id
+        INNER JOIN estados e ON m.estado = e.id
+        WHERE 1=1
+        <if test="codigoSucursal != null and codigoSucursal != ''">
+            AND s.codigoSucursal LIKE CONCAT('%', #{codigoSucursal}, '%')
+        </if>
+        <if test="nombreCorto != null and nombreCorto != ''">
+            AND s.nombreCorto LIKE CONCAT('%', #{nombreCorto}, '%')
+        </if>
+        <if test="estatus != null and estatus != ''">
+            AND s.estatus = #{estatus}
+        </if>
+    </select>
+
+    <insert id="registrarSucursal" parameterType="pojo.Sucursal">
+        INSERT INTO tbl_sucursales (
+            codigoSucursal, 
+            nombreCorto, 
+            estatus, 
+            calle, 
+            numero, 
+            idColonia
+        ) VALUES (
+            #{codigoSucursal}, 
+            #{nombreCorto}, 
+            'activa',  #{calle}, 
+            #{numero}, 
+            #{idColonia}
+        )
+    </insert>
+
+    <update id="editarSucursal" parameterType="pojo.Sucursal">
+        UPDATE tbl_sucursales SET
+            nombreCorto = #{nombreCorto},
+            calle = #{calle},
+            numero = #{numero},
+            idColonia = #{idColonia}
+        WHERE codigoSucursal = #{codigoSucursal}
+    </update>
+
+    <update id="eliminarSucursal" parameterType="String">
+        UPDATE tbl_sucursales 
+        SET estatus = 'inactiva'
+        WHERE codigoSucursal = #{codigoSucursal}
+    </update>
+
+    <select id="obtenerSucursalPorCodigo" resultType="pojo.Sucursal">
+        SELECT 
+            s.codigoSucursal,
+            s.nombreCorto,
+            s.estatus,
+            s.calle,
+            s.numero,
+            s.idColonia,
+            c.nombre AS nombreColonia,
+            c.codigo_postal AS codigoPostal,
+            m.nombre AS ciudad,
+            e.nombre AS estado
+        FROM tbl_sucursales s
+        INNER JOIN colonias c ON s.idColonia = c.id
+        INNER JOIN municipios m ON c.municipio = m.id
+        INNER JOIN estados e ON m.estado = e.id
+        WHERE s.codigoSucursal = #{codigoSucursal}
+    </select>
+
+</mapper>
