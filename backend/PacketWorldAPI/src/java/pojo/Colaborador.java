@@ -2,7 +2,6 @@ package pojo;
 
 
 public class Colaborador {
-    private Integer idColaborador;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
@@ -13,14 +12,13 @@ public class Colaborador {
     private String rol;
     private String numeroLicencia;
     private String fotografia;
-    private Integer idCodigoSucursal;
-    private Integer idUnidadAsignada; 
+    private String idCodigoSucursal;
+    private String idUnidadAsignada; 
 
     public Colaborador() {
     }
 
-    public Colaborador(Integer idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correo, String numeroPersonal, String contrasenia, String rol, String numeroLicencia, String fotografia, Integer idCodigoSucursal, Integer idUnidadAsignada) {
-        this.idColaborador = idColaborador;
+    public Colaborador(String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correo, String numeroPersonal, String contrasenia, String rol, String numeroLicencia, String fotografia, String idCodigoSucursal, String idUnidadAsignada) {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -33,16 +31,6 @@ public class Colaborador {
         this.fotografia = fotografia;
         this.idCodigoSucursal = idCodigoSucursal;
         this.idUnidadAsignada = idUnidadAsignada;
-    }
-    
-    
-
-    public Integer getIdColaborador() {
-        return idColaborador;
-    }
-
-    public void setIdColaborador(Integer idColaborador) {
-        this.idColaborador = idColaborador;
     }
 
     public String getNombre() {
@@ -125,22 +113,21 @@ public class Colaborador {
         this.fotografia = fotografia;
     }
 
-    public Integer getIdSucursal() {
+    public String getIdCodigoSucursal() {
         return idCodigoSucursal;
     }
 
-    public void setIdCodigoSucursal(Integer idCodigoSucursal) {
+    public void setIdCodigoSucursal(String idCodigoSucursal) {
         this.idCodigoSucursal = idCodigoSucursal;
     }
 
-    public Integer getIdUnidadAsignada() {
+    public String getIdUnidadAsignada() {
         return idUnidadAsignada;
     }
 
-    public void setIdUnidadAsignada(Integer idUnidadAsignada) {
+    public void setIdUnidadAsignada(String idUnidadAsignada) {
         this.idUnidadAsignada = idUnidadAsignada;
     }
-    
     
     
 }

@@ -2,63 +2,57 @@ package pojo;
 
 
 public class Sucursal {
-    private Integer idSucursal;
-    private String nombre;
-    private String codigo;
-    
-    //Direccion
+    private String codigoSucursal;
+    private String nombreCorto;
+    private String estatus;
+
     private String calle;
     private String numero;
-    private String colonia;
+
+    private Integer idColonia;
+    private String nombreColonia;
     private String codigoPostal;
     private String ciudad;
     private String estado;
     
-    
-    private Double latitud;
-    private Double longitud;
-    private String estatus;
-
     public Sucursal() {
     }
 
-    public Sucursal(Integer idSucursal, String nombre, String codigo, String calle, String numero, String colonia, String codigoPostal, String ciudad, String estado, Double latitud, Double longitud, String estatus) {
-        this.idSucursal = idSucursal;
-        this.nombre = nombre;
-        this.codigo = codigo;
+    public Sucursal(String codigoSucursal, String nombreCorto, String estatus, String calle, String numero, Integer idColonia, String nombreColonia, String codigoPostal, String ciudad, String estado) {
+        this.codigoSucursal = codigoSucursal;
+        this.nombreCorto = nombreCorto;
+        this.estatus = estatus;
         this.calle = calle;
         this.numero = numero;
-        this.colonia = colonia;
+        this.idColonia = idColonia;
+        this.nombreColonia = nombreColonia;
         this.codigoPostal = codigoPostal;
         this.ciudad = ciudad;
         this.estado = estado;
-        this.latitud = latitud;
-        this.longitud = longitud;
+    }
+
+    public String getCodigoSucursal() {
+        return codigoSucursal;
+    }
+
+    public void setCodigoSucursal(String codigoSucursal) {
+        this.codigoSucursal = codigoSucursal;
+    }
+
+    public String getNombreCorto() {
+        return nombreCorto;
+    }
+
+    public void setNombreCorto(String nombreCorto) {
+        this.nombreCorto = nombreCorto;
+    }
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
         this.estatus = estatus;
-    }
-
-    public Integer getIdSucursal() {
-        return idSucursal;
-    }
-
-    public void setIdSucursal(Integer idSucursal) {
-        this.idSucursal = idSucursal;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public String getCalle() {
@@ -77,12 +71,20 @@ public class Sucursal {
         this.numero = numero;
     }
 
-    public String getColonia() {
-        return colonia;
+    public Integer getIdColonia() {
+        return idColonia;
     }
 
-    public void setColonia(String colonia) {
-        this.colonia = colonia;
+    public void setIdColonia(Integer idColonia) {
+        this.idColonia = idColonia;
+    }
+
+    public String getNombreColonia() {
+        return nombreColonia;
+    }
+
+    public void setNombreColonia(String nombreColonia) {
+        this.nombreColonia = nombreColonia;
     }
 
     public String getCodigoPostal() {
@@ -108,29 +110,7 @@ public class Sucursal {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-
-    public Double getLatitud() {
-        return latitud;
-    }
-
-    public void setLatitud(Double latitud) {
-        this.latitud = latitud;
-    }
-
-    public Double getLongitud() {
-        return longitud;
-    }
-
-    public void setLongitud(Double longitud) {
-        this.longitud = longitud;
-    }
-
-    public String getEstatus() {
-        return estatus;
-    }
-
-    public void setEstatus(String estatus) {
-        this.estatus = estatus;
-    }
+    
+    
     
 }

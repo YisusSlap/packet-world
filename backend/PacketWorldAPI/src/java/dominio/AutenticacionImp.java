@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import modelo.mybatis.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Colaborador;
+import utilidades.Constantes;
 
 
 public class AutenticacionImp {
@@ -35,7 +36,7 @@ public class AutenticacionImp {
             conexionBD.close();
         }
     } else {
-        respuesta.setMensaje("Lo sentimos, por el momento no hay conexión, vuelva más tarde");
+        respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
     }
     
     return respuesta;
