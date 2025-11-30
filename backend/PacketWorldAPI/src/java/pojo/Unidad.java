@@ -2,11 +2,10 @@ package pojo;
 
 
 public class Unidad {
-    private Integer idUnidad;
+    private String vin;
     private String marca;
     private String modelo;
     private Integer anio;
-    private String vin;
     private String tipoUnidad;
     private String nii;
     private String estatus;
@@ -15,24 +14,23 @@ public class Unidad {
     public Unidad() {
     }
 
-    public Unidad(Integer idUnidad, String marca, String modelo, Integer anio, String vin, String tipoUnidad, String nii, String estatus, String motivoBaja) {
-        this.idUnidad = idUnidad;
+    public Unidad(String vin, String marca, String modelo, Integer anio, String tipoUnidad, String nii, String estatus, String motivoBaja) {
+        this.vin = vin;
         this.marca = marca;
         this.modelo = modelo;
         this.anio = anio;
-        this.vin = vin;
         this.tipoUnidad = tipoUnidad;
         this.nii = nii;
         this.estatus = estatus;
         this.motivoBaja = motivoBaja;
     }
 
-    public Integer getIdUnidad() {
-        return idUnidad;
+    public String getVin() {
+        return vin;
     }
 
-    public void setIdUnidad(Integer idUnidad) {
-        this.idUnidad = idUnidad;
+    public void setVin(String vin) {
+        this.vin = vin;
     }
 
     public String getMarca() {
@@ -57,14 +55,6 @@ public class Unidad {
 
     public void setAnio(Integer anio) {
         this.anio = anio;
-    }
-
-    public String getVin() {
-        return vin;
-    }
-
-    public void setVin(String vin) {
-        this.vin = vin;
     }
 
     public String getTipoUnidad() {
@@ -100,5 +90,5 @@ public class Unidad {
     }
     
     
-    
+
 }

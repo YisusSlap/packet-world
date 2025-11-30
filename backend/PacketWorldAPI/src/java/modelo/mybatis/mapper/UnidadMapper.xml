@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="unidades">
+
+    <select id="obtenerUnidades" resultType="pojo.Unidad">
+        SELECT 
+            vin, 
+            marca, 
+            modelo, 
+            anio, 
+            tipoUnidad, 
+            nii, 
+            estatus, 
+            motivoBaja
+        FROM tbl_unidades
+        WHERE 1=1
+        <if test="vin != null and vin != ''">
+            AND vin LIKE CONCAT('%', #{vin}, '%')
+        </if>
+        <if test="marca != null and marca != ''">
+            AND marca LIKE CONCAT('%', #{marca}, '%')
+        </if>
+        <if test="nii != null and nii != ''">
+            AND nii LIKE CONCAT('%', #{nii}, '%')
+        </if>
+    </select>
+
+    <insert id="registrarUnidad" parameterType="pojo.Unidad">
+        INSERT INTO tbl_unidades (
+            vin, marca, modelo, anio, tipoUnidad, nii, estatus
+        ) VALUES (
+            #{vin}, #{marca}, #{modelo}, #{anio}, #{tipoUnidad}, #{nii}, 'activo'
+        )
+    </insert>
+
+    <update id="editarUnidad" parameterType="pojo.Unidad">
+        UPDATE tbl_unidades SET
+            marca = #{marca},
+            modelo = #{modelo},
+            anio = #{anio},
+            tipoUnidad = #{tipoUnidad}
+            WHERE vin = #{vin}
+    </update>
+
+    <update id="bajaUnidad" parameterType="pojo.Unidad">
+        UPDATE tbl_unidades 
+        SET estatus = 'baja',
+            motivoBaja = #{motivoBaja}
+        WHERE vin = #{vin}
+    </update>
+
+</mapper>
