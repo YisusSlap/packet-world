@@ -2,35 +2,48 @@ package pojo;
 
 
 public class Colaborador {
+    private String numeroPersonal;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String curp;
-    private String correo;
-    private String numeroPersonal;
+    
+    private String correoElectronico;
     private String contrasenia;
     private String rol;
     private String numeroLicencia;
     private String fotografia;
     private String idCodigoSucursal;
-    private String idUnidadAsignada; 
+    private String idUnidadAsignada;
+    private String estatus;
+    
+    private byte[] fotografiaBytes;
 
     public Colaborador() {
     }
 
-    public Colaborador(String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correo, String numeroPersonal, String contrasenia, String rol, String numeroLicencia, String fotografia, String idCodigoSucursal, String idUnidadAsignada) {
+    public Colaborador(String numeroPersonal, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correoElectronico, String contrasenia, String rol, String numeroLicencia, String fotografia, String idCodigoSucursal, String idUnidadAsignada, String estatus) {
+        this.numeroPersonal = numeroPersonal;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.curp = curp;
-        this.correo = correo;
-        this.numeroPersonal = numeroPersonal;
+        this.correoElectronico = correoElectronico;
         this.contrasenia = contrasenia;
         this.rol = rol;
         this.numeroLicencia = numeroLicencia;
         this.fotografia = fotografia;
         this.idCodigoSucursal = idCodigoSucursal;
         this.idUnidadAsignada = idUnidadAsignada;
+        this.estatus = estatus;
+    }
+
+    public String getNumeroPersonal() {
+        return numeroPersonal;
+    }
+
+    public void setNumeroPersonal(String numeroPersonal) {
+        this.numeroPersonal = numeroPersonal;
     }
 
     public String getNombre() {
@@ -65,20 +78,12 @@ public class Colaborador {
         this.curp = curp;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getCorreoElectronico() {
+        return correoElectronico;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getNumeroPersonal() {
-        return numeroPersonal;
-    }
-
-    public void setNumeroPersonal(String numeroPersonal) {
-        this.numeroPersonal = numeroPersonal;
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
     }
 
     public String getContrasenia() {
@@ -128,6 +133,21 @@ public class Colaborador {
     public void setIdUnidadAsignada(String idUnidadAsignada) {
         this.idUnidadAsignada = idUnidadAsignada;
     }
-    
-    
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
+
+    public byte[] getFotografiaBytes() {
+        return fotografiaBytes;
+    }
+
+    public void setFotografiaBytes(byte[] fotografiaBytes) {
+        this.fotografiaBytes = fotografiaBytes;
+    }
+
 }

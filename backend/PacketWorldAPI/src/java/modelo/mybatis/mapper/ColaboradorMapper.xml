@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="colaboradores">
+
+    <select id="buscarColaboradores" resultType="pojo.Colaborador">
+        SELECT 
+            c.numeroPersonal, 
+            c.nombre, 
+            c.apellidoPaterno, 
+            c.apellidoMaterno, 
+            c.curp, 
+            c.correoElectronico, 
+            c.rol, 
+            c.fotografia, 
+            c.numeroLicencia, 
+            c.idCodigoSucursal, 
+            c.idUnidadAsignada, 
+            c.estatus
+        FROM tbl_colaboradores c
+        WHERE c.estatus = 'activo'
+        <if test="nombre != null and nombre != ''">
+            AND (c.nombre LIKE CONCAT('%', #{nombre}, '%') 
+                 OR c.apellidoPaterno LIKE CONCAT('%', #{nombre}, '%')
+                 OR c.numeroPersonal LIKE CONCAT('%', #{nombre}, '%'))
+        </if>
+        <if test="rol != null and rol != ''">
+            AND c.rol = #{rol}
+        </if>
+        <if test="idCodigoSucursal != null and idCodigoSucursal != ''">
+            AND c.idCodigoSucursal = #{idCodigoSucursal}
+        </if>
+    </select>
+
+    <select id="obtenerColaboradorPorNoPersonal" resultType="pojo.Colaborador">
+        SELECT 
+            numeroPersonal, 
+            nombre, 
+            apellidoPaterno, 
+            apellidoMaterno, 
+            curp, 
+            correoElectronico, 
+            contrasenia,
+            rol, 
+            fotografia, 
+            numeroLicencia, 
+            idCodigoSucursal, 
+            idUnidadAsignada, 
+            estatus
+        FROM tbl_colaboradores
+        WHERE numeroPersonal = #{numeroPersonal}
+    </select>
+
+    <insert id="registrarColaborador" parameterType="pojo.Colaborador">
+        INSERT INTO tbl_colaboradores (
+            numeroPersonal, 
+            nombre, 
+            apellidoPaterno, 
+            apellidoMaterno, 
+            curp, 
+            correoElectronico, 
+            contrasenia, 
+            rol, 
+            fotografia, 
+            numeroLicencia, 
+            idCodigoSucursal, 
+            idUnidadAsignada, 
+            estatus
+        ) VALUES (
+            #{numeroPersonal}, 
+            #{nombre}, 
+            #{apellidoPaterno}, 
+            #{apellidoMaterno},
+            #{curp}, 
+            #{correoElectronico}, 
+            #{contrasenia}, 
+            #{rol}, 
+            #{fotografia},
+            #{numeroLicencia}, 
+            #{idCodigoSucursal}, 
+            #{idUnidadAsignada}, 
+            'activo'
+        )
+    </insert>
+
+    <update id="editarColaborador" parameterType="pojo.Colaborador">
+        UPDATE tbl_colaboradores SET
+            nombre = #{nombre},
+            apellidoPaterno = #{apellidoPaterno},
+            apellidoMaterno = #{apellidoMaterno},
+            correoElectronico = #{correoElectronico},
+            curp = #{curp},
+            <if test="contrasenia != null and contrasenia != ''">
+                contrasenia = #{contrasenia},
+            </if>
+            fotografia = #{fotografia},
+            numeroLicencia = #{numeroLicencia},
+            idCodigoSucursal = #{idCodigoSucursal},
+            idUnidadAsignada = #{idUnidadAsignada}
+        WHERE numeroPersonal = #{numeroPersonal}
+    </update>
+
+    <update id="eliminarColaborador" parameterType="String">
+        UPDATE tbl_colaboradores 
+        SET estatus = 'inactivo',
+            idUnidadAsignada = NULL
+        WHERE numeroPersonal = #{numeroPersonal}
+    </update>
+    
+    <update id="guardarFoto" parameterType="pojo.Colaborador">
+        UPDATE tbl_colaboradores 
+        SET fotografia = #{fotografiaBytes}
+        WHERE numeroPersonal = #{numeroPersonal}
+    </update>
+
+    <select id="obtenerFoto" resultType="pojo.Colaborador">
+        SELECT 
+            numeroPersonal,
+            TO_BASE64(fotografia) as fotografia 
+        FROM tbl_colaboradores 
+        WHERE numeroPersonal = #{numeroPersonal}
+    </select>
+
+</mapper>
