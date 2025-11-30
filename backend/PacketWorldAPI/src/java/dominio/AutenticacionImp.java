@@ -2,6 +2,7 @@ package dominio;
 import dto.RSAutenticacionColaborador;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.UUID;
 import modelo.mybatis.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Colaborador;
@@ -19,7 +20,9 @@ public class AutenticacionImp {
         try {
             HashMap<String, String> parametros = new LinkedHashMap<>();
             parametros.put("numeroPersonal", numeroPersonal);
-            parametros.put("contrasenia", contrasenia);
+            
+            String passhHash = utilidades.Utilidades.hashPassword(contrasenia);
+            parametros.put("contrasenia", passhHash);
             
             Colaborador colaborador = conexionBD.selectOne("autenticacion.loginColaborador", parametros);
             
@@ -27,6 +30,9 @@ public class AutenticacionImp {
                 respuesta.setError(false);
                 respuesta.setMensaje("Credenciales correctas del colaborador " + colaborador.getNombre());
                 respuesta.setColaborador(colaborador);
+                
+                String token = UUID.randomUUID().toString();
+                respuesta.setToken(token);
             } else {
                 respuesta.setMensaje("Número de personal y/o contraseña son incorrectos, por favor verificar");
             }
