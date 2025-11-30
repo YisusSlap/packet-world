@@ -39,3 +39,10 @@ INSERT INTO tbl_colaboradores (
     'COND001', 'Movil', 'Movil', 'Movil', 'MOVIL50505HVZ002', 
     'conductor@packetworld.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'Conductor', 'TYPE-A-998877', 'SUC-001', 'VIN1234567890', 'activo'
 );
+
+-- --------------------------------------------------------------
+-- 5. Modificacion de la tabla colaboradores fotografia
+-- Nota: Para hacerlo base64
+-- --------------------------------------------------------------
+
+ALTER TABLE tbl_colaboradores MODIFY fotografia LONGBLOB;
