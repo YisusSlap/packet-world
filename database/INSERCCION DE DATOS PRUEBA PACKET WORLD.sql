@@ -16,7 +16,7 @@ VALUES ('VIN1234567890', 'Nissan', 'NP300', 2024, 'Gasolina', '2024VIN1', 'activ
 
 
 -- ---------------------------------------------------------
--- 3. ADMINISTRADOR
+-- 3. ADMINISTRADOR NumeroPersonal ADM001 y contraseña admin
 -- Nota: 'idCodigoSucursal' recibe 'SUC-001', no el número 1.
 -- ---------------------------------------------------------
 INSERT INTO tbl_colaboradores (
@@ -24,18 +24,18 @@ INSERT INTO tbl_colaboradores (
     correoElectronico, contrasenia, rol, numeroLicencia, idCodigoSucursal, estatus
 ) VALUES (
     'ADM001', 'Admin', 'Admin', 'Admin', 'ADMIN90011HVZ001', 
-    'admin@packetworld.com', 'admin', 'Administrador', NULL, 'SUC-001', 'activo'
+    'admin@packetworld.com', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'Administrador', NULL, 'SUC-001', 'activo'
 );
 
 
 -- ---------------------------------------------------------
--- 4. CONDUCTOR
--- Nota: Se vincula a la sucursal por código y a la unidad por VIN.
+-- 4. CONDUCTOR - NumeroPersonal COND001 y contraseña 1234
+-- Nota: Se vincula a la sucursal por código y a la unidad por VIN. 
 -- ---------------------------------------------------------
 INSERT INTO tbl_colaboradores (
     numeroPersonal, nombre, apellidoPaterno, apellidoMaterno, curp, 
     correoElectronico, contrasenia, rol, numeroLicencia, idCodigoSucursal, idUnidadAsignada, estatus
 ) VALUES (
     'COND001', 'Movil', 'Movil', 'Movil', 'MOVIL50505HVZ002', 
-    'conductor@packetworld.com', '1234', 'Conductor', 'TYPE-A-998877', 'SUC-001', 'VIN1234567890', 'activo'
+    'conductor@packetworld.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'Conductor', 'TYPE-A-998877', 'SUC-001', 'VIN1234567890', 'activo'
 );
