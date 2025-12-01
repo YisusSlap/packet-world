@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos">
+
+    <select id="obtenerColoniasPorCP" resultType="pojo.Colonia">
+        SELECT 
+            id AS idColonia,
+            nombre,
+            codigo_postal AS codigoPostal
+        FROM colonias
+        WHERE codigo_postal = #{codigoPostal}
+        ORDER BY nombre ASC
+    </select>
+
+</mapper>

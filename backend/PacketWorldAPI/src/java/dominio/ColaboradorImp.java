@@ -146,7 +146,7 @@ public class ColaboradorImp {
             try {
                 Colaborador colaborador = new Colaborador();
                 colaborador.setNumeroPersonal(numeroPersonal);
-                colaborador.setFotografiaBytes(fotoBytes); // Seteamos los bytes
+                colaborador.setFotografiaBytes(fotoBytes);
                 
                 int filasAfectadas = conexionBD.update("colaboradores.guardarFoto", colaborador);
                 conexionBD.commit();

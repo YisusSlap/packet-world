@@ -3,24 +3,25 @@ package pojo;
 
 public class Paquete {
     private Integer idPaquete;
-    private String numeroGuia;
+    private Integer idEnvio;
     private String descripcion;
-    private Double peso;
-    private Double alto;
-    private Double ancho;
-    private Double profundida;
+    
+    private Double pesoKg;
+    private Double dimAltoCm;
+    private Double dimAnchoCm;
+    private Double dimProfundidadCm;
 
     public Paquete() {
     }
 
-    public Paquete(Integer idPaquete, String descripcion, Double peso, Double alto, Double ancho, Double profundida, String numeroGuia) {
+    public Paquete(Integer idPaquete, Integer idEnvio, String descripcion, Double pesoKg, Double dimAltoCm, Double dimAnchoCm, Double dimProfundidadCm) {
         this.idPaquete = idPaquete;
+        this.idEnvio = idEnvio;
         this.descripcion = descripcion;
-        this.peso = peso;
-        this.alto = alto;
-        this.ancho = ancho;
-        this.profundida = profundida;
-        this.numeroGuia = numeroGuia;
+        this.pesoKg = pesoKg;
+        this.dimAltoCm = dimAltoCm;
+        this.dimAnchoCm = dimAnchoCm;
+        this.dimProfundidadCm = dimProfundidadCm;
     }
 
     public Integer getIdPaquete() {
@@ -31,6 +32,14 @@ public class Paquete {
         this.idPaquete = idPaquete;
     }
 
+    public Integer getIdEnvio() {
+        return idEnvio;
+    }
+
+    public void setIdEnvio(Integer idEnvio) {
+        this.idEnvio = idEnvio;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
@@ -39,45 +48,38 @@ public class Paquete {
         this.descripcion = descripcion;
     }
 
-    public Double getPeso() {
-        return peso;
+    public Double getPesoKg() {
+        return pesoKg;
     }
 
-    public void setPeso(Double peso) {
-        this.peso = peso;
+    public void setPesoKg(Double pesoKg) {
+        this.pesoKg = pesoKg;
     }
 
-    public Double getAlto() {
-        return alto;
+    public Double getDimAltoCm() {
+        return dimAltoCm;
     }
 
-    public void setAlto(Double alto) {
-        this.alto = alto;
+    public void setDimAltoCm(Double dimAltoCm) {
+        this.dimAltoCm = dimAltoCm;
     }
 
-    public Double getAncho() {
-        return ancho;
+    public Double getDimAnchoCm() {
+        return dimAnchoCm;
     }
 
-    public void setAncho(Double ancho) {
-        this.ancho = ancho;
+    public void setDimAnchoCm(Double dimAnchoCm) {
+        this.dimAnchoCm = dimAnchoCm;
     }
 
-    public Double getProfundida() {
-        return profundida;
+    public Double getDimProfundidadCm() {
+        return dimProfundidadCm;
     }
 
-    public void setProfundida(Double profundida) {
-        this.profundida = profundida;
+    public void setDimProfundidadCm(Double dimProfundidadCm) {
+        this.dimProfundidadCm = dimProfundidadCm;
     }
-
-    public String getNumeroGuia() {
-        return numeroGuia;
-    }
-
-    public void setNumeroGuia(String numeroGuia) {
-        this.numeroGuia = numeroGuia;
-    }
+    
     
     
 }

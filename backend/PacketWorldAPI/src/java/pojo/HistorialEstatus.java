@@ -3,22 +3,22 @@ package pojo;
 
 public class HistorialEstatus {
     private Integer idHistorial;
-    private String numeroGuia;
+    private Integer idEnvio;
     private String estatus;
     private String fechaCambio;
-    private String mensaje;
-    private Integer idColaborador;
+    private String comentario;
+    private String numeroPersonalColaborador;
 
     public HistorialEstatus() {
     }
 
-    public HistorialEstatus(Integer idHistorial, String numeroGuia, String estatus, String fechaCambio, String mensaje, Integer idColaborador) {
+    public HistorialEstatus(Integer idHistorial, Integer idEnvio, String estatus, String fechaCambio, String comentario, String numeroPersonalColaborador) {
         this.idHistorial = idHistorial;
-        this.numeroGuia = numeroGuia;
+        this.idEnvio = idEnvio;
         this.estatus = estatus;
         this.fechaCambio = fechaCambio;
-        this.mensaje = mensaje;
-        this.idColaborador = idColaborador;
+        this.comentario = comentario;
+        this.numeroPersonalColaborador = numeroPersonalColaborador;
     }
 
     public Integer getIdHistorial() {
@@ -29,12 +29,12 @@ public class HistorialEstatus {
         this.idHistorial = idHistorial;
     }
 
-    public String getNumeroGuia() {
-        return numeroGuia;
+    public Integer getIdEnvio() {
+        return idEnvio;
     }
 
-    public void setNumeroGuia(String numeroGuia) {
-        this.numeroGuia = numeroGuia;
+    public void setIdEnvio(Integer idEnvio) {
+        this.idEnvio = idEnvio;
     }
 
     public String getEstatus() {
@@ -53,22 +53,23 @@ public class HistorialEstatus {
         this.fechaCambio = fechaCambio;
     }
 
-    public String getMensaje() {
-        return mensaje;
+    public String getComentario() {
+        return comentario;
     }
 
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
 
-    public Integer getIdColaborador() {
-        return idColaborador;
+    public String getNumeroPersonalColaborador() {
+        return numeroPersonalColaborador;
     }
 
-    public void setIdColaborador(Integer idColaborador) {
-        this.idColaborador = idColaborador;
+    public void setNumeroPersonalColaborador(String numeroPersonalColaborador) {
+        this.numeroPersonalColaborador = numeroPersonalColaborador;
     }
     
-        
+    
+    
 }
 
