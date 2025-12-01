@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="clientes">
+
+    <select id="buscarClientes" resultType="pojo.Cliente">
+        SELECT 
+            t.idCliente,
+            t.nombre,
+            t.apellidoPaterno,
+            t.apellidoMaterno,
+            t.calle,
+            t.numero,
+            t.idColonia,
+            c.nombre AS nombreColonia,
+            c.codigo_postal AS codigoPostal,
+            m.nombre AS ciudad,
+            e.nombre AS estado,
+            t.telefono,
+            t.correoElectronico,
+            t.estatus
+        FROM tbl_clientes t
+        INNER JOIN colonias c ON t.idColonia = c.id
+        INNER JOIN municipios m ON c.municipio = m.id
+        INNER JOIN estados e ON m.estado = e.id
+        WHERE t.estatus = 'activo'
+        <if test="nombre != null and nombre != ''">
+            AND (t.nombre LIKE CONCAT('%', #{nombre}, '%') 
+                 OR t.apellidoPaterno LIKE CONCAT('%', #{nombre}, '%'))
+        </if>
+        <if test="telefono != null and telefono != ''">
+            AND t.telefono LIKE CONCAT('%', #{telefono}, '%')
+        </if>
+        <if test="correoElectronico != null and correoElectronico != ''">
+            AND t.correoElectronico LIKE CONCAT('%', #{correoElectronico}, '%')
+        </if>
+    </select>
+
+    <insert id="registrarCliente" parameterType="pojo.Cliente">
+        INSERT INTO tbl_clientes (
+            nombre, apellidoPaterno, apellidoMaterno, 
+            calle, numero, idColonia, 
+            telefono, correoElectronico, estatus
+        ) VALUES (
+            #{nombre}, #{apellidoPaterno}, #{apellidoMaterno},
+            #{calle}, #{numero}, #{idColonia},
+            #{telefono}, #{correoElectronico}, 'activo'
+        )
+    </insert>
+
+    <update id="editarCliente" parameterType="pojo.Cliente">
+        UPDATE tbl_clientes SET
+            nombre = #{nombre},
+            apellidoPaterno = #{apellidoPaterno},
+            apellidoMaterno = #{apellidoMaterno},
+            calle = #{calle},
+            numero = #{numero},
+            idColonia = #{idColonia},
+            telefono = #{telefono},
+            correoElectronico = #{correoElectronico}
+        WHERE idCliente = #{idCliente}
+    </update>
+
+    <update id="eliminarCliente" parameterType="int">
+        UPDATE tbl_clientes 
+        SET estatus = 'inactivo'
+        WHERE idCliente = #{idCliente}
+    </update>
+
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="envios">
+
+    <resultMap id="mapaEnvioCompleto" type="pojo.Envio">
+        <id property="idEnvio" column="idEnvio"/>
+        <result property="numeroGuia" column="numeroGuia"/>
+        <result property="idCliente" column="idCliente"/>
+        <result property="nombreCliente" column="nombreCliente"/>
+        <result property="codigoSucursalOrigen" column="codigoSucursalOrigenFk"/>
+        <result property="idConductorAsignado" column="idConductorAsignado"/>
+        <result property="destinatarioNombre" column="destinatarioNombre"/>
+        <result property="destinatarioAp1" column="destinatarioAp1"/>
+        <result property="destinatarioAp2" column="destinatarioAp2"/>
+        <result property="destinoCalle" column="destinoCalle"/>
+        <result property="destinoNumero" column="destinoNumero"/>
+        <result property="idColoniaDestino" column="idColoniaDestino"/>
+        <result property="nombreColonia" column="nombreColonia"/>
+        <result property="codigoPostal" column="codigoPostal"/>
+        <result property="ciudad" column="ciudad"/>
+        <result property="estado" column="estado"/>
+        <result property="costoTotal" column="costoTotal"/>
+        <result property="estatusActual" column="estatusActual"/>
+        
+        <collection property="listaPaquetes" ofType="pojo.Paquete">
+            <id property="idPaquete" column="idPaquete"/>
+            <result property="idEnvio" column="idEnvio"/>
+            <result property="descripcion" column="descripcion"/>
+            <result property="pesoKg" column="pesoKg"/>
+            <result property="dimAltoCm" column="dimAltoCm"/>
+            <result property="dimAnchoCm" column="dimAnchoCm"/>
+            <result property="dimProfundidadCm" column="dimProfundidadCm"/>
+        </collection>
+    </resultMap>
+
+    <insert id="registrarEnvio" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
+        INSERT INTO tbl_envios (
+            numeroGuia, idCliente, destinatarioNombre, destinatarioAp1, destinatarioAp2,
+            codigoSucursalOrigenFk, destinoCalle, destinoNumero, idColoniaDestino,
+            costoTotal, estatusActual
+        ) VALUES (
+            #{numeroGuia}, #{idCliente}, #{destinatarioNombre}, #{destinatarioAp1}, #{destinatarioAp2},
+            #{codigoSucursalOrigen}, #{destinoCalle}, #{destinoNumero}, #{idColoniaDestino},
+            #{costoTotal}, 'recibido en sucursal'
+        )
+    </insert>
+
+    <insert id="registrarPaquete" parameterType="pojo.Paquete">
+        INSERT INTO tbl_paquetes (
+            idEnvio, descripcion, pesoKg, dimAltoCm, dimAnchoCm, dimProfundidadCm
+        ) VALUES (
+            #{idEnvio}, #{descripcion}, #{pesoKg}, #{dimAltoCm}, #{dimAnchoCm}, #{dimProfundidadCm}
+        )
+    </insert>
+
+    <select id="obtenerPorGuia" resultMap="mapaEnvioCompleto">
+        SELECT 
+            e.idEnvio,
+            e.numeroGuia,
+            e.idCliente,
+            e.destinatarioNombre,
+            e.destinatarioAp1,
+            e.destinatarioAp2,
+            e.codigoSucursalOrigenFk,  e.idConductorAsignado,
+            e.destinoCalle,
+            e.destinoNumero,
+            e.idColoniaDestino,
+            e.costoTotal,
+            e.estatusActual,
+            
+            cli.nombre AS nombreCliente,
+            
+            c.nombre AS nombreColonia,
+            c.codigo_postal AS codigoPostal,
+            m.nombre AS ciudad,
+            edo.nombre AS estado,
+            
+            p.idPaquete,
+            p.descripcion,
+            p.pesoKg,
+            p.dimAltoCm,
+            p.dimAnchoCm,
+            p.dimProfundidadCm
+            
+        FROM tbl_envios e
+        INNER JOIN tbl_clientes cli ON e.idCliente = cli.idCliente
+        INNER JOIN colonias c ON e.idColoniaDestino = c.id
+        INNER JOIN municipios m ON c.municipio = m.id
+        INNER JOIN estados edo ON m.estado = edo.id
+        LEFT JOIN tbl_paquetes p ON e.idEnvio = p.idEnvio
+        WHERE e.numeroGuia = #{numeroGuia}
+    </select>
+    
+    <select id="obtenerPorConductor" resultType="pojo.Envio">
+        SELECT 
+            numeroGuia, estatusActual,
+            CONCAT(destinoCalle, ' #', destinoNumero, ', ', c.nombre) AS destinoCalle 
+        FROM tbl_envios e
+        INNER JOIN colonias c ON e.idColoniaDestino = c.id
+        WHERE idConductorAsignado = #{idConductorAsignado}
+        AND estatusActual NOT IN ('entregado', 'cancelado') 
+    </select>
+
+    <update id="actualizarEstatus" parameterType="map">
+        UPDATE tbl_envios 
+        SET estatusActual = #{estatus}
+        WHERE numeroGuia = #{numeroGuia}
+    </update>
+
+    <insert id="registrarHistorial" parameterType="pojo.HistorialEstatus">
+        INSERT INTO tbl_historial_estatus (
+            idEnvio, numeroPersonalColaborador, estatus, comentario, fechaHora
+        ) VALUES (
+            #{idEnvio}, #{numeroPersonalColaborador}, #{estatus}, #{comentario}, NOW()
+        )
+    </insert>
+    
+    <select id="obtenerIdPorGuia" resultType="int">
+        SELECT idEnvio FROM tbl_envios WHERE numeroGuia = #{numeroGuia}
+    </select>
+
+    <update id="sumarCostoDummy" parameterType="map">
+        UPDATE tbl_envios 
+        SET costoTotal = costoTotal + #{monto} 
+        WHERE idEnvio = #{idEnvio}
+    </update>
+    
+    <update id="asignarConductor" parameterType="map">
+        UPDATE tbl_envios 
+        SET idConductorAsignado = #{numeroPersonal}
+        WHERE numeroGuia = #{numeroGuia}
+    </update>
+    
+    <update id="editarEnvio" parameterType="pojo.Envio">
+        UPDATE tbl_envios SET
+            idCliente = #{idCliente},
+            destinatarioNombre = #{destinatarioNombre},
+            destinatarioAp1 = #{destinatarioAp1},
+            destinatarioAp2 = #{destinatarioAp2},
+            codigoSucursalOrigenFk = #{codigoSucursalOrigen},
+            destinoCalle = #{destinoCalle},
+            destinoNumero = #{destinoNumero},
+            idColoniaDestino = #{idColoniaDestino}
+        WHERE numeroGuia = #{numeroGuia}
+    </update>
+
+    <update id="editarPaquete" parameterType="pojo.Paquete">
+        UPDATE tbl_paquetes SET
+            descripcion = #{descripcion},
+            pesoKg = #{pesoKg},
+            dimAltoCm = #{dimAltoCm},
+            dimAnchoCm = #{dimAnchoCm},
+            dimProfundidadCm = #{dimProfundidadCm}
+        WHERE idPaquete = #{idPaquete}
+    </update>
+
+    <delete id="eliminarPaquete" parameterType="int">
+        DELETE FROM tbl_paquetes WHERE idPaquete = #{idPaquete}
+    </delete>
+    
+    <select id="obtenerIdEnvioPorPaquete" resultType="int">
+        SELECT idEnvio FROM tbl_paquetes WHERE idPaquete = #{idPaquete}
+    </select>
+
+</mapper>

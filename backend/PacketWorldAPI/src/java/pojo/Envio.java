@@ -5,47 +5,67 @@ import java.util.List;
 
 
 public class Envio {
+    private Integer idEnvio;
     private String numeroGuia;
     private Integer idCliente;
-    private Integer idSucursalOrigen;
-    private Integer idSucursalDestino;
-    private Integer idConductor;
+    private String nombreCliente;
+    private String destinatarioNombre;
+    private String destinatarioAp1;
+    private String destinatarioAp2;
+    
+    private String codigoSucursalOrigen;
+    private String idConductorAsignado;    
     
     //Direccion Destino
-    private String nombreDestinatario;
-    private String calleDestino;
-    private String numeroDestino;
-    private String coloniaDestino;
-    private String codigoPostalDestino;
-    private String ciudadDestino;
-    private String estadoDestino;
+    private String destinoCalle;
+    private String destinoNumero;
+    private Integer idColoniaDestino;
+    private String nombreColonia;
+    private String codigoPostal;
+    private String ciudad;
+    private String estado;
     
     private String estatusActual;
     private Double costoTotal;
     
     private List<Paquete> listaPaquetes;
     private List<HistorialEstatus> historial;
+    
+    private String numeroPersonalUsuario;
 
     public Envio() {
     }
 
-    public Envio(String numeroGuia, Integer idCliente, Integer idSucursalOrigen, Integer idSucursalDestino, Integer idConductor, String nombreDestinatario, String calleDestino, String numeroDestino, String coloniaDestino, String codigoPostalDestino, String ciudadDestino, String estadoDestino, String estatusActual, Double costoTotal, List<Paquete> listaPaquetes, List<HistorialEstatus> historial) {
+    public Envio(Integer idEnvio, String numeroGuia, Integer idCliente, String nombreCliente, String destinatarioNombre, String destinatarioAp1, String destinatarioAp2, String codigoSucursalOrigen, String idConductorAsignado, String destinoCalle, String destinoNumero, Integer idColoniaDestino, String nombreColonia, String codigoPostal, String ciudad, String estado, String estatusActual, Double costoTotal, List<Paquete> listaPaquetes, List<HistorialEstatus> historial, String numeroPersonalUsuario) {
+        this.idEnvio = idEnvio;
         this.numeroGuia = numeroGuia;
         this.idCliente = idCliente;
-        this.idSucursalOrigen = idSucursalOrigen;
-        this.idSucursalDestino = idSucursalDestino;
-        this.idConductor = idConductor;
-        this.nombreDestinatario = nombreDestinatario;
-        this.calleDestino = calleDestino;
-        this.numeroDestino = numeroDestino;
-        this.coloniaDestino = coloniaDestino;
-        this.codigoPostalDestino = codigoPostalDestino;
-        this.ciudadDestino = ciudadDestino;
-        this.estadoDestino = estadoDestino;
+        this.nombreCliente = nombreCliente;
+        this.destinatarioNombre = destinatarioNombre;
+        this.destinatarioAp1 = destinatarioAp1;
+        this.destinatarioAp2 = destinatarioAp2;
+        this.codigoSucursalOrigen = codigoSucursalOrigen;
+        this.idConductorAsignado = idConductorAsignado;
+        this.destinoCalle = destinoCalle;
+        this.destinoNumero = destinoNumero;
+        this.idColoniaDestino = idColoniaDestino;
+        this.nombreColonia = nombreColonia;
+        this.codigoPostal = codigoPostal;
+        this.ciudad = ciudad;
+        this.estado = estado;
         this.estatusActual = estatusActual;
         this.costoTotal = costoTotal;
         this.listaPaquetes = listaPaquetes;
         this.historial = historial;
+        this.numeroPersonalUsuario = numeroPersonalUsuario;
+    }
+
+    public Integer getIdEnvio() {
+        return idEnvio;
+    }
+
+    public void setIdEnvio(Integer idEnvio) {
+        this.idEnvio = idEnvio;
     }
 
     public String getNumeroGuia() {
@@ -64,84 +84,108 @@ public class Envio {
         this.idCliente = idCliente;
     }
 
-    public Integer getIdSucursalOrigen() {
-        return idSucursalOrigen;
+    public String getNombreCliente() {
+        return nombreCliente;
     }
 
-    public void setIdSucursalOrigen(Integer idSucursalOrigen) {
-        this.idSucursalOrigen = idSucursalOrigen;
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
     }
 
-    public Integer getIdSucursalDestino() {
-        return idSucursalDestino;
+    public String getDestinatarioNombre() {
+        return destinatarioNombre;
     }
 
-    public void setIdSucursalDestino(Integer idSucursalDestino) {
-        this.idSucursalDestino = idSucursalDestino;
+    public void setDestinatarioNombre(String destinatarioNombre) {
+        this.destinatarioNombre = destinatarioNombre;
     }
 
-    public Integer getIdConductor() {
-        return idConductor;
+    public String getDestinatarioAp1() {
+        return destinatarioAp1;
     }
 
-    public void setIdConductor(Integer idConductor) {
-        this.idConductor = idConductor;
+    public void setDestinatarioAp1(String destinatarioAp1) {
+        this.destinatarioAp1 = destinatarioAp1;
     }
 
-    public String getNombreDestinatario() {
-        return nombreDestinatario;
+    public String getDestinatarioAp2() {
+        return destinatarioAp2;
     }
 
-    public void setNombreDestinatario(String nombreDestinatario) {
-        this.nombreDestinatario = nombreDestinatario;
+    public void setDestinatarioAp2(String destinatarioAp2) {
+        this.destinatarioAp2 = destinatarioAp2;
     }
 
-    public String getCalleDestino() {
-        return calleDestino;
+    public String getCodigoSucursalOrigen() {
+        return codigoSucursalOrigen;
     }
 
-    public void setCalleDestino(String calleDestino) {
-        this.calleDestino = calleDestino;
+    public void setCodigoSucursalOrigen(String codigoSucursalOrigen) {
+        this.codigoSucursalOrigen = codigoSucursalOrigen;
     }
 
-    public String getNumeroDestino() {
-        return numeroDestino;
+    public String getIdConductorAsignado() {
+        return idConductorAsignado;
     }
 
-    public void setNumeroDestino(String numeroDestino) {
-        this.numeroDestino = numeroDestino;
+    public void setIdConductorAsignado(String idConductorAsignado) {
+        this.idConductorAsignado = idConductorAsignado;
     }
 
-    public String getColoniaDestino() {
-        return coloniaDestino;
+    public String getDestinoCalle() {
+        return destinoCalle;
     }
 
-    public void setColoniaDestino(String coloniaDestino) {
-        this.coloniaDestino = coloniaDestino;
+    public void setDestinoCalle(String destinoCalle) {
+        this.destinoCalle = destinoCalle;
     }
 
-    public String getCodigoPostalDestino() {
-        return codigoPostalDestino;
+    public String getDestinoNumero() {
+        return destinoNumero;
     }
 
-    public void setCodigoPostalDestino(String codigoPostalDestino) {
-        this.codigoPostalDestino = codigoPostalDestino;
+    public void setDestinoNumero(String destinoNumero) {
+        this.destinoNumero = destinoNumero;
     }
 
-    public String getCiudadDestino() {
-        return ciudadDestino;
+    public Integer getIdColoniaDestino() {
+        return idColoniaDestino;
     }
 
-    public void setCiudadDestino(String ciudadDestino) {
-        this.ciudadDestino = ciudadDestino;
+    public void setIdColoniaDestino(Integer idColoniaDestino) {
+        this.idColoniaDestino = idColoniaDestino;
     }
 
-    public String getEstadoDestino() {
-        return estadoDestino;
+    public String getNombreColonia() {
+        return nombreColonia;
     }
 
-    public void setEstadoDestino(String estadoDestino) {
-        this.estadoDestino = estadoDestino;
+    public void setNombreColonia(String nombreColonia) {
+        this.nombreColonia = nombreColonia;
+    }
+
+    public String getCodigoPostal() {
+        return codigoPostal;
+    }
+
+    public void setCodigoPostal(String codigoPostal) {
+        this.codigoPostal = codigoPostal;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public String getEstatusActual() {
@@ -176,5 +220,14 @@ public class Envio {
         this.historial = historial;
     }
 
+    public String getNumeroPersonalUsuario() {
+        return numeroPersonalUsuario;
+    }
+
+    public void setNumeroPersonalUsuario(String numeroPersonalUsuario) {
+        this.numeroPersonalUsuario = numeroPersonalUsuario;
+    }
+
+    
         
 }

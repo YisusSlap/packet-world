@@ -7,32 +7,38 @@ public class Cliente {
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String telefono;
-    private String correo;
+    private String correoElectronico;
     
     //Direccion
     private String calle;
     private String numero;
-    private String colonia;
+    
+    private Integer idColonia;
+    private String nombreColonia;
     private String codigoPostal;
     private String ciudad;
     private String estado;
+    
+    private String estatus;
 
     public Cliente() {
     }
 
-    public Cliente(Integer idCliente, String nombre, String apellidoPaterno, String apellidoMaterno, String telefono, String correo, String calle, String numero, String colonia, String codigoPostal, String ciudad, String estado) {
+    public Cliente(Integer idCliente, String nombre, String apellidoPaterno, String apellidoMaterno, String telefono, String correoElectronico, String calle, String numero, Integer idColonia, String nombreColonia, String codigoPostal, String ciudad, String estado, String estatus) {
         this.idCliente = idCliente;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.telefono = telefono;
-        this.correo = correo;
+        this.correoElectronico = correoElectronico;
         this.calle = calle;
         this.numero = numero;
-        this.colonia = colonia;
+        this.idColonia = idColonia;
+        this.nombreColonia = nombreColonia;
         this.codigoPostal = codigoPostal;
         this.ciudad = ciudad;
         this.estado = estado;
+        this.estatus = estatus;
     }
 
     public Integer getIdCliente() {
@@ -75,12 +81,12 @@ public class Cliente {
         this.telefono = telefono;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getCorreoElectronico() {
+        return correoElectronico;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
     }
 
     public String getCalle() {
@@ -99,12 +105,20 @@ public class Cliente {
         this.numero = numero;
     }
 
-    public String getColonia() {
-        return colonia;
+    public Integer getIdColonia() {
+        return idColonia;
     }
 
-    public void setColonia(String colonia) {
-        this.colonia = colonia;
+    public void setIdColonia(Integer idColonia) {
+        this.idColonia = idColonia;
+    }
+
+    public String getNombreColonia() {
+        return nombreColonia;
+    }
+
+    public void setNombreColonia(String nombreColonia) {
+        this.nombreColonia = nombreColonia;
     }
 
     public String getCodigoPostal() {
@@ -130,6 +144,15 @@ public class Cliente {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
+    
     
     
 }
