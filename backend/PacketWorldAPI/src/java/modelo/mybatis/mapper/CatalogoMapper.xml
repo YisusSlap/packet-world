@@ -5,6 +5,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="catalogos">
 
+    <select id="obtenerEstados" resultType="pojo.Estado">
+        SELECT id AS idEstado, nombre 
+        FROM estados 
+        ORDER BY nombre ASC
+    </select>
+
+    <select id="obtenerMunicipiosPorEstado" resultType="pojo.Municipio">
+        SELECT id AS idMunicipio, nombre, estado AS idEstado
+        FROM municipios 
+        WHERE estado = #{idEstado}
+        ORDER BY nombre ASC
+    </select>
+
+    <select id="obtenerCPsPorMunicipio" resultType="string">
+        SELECT DISTINCT codigo_postal 
+        FROM colonias 
+        WHERE municipio = #{idMunicipio}
+        ORDER BY codigo_postal ASC
+    </select>
+
     <select id="obtenerColoniasPorCP" resultType="pojo.Colonia">
         SELECT 
             id AS idColonia,

@@ -73,7 +73,7 @@ public class EnvioWS {
         return EnvioImp.obtenerPorConductor(idConductor);
     }
 
-    @Path("actualizar-estatus")
+    @Path("actualizarEstatus")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     public Respuesta actualizarEstatus(@FormParam("numeroGuia") String guia,
@@ -86,7 +86,7 @@ public class EnvioWS {
         return EnvioImp.actualizarEstatus(guia, estatus, comentario, idConductor);
     }
 
-    @Path("asignar-conductor")
+    @Path("asignarConductor")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     public Respuesta asignarConductor(@FormParam("numeroGuia") String numeroGuia,

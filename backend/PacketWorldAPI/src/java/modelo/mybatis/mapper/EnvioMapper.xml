@@ -34,6 +34,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <result property="dimAnchoCm" column="dimAnchoCm"/>
             <result property="dimProfundidadCm" column="dimProfundidadCm"/>
         </collection>
+
+        <collection property="historial" ofType="pojo.HistorialEstatus">
+            <id property="idHistorial" column="idHistorial"/>
+            <result property="idEnvio" column="idEnvio"/>
+            <result property="estatus" column="historialEstatus"/> <result property="fechaCambio" column="fechaHora"/> <result property="comentario" column="comentario"/>
+            <result property="numeroPersonalColaborador" column="colaboradorHistorial"/>
+        </collection>
     </resultMap>
 
     <insert id="registrarEnvio" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
@@ -58,40 +65,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="obtenerPorGuia" resultMap="mapaEnvioCompleto">
         SELECT 
-            e.idEnvio,
-            e.numeroGuia,
-            e.idCliente,
-            e.destinatarioNombre,
-            e.destinatarioAp1,
-            e.destinatarioAp2,
-            e.codigoSucursalOrigenFk,  e.idConductorAsignado,
-            e.destinoCalle,
-            e.destinoNumero,
-            e.idColoniaDestino,
-            e.costoTotal,
-            e.estatusActual,
+            e.idEnvio, e.numeroGuia, e.idCliente, e.destinatarioNombre, e.destinatarioAp1, e.destinatarioAp2,
+            e.codigoSucursalOrigenFk, e.idConductorAsignado, e.destinoCalle, e.destinoNumero, 
+            e.idColoniaDestino, e.costoTotal, e.estatusActual,
             
             cli.nombre AS nombreCliente,
+            c.nombre AS nombreColonia, c.codigo_postal AS codigoPostal,
+            m.nombre AS ciudad, edo.nombre AS estado,
             
-            c.nombre AS nombreColonia,
-            c.codigo_postal AS codigoPostal,
-            m.nombre AS ciudad,
-            edo.nombre AS estado,
+            p.idPaquete, p.descripcion, p.pesoKg, p.dimAltoCm, p.dimAnchoCm, p.dimProfundidadCm,
             
-            p.idPaquete,
-            p.descripcion,
-            p.pesoKg,
-            p.dimAltoCm,
-            p.dimAnchoCm,
-            p.dimProfundidadCm
+            h.idHistorial, 
+            h.estatus AS historialEstatus, 
+            h.fechaHora, 
+            h.comentario, 
+            h.numeroPersonalColaborador AS colaboradorHistorial
             
         FROM tbl_envios e
         INNER JOIN tbl_clientes cli ON e.idCliente = cli.idCliente
         INNER JOIN colonias c ON e.idColoniaDestino = c.id
         INNER JOIN municipios m ON c.municipio = m.id
         INNER JOIN estados edo ON m.estado = edo.id
+        
         LEFT JOIN tbl_paquetes p ON e.idEnvio = p.idEnvio
+        LEFT JOIN tbl_historial_estatus h ON e.idEnvio = h.idEnvio
+        
         WHERE e.numeroGuia = #{numeroGuia}
+        ORDER BY h.fechaHora DESC 
     </select>
     
     <select id="obtenerPorConductor" resultType="pojo.Envio">
@@ -105,9 +105,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <update id="actualizarEstatus" parameterType="map">
-        UPDATE tbl_envios 
-        SET estatusActual = #{estatus}
-        WHERE numeroGuia = #{numeroGuia}
+        UPDATE tbl_envios SET estatusActual = #{estatus} WHERE numeroGuia = #{numeroGuia}
     </update>
 
     <insert id="registrarHistorial" parameterType="pojo.HistorialEstatus">
@@ -123,15 +121,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <update id="sumarCostoDummy" parameterType="map">
-        UPDATE tbl_envios 
-        SET costoTotal = costoTotal + #{monto} 
-        WHERE idEnvio = #{idEnvio}
+        UPDATE tbl_envios SET costoTotal = costoTotal + #{monto} WHERE idEnvio = #{idEnvio}
     </update>
     
     <update id="asignarConductor" parameterType="map">
-        UPDATE tbl_envios 
-        SET idConductorAsignado = #{numeroPersonal}
-        WHERE numeroGuia = #{numeroGuia}
+        UPDATE tbl_envios SET idConductorAsignado = #{numeroPersonal} WHERE numeroGuia = #{numeroGuia}
     </update>
     
     <update id="editarEnvio" parameterType="pojo.Envio">
