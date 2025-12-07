@@ -6,6 +6,7 @@ import modelo.mybatis.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Colonia;
 import pojo.Estado;
+import pojo.EstatusEnvio;
 import pojo.Municipio;
 
 public class CatalogoImp {
@@ -69,4 +70,19 @@ public class CatalogoImp {
         }
         return colonias;
     }
+    
+   public static List<EstatusEnvio> obtenerEstatusEnvio(){
+       List<EstatusEnvio> listaEstatus = new ArrayList<>();
+        SqlSession conexionBD = MybatisUtil.getSession();
+        if (conexionBD != null) {
+            try {
+                listaEstatus = conexionBD.selectList("catalogos.obtenerEstatusEnvio");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                conexionBD.close();
+            }
+        }
+        return listaEstatus;
+   }
 }

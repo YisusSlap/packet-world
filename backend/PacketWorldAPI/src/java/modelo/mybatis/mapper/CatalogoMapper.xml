@@ -34,5 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE codigo_postal = #{codigoPostal}
         ORDER BY nombre ASC
     </select>
-
+    <select id="obtenerEstatusEnvio" resultType="pojo.EstatusEnvio">
+        SELECT id, nombre FROM tbl_estatus_envio ORDER BY id ASC
+    </select>
 </mapper>

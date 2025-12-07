@@ -45,13 +45,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <insert id="registrarEnvio" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
         INSERT INTO tbl_envios (
-            numeroGuia, idCliente, destinatarioNombre, destinatarioAp1, destinatarioAp2,
-            codigoSucursalOrigenFk, destinoCalle, destinoNumero, idColoniaDestino,
-            costoTotal, estatusActual
+        numeroGuia, idCliente, destinatarioNombre, destinatarioAp1, destinatarioAp2,
+        codigoSucursalOrigenFk, destinoCalle, destinoNumero, idColoniaDestino,
+        costoTotal, 
+        idEstatus
         ) VALUES (
-            #{numeroGuia}, #{idCliente}, #{destinatarioNombre}, #{destinatarioAp1}, #{destinatarioAp2},
-            #{codigoSucursalOrigen}, #{destinoCalle}, #{destinoNumero}, #{idColoniaDestino},
-            #{costoTotal}, 'recibido en sucursal'
+        #{numeroGuia}, #{idCliente}, #{destinatarioNombre}, #{destinatarioAp1}, #{destinatarioAp2},
+        #{codigoSucursalOrigen}, #{destinoCalle}, #{destinoNumero}, #{idColoniaDestino},
+        #{costoTotal}, 
+        #{idEstatus} 
         )
     </insert>
 
@@ -67,7 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT 
             e.idEnvio, e.numeroGuia, e.idCliente, e.destinatarioNombre, e.destinatarioAp1, e.destinatarioAp2,
             e.codigoSucursalOrigenFk, e.idConductorAsignado, e.destinoCalle, e.destinoNumero, 
-            e.idColoniaDestino, e.costoTotal, e.estatusActual,
+            e.idColoniaDestino, e.costoTotal, cat.nombre AS estatusActual,
             
             cli.nombre AS nombreCliente,
             c.nombre AS nombreColonia, c.codigo_postal AS codigoPostal,
@@ -83,6 +85,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             
         FROM tbl_envios e
         INNER JOIN tbl_clientes cli ON e.idCliente = cli.idCliente
+        INNER JOIN tbl_estatus_envio cat ON e.idEstatus = cat.id
         INNER JOIN colonias c ON e.idColoniaDestino = c.id
         INNER JOIN municipios m ON c.municipio = m.id
         INNER JOIN estados edo ON m.estado = edo.id
@@ -96,23 +99,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="obtenerPorConductor" resultType="pojo.Envio">
         SELECT 
-            numeroGuia, estatusActual,
-            CONCAT(destinoCalle, ' #', destinoNumero, ', ', c.nombre) AS destinoCalle 
+            numeroGuia, 
+            cat.nombre AS estatusActual,
+            CONCAT(e.destinoCalle, ' #', e.destinoNumero, ', ', c.nombre) AS destinoCalle 
         FROM tbl_envios e
         INNER JOIN colonias c ON e.idColoniaDestino = c.id
-        WHERE idConductorAsignado = #{idConductorAsignado}
-        AND estatusActual NOT IN ('entregado', 'cancelado') 
+        INNER JOIN tbl_estatus_envio cat ON e.idEstatus = cat.id
+        WHERE e.idConductorAsignado = #{idConductorAsignado}
+        AND cat.nombre NOT IN ('entregado', 'cancelado') 
     </select>
 
     <update id="actualizarEstatus" parameterType="map">
-        UPDATE tbl_envios SET estatusActual = #{estatus} WHERE numeroGuia = #{numeroGuia}
+        UPDATE tbl_envios SET idEstatus = #{idEstatus} WHERE numeroGuia = #{numeroGuia}
     </update>
 
     <insert id="registrarHistorial" parameterType="pojo.HistorialEstatus">
         INSERT INTO tbl_historial_estatus (
-            idEnvio, numeroPersonalColaborador, estatus, comentario, fechaHora
+            idEnvio, numeroPersonalColaborador, idEstatus, comentario, fechaHora
         ) VALUES (
-            #{idEnvio}, #{numeroPersonalColaborador}, #{estatus}, #{comentario}, NOW()
+            #{idEnvio}, #{numeroPersonalColaborador}, #{idEstatus}, #{comentario}, NOW()
         )
     </insert>
     
