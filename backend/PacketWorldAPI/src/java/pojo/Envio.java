@@ -25,6 +25,7 @@ public class Envio {
     private String ciudad;
     private String estado;
     
+    private Integer idEstatus;
     private String estatusActual;
     private Double costoTotal;
     
@@ -36,7 +37,7 @@ public class Envio {
     public Envio() {
     }
 
-    public Envio(Integer idEnvio, String numeroGuia, Integer idCliente, String nombreCliente, String destinatarioNombre, String destinatarioAp1, String destinatarioAp2, String codigoSucursalOrigen, String idConductorAsignado, String destinoCalle, String destinoNumero, Integer idColoniaDestino, String nombreColonia, String codigoPostal, String ciudad, String estado, String estatusActual, Double costoTotal, List<Paquete> listaPaquetes, List<HistorialEstatus> historial, String numeroPersonalUsuario) {
+    public Envio(Integer idEnvio, String numeroGuia, Integer idCliente, String nombreCliente, String destinatarioNombre, String destinatarioAp1, String destinatarioAp2, String codigoSucursalOrigen, String idConductorAsignado, String destinoCalle, String destinoNumero, Integer idColoniaDestino, String nombreColonia, String codigoPostal, String ciudad, String estado, Integer idEstatus, String estatusActual, Double costoTotal, List<Paquete> listaPaquetes, List<HistorialEstatus> historial, String numeroPersonalUsuario) {
         this.idEnvio = idEnvio;
         this.numeroGuia = numeroGuia;
         this.idCliente = idCliente;
@@ -53,6 +54,7 @@ public class Envio {
         this.codigoPostal = codigoPostal;
         this.ciudad = ciudad;
         this.estado = estado;
+        this.idEstatus = idEstatus;
         this.estatusActual = estatusActual;
         this.costoTotal = costoTotal;
         this.listaPaquetes = listaPaquetes;
@@ -228,6 +230,14 @@ public class Envio {
         this.numeroPersonalUsuario = numeroPersonalUsuario;
     }
 
+    public Integer getIdEstatus() {
+        return idEstatus;
+    }
+
+    public void setIdEstatus(Integer idEstatus) {
+        this.idEstatus = idEstatus;
+    }
+    
     
         
 }

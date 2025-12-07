@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pojo.Colonia;
 import pojo.Estado;
+import pojo.EstatusEnvio;
 import pojo.Municipio;
 
 @Path("catalogos")
@@ -57,5 +58,12 @@ public class CatalogoWS {
             throw new BadRequestException("El código postal es obligatorio");
         }
         return CatalogoImp.obtenerColoniasPorCP(codigoPostal);
+    }
+    
+    @Path("estatusEnvio")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<EstatusEnvio> obtenerEstatus() {
+        return CatalogoImp.obtenerEstatusEnvio();
     }
 }
