@@ -1,0 +1,66 @@
+/* Paleta: Azul (#89CFF0), Violeta (#B39CD0), Blanco, Gris (#F4F6F8) */
+
+.root {
+    -fx-background-color: #F4F6F8; /* Fondo gris muy suave */
+    -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+/* --- MENU LATERAL --- */
+.sidebar {
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555555;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: #F0EBFA; /* Violeta muy claro al pasar mouse */
+    -fx-text-fill: #6A4C93;
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.btn-primary {
+    -fx-background-color: #89CFF0; /* Azul Pastel */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #7ABBE0;
+}
+
+.btn-secondary {
+    -fx-background-color: #B39CD0; /* Violeta Pastel */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+/* --- TABLAS MODERNAS --- */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-base: #FFFFFF;
+    -fx-control-inner-background: #FFFFFF;
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: transparent;
+    -fx-padding: 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #89CFF0;
+    -fx-background-radius: 5 5 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
