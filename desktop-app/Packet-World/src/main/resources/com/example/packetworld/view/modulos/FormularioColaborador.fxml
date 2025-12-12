@@ -35,7 +35,8 @@
         <PasswordField fx:id="txtPassword" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
 
         <Label text="Sucursal ID:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtSucursal" promptText="Ej. 1" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <ComboBox fx:id="cbSucursal" promptText="Seleccione Sucursal..." prefWidth="200"
+                  GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
 
         <Label fx:id="lblLicencia" text="No. Licencia:" visible="false" managed="false"

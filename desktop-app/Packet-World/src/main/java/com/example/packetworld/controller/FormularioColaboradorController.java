@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.Colaborador;
 import com.example.packetworld.model.Respuesta;
+import com.example.packetworld.model.Sucursal;
 import com.example.packetworld.model.Unidad;
 import com.example.packetworld.service.ApiService;
 import javafx.collections.FXCollections;
@@ -20,7 +21,7 @@ public class FormularioColaboradorController {
     @FXML private TextField txtCurp;
     @FXML private TextField txtCorreo;
     @FXML private PasswordField txtPassword;
-    @FXML private TextField txtSucursal;
+    @FXML private ComboBox<Sucursal> cbSucursal;
     @FXML private ComboBox<String> cbRol;
     @FXML private Label lblLicencia;
     @FXML private TextField txtLicencia;
@@ -31,6 +32,7 @@ public class FormularioColaboradorController {
     public void initialize() {
         // Llenar combo de roles
         cbRol.getItems().addAll("Administrador", "Ejecutivo", "Conductor");
+        cargarSucursales();
 
         // LISTENER: Detectar cambio de Rol en tiempo real
         cbRol.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -49,7 +51,18 @@ public class FormularioColaboradorController {
         c.setCurp(txtCurp.getText());
         c.setCorreoElectronico(txtCorreo.getText());
         c.setContrasenia(txtPassword.getText());
-        c.setIdCodigoSucursal(txtSucursal.getText());
+
+        // --- CAMBIO AQUÍ: SUCURSAL ---
+        Sucursal sucursalSeleccionada = cbSucursal.getValue();
+        if (sucursalSeleccionada != null) {
+            // Guardamos solo el ID (código) de la sucursal
+            c.setIdCodigoSucursal(sucursalSeleccionada.getCodigoSucursal());
+        } else {
+            mostrarAlerta("Faltan datos", "Debes seleccionar una sucursal obligatoriamente.");
+            return;
+        }
+        // -----------------------------
+
         c.setRol(cbRol.getValue());
         c.setEstatus("Activo");
 
@@ -61,27 +74,23 @@ public class FormularioColaboradorController {
 
         // LÓGICA DE CONDUCTOR
         if ("Conductor".equalsIgnoreCase(c.getRol())) {
-            // Validar licencia obligatoria
             if (txtLicencia.getText().isEmpty()) {
                 mostrarAlerta("Faltan datos", "El conductor requiere número de licencia.");
                 return;
             }
             c.setNumeroLicencia(txtLicencia.getText());
 
-            // Asignar Unidad (Si seleccionó una)
             Unidad unidadSeleccionada = cbUnidad.getValue();
             if (unidadSeleccionada != null) {
-                // Usamos el NII como ID de asignación (o VIN, según tu base de datos)
                 c.setIdUnidadAsignada(unidadSeleccionada.getVin());
             }
         } else {
-            // Limpiar datos si cambió de rol antes de guardar
             c.setNumeroLicencia(null);
             c.setIdUnidadAsignada(null);
         }
 
+        // ENVÍO A API
         Respuesta resp;
-
         if (esEdicion) {
             resp = ApiService.editarColaborador(c); // PUT
         } else {
@@ -147,14 +156,11 @@ public class FormularioColaboradorController {
      */
     public void setColaborador(Colaborador colaborador) {
         if (colaborador != null) {
-            this.esEdicion = true; // Cambiamos bandera a TRUE
-
-            // Cambiar título de la ventana (opcional)
-            // lblTitulo.setText("Editar Colaborador");
+            this.esEdicion = true;
 
             // 1. Llenar campos básicos
             txtNumPersonal.setText(colaborador.getNumeroPersonal());
-            txtNumPersonal.setDisable(true); // REGLA DE ORO: No se puede editar la llave primaria (ID)
+            txtNumPersonal.setDisable(true); // ID no editable
 
             txtNombre.setText(colaborador.getNombre());
             txtPaterno.setText(colaborador.getApellidoPaterno());
@@ -162,25 +168,34 @@ public class FormularioColaboradorController {
             txtCurp.setText(colaborador.getCurp());
             txtCorreo.setText(colaborador.getCorreoElectronico());
             txtPassword.setText(colaborador.getContrasenia());
-            txtSucursal.setText(colaborador.getIdCodigoSucursal());
 
-            // 2. Seleccionar Rol en el ComboBox
+            // --- CAMBIO AQUÍ: SUCURSAL ---
+            // Buscamos la sucursal en el combo que coincida con el ID guardado
+            String idSucursalGuardada = colaborador.getIdCodigoSucursal();
+            if (idSucursalGuardada != null) {
+                for (Sucursal s : cbSucursal.getItems()) {
+                    // Comparamos el código de la sucursal
+                    if (s.getCodigoSucursal().equals(idSucursalGuardada)) {
+                        cbSucursal.setValue(s);
+                        break;
+                    }
+                }
+            }
+            // -----------------------------
+
+            // 2. Seleccionar Rol
             cbRol.setValue(colaborador.getRol());
 
             // 3. Lógica Especial para Conductores
-            // Si es conductor, forzamos que se muestren los campos ocultos y los llenamos
             if ("Conductor".equalsIgnoreCase(colaborador.getRol())) {
-                mostrarCamposConductor(true); // Método que ya creaste antes
+                mostrarCamposConductor(true);
                 txtLicencia.setText(colaborador.getNumeroLicencia());
 
-                // Truco para seleccionar la Unidad correcta en el ComboBox:
-                // El colaborador tiene un String (ID), pero el combo tiene Objetos Unidad.
-                // Buscamos cuál coincide y lo seleccionamos.
+                // Seleccionar Unidad
                 String idUnidad = colaborador.getIdUnidadAsignada();
                 if (idUnidad != null && !idUnidad.isEmpty()) {
                     for (Unidad u : cbUnidad.getItems()) {
-                        // Comparamos por NII o VIN (según qué guardes como ID)
-                        if (u.getNii().equals(idUnidad)) {
+                        if (u.getVin().equals(idUnidad)) { // O u.getNii() según uses
                             cbUnidad.setValue(u);
                             break;
                         }
@@ -188,5 +203,10 @@ public class FormularioColaboradorController {
                 }
             }
         }
+    }
+
+    private void cargarSucursales() {
+        List<Sucursal> lista = ApiService.obtenerSucursales();
+        cbSucursal.setItems(FXCollections.observableArrayList(lista));
     }
 }

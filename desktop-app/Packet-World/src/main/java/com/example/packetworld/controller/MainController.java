@@ -40,7 +40,7 @@ public class MainController {
     @FXML public void irColaboradores() { cargarVista("ColaboradoresView.fxml"); }
     @FXML public void irEnvios() { /* Por implementar */ }
     @FXML public void irUnidades() { cargarVista("UnidadesView.fxml"); }
-    @FXML public void irSucursales() { /* Por implementar */ }
+    @FXML public void irSucursales() { cargarVista("SucursalesView.fxml");}
     @FXML public void irClientes() { /* Por implementar */ }
 
     @FXML

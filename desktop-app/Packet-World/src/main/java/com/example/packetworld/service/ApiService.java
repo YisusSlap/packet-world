@@ -1,9 +1,6 @@
 package com.example.packetworld.service;
 
-import com.example.packetworld.model.Colaborador;
-import com.example.packetworld.model.Respuesta;
-import com.example.packetworld.model.RSAutenticacionColaborador;
-import com.example.packetworld.model.Unidad;
+import com.example.packetworld.model.*;
 import com.google.gson.Gson;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -179,6 +176,101 @@ public class ApiService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // --- SUCURSALES ---
+
+    // 1. GET (Obtener todas)
+    public static List<Sucursal> obtenerSucursales() {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "sucursales/obtener")
+                    .asString();
+            if (response.getStatus() == 200) {
+                Sucursal[] array = new Gson().fromJson(response.getBody(), Sucursal[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    // 2. POST (Registrar)
+    public static Respuesta registrarSucursal(Sucursal s) {
+        try {
+            String json = new Gson().toJson(s);
+            HttpResponse<String> response = Unirest.post(BASE_URL + "sucursales/registrar")
+                    .header("Content-Type", "application/json")
+                    .body(json)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    // 3. PUT (Editar)
+    public static Respuesta editarSucursal(Sucursal s) {
+        try {
+            String json = new Gson().toJson(s);
+            HttpResponse<String> response = Unirest.put(BASE_URL + "sucursales/editar")
+                    .header("Content-Type", "application/json")
+                    .body(json)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    // 4. DELETE (Eliminar por código)
+    public static Respuesta eliminarSucursal(String codigo) {
+        try {
+            HttpResponse<String> response = Unirest.delete(BASE_URL + "sucursales/eliminar/" + codigo)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    // --- CATÁLOGO ---
+
+    public static List<Estado> obtenerEstados() {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "catalogos/estados").asString();
+            if (response.getStatus() == 200) {
+                Estado[] array = new Gson().fromJson(response.getBody(), Estado[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    public static List<Municipio> obtenerMunicipios(Integer idEstado) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "catalogos/municipios/" + idEstado).asString();
+            if (response.getStatus() == 200) {
+                Municipio[] array = new Gson().fromJson(response.getBody(), Municipio[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    public static List<String> obtenerCPs(Integer idMunicipio) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "catalogos/codigosPostales/" + idMunicipio).asString();
+            if (response.getStatus() == 200) {
+                // Tu API devuelve una lista de Strings directo
+                String[] array = new Gson().fromJson(response.getBody(), String[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    public static List<Colonia> obtenerColonias(String cp) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "catalogos/colonias/" + cp).asString();
+            if (response.getStatus() == 200) {
+                Colonia[] array = new Gson().fromJson(response.getBody(), Colonia[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
     }
 
 }
