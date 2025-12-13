@@ -1,10 +1,13 @@
-package pojo;
-
+package com.example.packetworld.model;
 
 public class HistorialEstatus {
     private Integer idHistorial;
     private Integer idEnvio;
+
+    // --- CAMBIO CRÍTICO ---
     private Integer idEstatus;
+    // ----------------------
+
     private String fechaCambio;
     private String comentario;
     private String numeroPersonalColaborador;
@@ -37,6 +40,7 @@ public class HistorialEstatus {
         this.idEnvio = idEnvio;
     }
 
+    // --- GETTERS Y SETTERS CORREGIDOS ---
     public Integer getIdEstatus() {
         return idEstatus;
     }
@@ -44,6 +48,7 @@ public class HistorialEstatus {
     public void setIdEstatus(Integer idEstatus) {
         this.idEstatus = idEstatus;
     }
+    // ------------------------------------
 
     public String getFechaCambio() {
         return fechaCambio;
@@ -68,8 +73,4 @@ public class HistorialEstatus {
     public void setNumeroPersonalColaborador(String numeroPersonalColaborador) {
         this.numeroPersonalColaborador = numeroPersonalColaborador;
     }
-    
-    
-    
 }
-

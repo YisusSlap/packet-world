@@ -19,18 +19,22 @@ public class EnvioImp {
         
         if (conexionBD != null) {
             try {
+                // Generar Guía
                 String guia = "PW-" + System.currentTimeMillis(); 
                 envio.setNumeroGuia(guia);
                 
+                // Calcular Costo
                 double costo = 150.0;
                 if(envio.getListaPaquetes() != null){
                     costo += envio.getListaPaquetes().size() * 50;
                 }
                 envio.setCostoTotal(costo);
 
+                // Insertar Envío
                 int filas = conexionBD.insert("envios.registrarEnvio", envio);
                 Integer idEnvioGenerado = envio.getIdEnvio();
                 
+                // Insertar Paquetes
                 if (envio.getListaPaquetes() != null) {
                     for (Paquete p : envio.getListaPaquetes()) {
                         p.setIdEnvio(idEnvioGenerado);
@@ -38,10 +42,14 @@ public class EnvioImp {
                     }
                 }
                 
+                // Insertar Historial Inicial
                 HistorialEstatus historial = new HistorialEstatus();
                 historial.setIdEnvio(idEnvioGenerado);
                 historial.setNumeroPersonalColaborador(envio.getNumeroPersonalUsuario()); 
-                historial.setEstatus("recibido en sucursal");
+                
+                // CORRECCIÓN 1: Usar setIdEstatus (Integer)
+                historial.setIdEstatus(1); 
+                
                 historial.setComentario("Envío registrado en sistema.");
                 conexionBD.insert("envios.registrarHistorial", historial);
 
@@ -63,55 +71,65 @@ public class EnvioImp {
         return respuesta;
     }
 
+    // ... (obtenerPorGuia y obtenerPorConductor quedan IGUAL) ...
     public static Envio obtenerPorGuia(String numeroGuia) {
+        // ... tu código original ...
         Envio envio = null;
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {
             try {
                 envio = conexionBD.selectOne("envios.obtenerPorGuia", numeroGuia);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                conexionBD.close();
-            }
+            } catch (Exception e) { e.printStackTrace(); } 
+            finally { conexionBD.close(); }
         }
         return envio;
     }
-    
+
     public static List<Envio> obtenerPorConductor(String numeroPersonal) {
+        // ... tu código original ...
         List<Envio> lista = null;
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {
             try {
                 lista = conexionBD.selectList("envios.obtenerPorConductor", numeroPersonal);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                conexionBD.close();
-            }
+            } catch (Exception e) { e.printStackTrace(); } 
+            finally { conexionBD.close(); }
         }
         return lista;
     }
 
+
     public static Respuesta actualizarEstatus(String numeroGuia, String estatus, String comentario, String numeroPersonal) {
         Respuesta respuesta = new Respuesta();
         SqlSession conexionBD = MybatisUtil.getSession();
+        
         if (conexionBD != null) {
             try {
                 Map<String, String> params = new HashMap<>();
                 params.put("numeroGuia", numeroGuia);
                 params.put("estatus", estatus);
+                
                 int filas = conexionBD.update("envios.actualizarEstatus", params);
                 
                 if (filas > 0) {
                     Integer idEnvio = conexionBD.selectOne("envios.obtenerIdPorGuia", numeroGuia);
+                    
                     HistorialEstatus historial = new HistorialEstatus();
                     historial.setIdEnvio(idEnvio);
                     historial.setNumeroPersonalColaborador(numeroPersonal);
-                    historial.setEstatus(estatus);
+                    
+                    // CORRECCIÓN 2: Parsear el String a Integer
+                    try {
+                        historial.setIdEstatus(Integer.parseInt(estatus));
+                    } catch (NumberFormatException ex) {
+                        historial.setIdEstatus(0); // O manejar error
+                    }
+                    
                     historial.setComentario(comentario);
+                    
                     conexionBD.insert("envios.registrarHistorial", historial);
                     conexionBD.commit();
+                    
                     respuesta.setError(false);
                     respuesta.setMensaje("Estatus actualizado correctamente.");
                 } else {
@@ -132,7 +150,8 @@ public class EnvioImp {
         return respuesta;
     }
 
-    public static Respuesta asignarConductor(String numeroGuia, String numeroPersonal) {
+    // ... (asignarConductor y editarEnvio quedan IGUAL) ...
+     public static Respuesta asignarConductor(String numeroGuia, String numeroPersonal) {
         Respuesta respuesta = new Respuesta();
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {

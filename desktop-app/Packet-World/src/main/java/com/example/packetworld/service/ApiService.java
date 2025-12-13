@@ -273,4 +273,91 @@ public class ApiService {
         return new ArrayList<>();
     }
 
+    public static List<EstatusEnvio> obtenerEstatus() {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "catalogos/estatusEnvio").asString();
+            if (response.getStatus() == 200) {
+                EstatusEnvio[] array = new Gson().fromJson(response.getBody(), EstatusEnvio[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    // --- CLIENTES ---
+
+    public static List<Cliente> buscarClientes(String nombre, String telefono, String correo) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "clientes/buscar")
+                    .queryString("nombre", nombre != null ? nombre : "")
+                    .queryString("telefono", telefono != null ? telefono : "")
+                    .queryString("correo", correo != null ? correo : "")
+                    .asString();
+
+            if (response.getStatus() == 200) {
+                Cliente[] array = new Gson().fromJson(response.getBody(), Cliente[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    public static List<Cliente> obtenerClientes() {
+        return buscarClientes(null, null, null);
+    }
+
+    public static Respuesta registrarCliente(Cliente c) {
+        try {
+            String json = new Gson().toJson(c);
+            HttpResponse<String> response = Unirest.post(BASE_URL + "clientes/registrar")
+                    .header("Content-Type", "application/json")
+                    .body(json)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    public static Respuesta editarCliente(Cliente c) {
+        try {
+            String json = new Gson().toJson(c);
+            HttpResponse<String> response = Unirest.put(BASE_URL + "clientes/editar")
+                    .header("Content-Type", "application/json")
+                    .body(json)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    public static Respuesta eliminarCliente(Integer idCliente) {
+        try {
+            HttpResponse<String> response = Unirest.delete(BASE_URL + "clientes/eliminar/" + idCliente)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    // --- ENVÍOS ---
+
+    public static Respuesta registrarEnvio(Envio envio) {
+        try {
+            String json = new Gson().toJson(envio);
+            HttpResponse<String> response = Unirest.post(BASE_URL + "envios/registrar")
+                    .header("Content-Type", "application/json")
+                    .body(json)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    // Buscar por Guía (Retorna un solo Envio)
+    public static Envio rastrearEnvio(String guia) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "envios/rastrear/" + guia).asString();
+            if (response.getStatus() == 200) {
+                return new Gson().fromJson(response.getBody(), Envio.class);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
 }

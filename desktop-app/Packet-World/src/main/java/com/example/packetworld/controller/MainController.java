@@ -38,10 +38,10 @@ public class MainController {
     }
 
     @FXML public void irColaboradores() { cargarVista("ColaboradoresView.fxml"); }
-    @FXML public void irEnvios() { /* Por implementar */ }
+    @FXML public void irEnvios() { cargarVista("EnviosView.fxml"); }
     @FXML public void irUnidades() { cargarVista("UnidadesView.fxml"); }
     @FXML public void irSucursales() { cargarVista("SucursalesView.fxml");}
-    @FXML public void irClientes() { /* Por implementar */ }
+    @FXML public void irClientes() { cargarVista("ClientesView.fxml"); }
 
     @FXML
     public void cerrarSesion() {
