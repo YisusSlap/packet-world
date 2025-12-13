@@ -110,16 +110,16 @@ public class ColaboradorWS {
     @Produces(MediaType.APPLICATION_JSON)
     public Respuesta cambiarContrasenia(
             @FormParam("numeroPersonal") String numeroPersonal,
-            @FormParam("passwordActual") String passwordActual,
-            @FormParam("passwordNuevo") String passwordNuevo) {
+            @FormParam("contraseniaActual") String contraseniaActual,
+            @FormParam("contraseniaNueva") String contraseniaNueva) {
         
         if (numeroPersonal == null || numeroPersonal.isEmpty() || 
-            passwordActual == null || passwordActual.isEmpty() || 
-            passwordNuevo == null || passwordNuevo.isEmpty()) {
+            contraseniaActual == null || contraseniaActual.isEmpty() || 
+            contraseniaNueva == null || contraseniaNueva.isEmpty()) {
             
             throw new BadRequestException("Faltan datos (número personal, contraseña actual o nueva).");
         }
         
-        return ColaboradorImp.cambiarContrasenia(numeroPersonal, passwordActual, passwordNuevo);
+        return ColaboradorImp.cambiarContrasenia(numeroPersonal, contraseniaActual, contraseniaNueva);
     }
 }

@@ -108,7 +108,7 @@ public class ColaboradorImp {
         return respuesta;
     }
     
-    public static Respuesta cambiarContrasenia(String numeroPersonal, String passwordActual, String passwordNuevo) {
+    public static Respuesta cambiarContrasenia(String numeroPersonal, String contraseniaActual, String contraseniaNueva) {
         Respuesta respuesta = new Respuesta();
         SqlSession conexionBD = MybatisUtil.getSession();
         
@@ -117,11 +117,11 @@ public class ColaboradorImp {
                 Colaborador colaboradorGuardado = conexionBD.selectOne("colaboradores.obtenerColaboradorPorNoPersonal", numeroPersonal);
                 
                 if (colaboradorGuardado != null) {
-                    String hashActualEnviado = Utilidades.hashPassword(passwordActual);
+                    String hashActualEnviado = Utilidades.hashPassword(contraseniaActual);
                     
                     if (hashActualEnviado.equals(colaboradorGuardado.getContrasenia())) {
                         
-                        String nuevoHash = Utilidades.hashPassword(passwordNuevo);
+                        String nuevoHash = Utilidades.hashPassword(contraseniaNueva);
                         
                         Map<String, String> params = new HashMap<>();
                         params.put("numeroPersonal", numeroPersonal);
