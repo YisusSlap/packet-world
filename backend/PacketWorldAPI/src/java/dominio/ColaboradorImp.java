@@ -1,7 +1,9 @@
 package dominio;
 
 import dto.Respuesta;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import modelo.mybatis.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Colaborador;
@@ -84,10 +86,6 @@ public class ColaboradorImp {
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {
             try {
-                if (colaborador.getContrasenia() != null && !colaborador.getContrasenia().isEmpty()) {
-                    String passHash = Utilidades.hashPassword(colaborador.getContrasenia());
-                    colaborador.setContrasenia(passHash);
-                }
                 int filasAfectadas = conexionBD.update("colaboradores.editarColaborador", colaborador);
                 conexionBD.commit();
                 if (filasAfectadas > 0) {
@@ -109,6 +107,57 @@ public class ColaboradorImp {
         }
         return respuesta;
     }
+    
+    public static Respuesta cambiarContrasenia(String numeroPersonal, String passwordActual, String passwordNuevo) {
+        Respuesta respuesta = new Respuesta();
+        SqlSession conexionBD = MybatisUtil.getSession();
+        
+        if (conexionBD != null) {
+            try {
+                Colaborador colaboradorGuardado = conexionBD.selectOne("colaboradores.obtenerColaboradorPorNoPersonal", numeroPersonal);
+                
+                if (colaboradorGuardado != null) {
+                    String hashActualEnviado = Utilidades.hashPassword(passwordActual);
+                    
+                    if (hashActualEnviado.equals(colaboradorGuardado.getContrasenia())) {
+                        
+                        String nuevoHash = Utilidades.hashPassword(passwordNuevo);
+                        
+                        Map<String, String> params = new HashMap<>();
+                        params.put("numeroPersonal", numeroPersonal);
+                        params.put("nuevaContrasenia", nuevoHash);
+                        
+                        int filas = conexionBD.update("colaboradores.actualizarContrasenia", params);
+                        conexionBD.commit();
+                        
+                        if(filas > 0){
+                            respuesta.setError(false);
+                            respuesta.setMensaje("Contraseña actualizada correctamente.");
+                        } else {
+                            respuesta.setError(true);
+                            respuesta.setMensaje("No se pudo actualizar la contraseña.");
+                        }
+                    } else {
+                        respuesta.setError(true);
+                        respuesta.setMensaje("La contraseña actual es incorrecta.");
+                    }
+                } else {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("Usuario no encontrado.");
+                }
+            } catch (Exception e) {
+                if(conexionBD!=null) conexionBD.rollback();
+                respuesta.setError(true);
+                respuesta.setMensaje("Error: " + e.getMessage());
+            } finally {
+                conexionBD.close();
+            }
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+        }
+        return respuesta;
+    }    
 
     public static Respuesta eliminarColaborador(String numeroPersonal) {
         Respuesta respuesta = new Respuesta();

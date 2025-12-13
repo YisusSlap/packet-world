@@ -16,45 +16,52 @@ public class EnvioImp {
     public static Respuesta registrarEnvio(Envio envio) {
         Respuesta respuesta = new Respuesta();
         SqlSession conexionBD = MybatisUtil.getSession();
-        
+
         if (conexionBD != null) {
             try {
-                String guia = "PW-" + System.currentTimeMillis(); 
+                String guia = "PW-" + System.currentTimeMillis();
                 envio.setNumeroGuia(guia);
-                
+
+                if (envio.getIdEstatus() == null) {
+                    envio.setIdEstatus(1);
+                }
+
                 double costo = 150.0;
-                if(envio.getListaPaquetes() != null){
+                if (envio.getListaPaquetes() != null) {
                     costo += envio.getListaPaquetes().size() * 50;
                 }
                 envio.setCostoTotal(costo);
 
                 int filas = conexionBD.insert("envios.registrarEnvio", envio);
                 Integer idEnvioGenerado = envio.getIdEnvio();
-                
+
                 if (envio.getListaPaquetes() != null) {
                     for (Paquete p : envio.getListaPaquetes()) {
                         p.setIdEnvio(idEnvioGenerado);
-                        conexionBD.insert("envios.registrarPaquete", p);
+                        conexionBD.insert("paquetes.registrarPaquete", p);
                     }
                 }
-                
+
                 HistorialEstatus historial = new HistorialEstatus();
                 historial.setIdEnvio(idEnvioGenerado);
-                historial.setNumeroPersonalColaborador(envio.getNumeroPersonalUsuario()); 
-                historial.setEstatus("recibido en sucursal");
+                historial.setNumeroPersonalColaborador(envio.getNumeroPersonalUsuario());
+                historial.setIdEstatus(1);
                 historial.setComentario("Envío registrado en sistema.");
                 conexionBD.insert("envios.registrarHistorial", historial);
-
                 conexionBD.commit();
                 respuesta.setError(false);
                 respuesta.setMensaje("Envío creado exitosamente. Guía: " + guia);
             } catch (Exception e) {
-                conexionBD.rollback(); 
+                if (conexionBD != null) {
+                    conexionBD.rollback();
+                }
                 respuesta.setError(true);
                 respuesta.setMensaje("Error al crear envío: " + e.getMessage());
                 e.printStackTrace();
             } finally {
-                conexionBD.close();
+                if (conexionBD != null) {
+                    conexionBD.close();
+                }
             }
         } else {
             respuesta.setError(true);
@@ -63,6 +70,7 @@ public class EnvioImp {
         return respuesta;
     }
 
+    
     public static Envio obtenerPorGuia(String numeroGuia) {
         Envio envio = null;
         SqlSession conexionBD = MybatisUtil.getSession();
@@ -93,14 +101,14 @@ public class EnvioImp {
         return lista;
     }
 
-    public static Respuesta actualizarEstatus(String numeroGuia, String estatus, String comentario, String numeroPersonal) {
+    public static Respuesta actualizarEstatus(String numeroGuia, Integer idEstatus, String comentario, String numeroPersonal) {
         Respuesta respuesta = new Respuesta();
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {
             try {
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("numeroGuia", numeroGuia);
-                params.put("estatus", estatus);
+                params.put("idEstatus", idEstatus);
                 int filas = conexionBD.update("envios.actualizarEstatus", params);
                 
                 if (filas > 0) {
@@ -108,7 +116,7 @@ public class EnvioImp {
                     HistorialEstatus historial = new HistorialEstatus();
                     historial.setIdEnvio(idEnvio);
                     historial.setNumeroPersonalColaborador(numeroPersonal);
-                    historial.setEstatus(estatus);
+                    historial.setIdEstatus(idEstatus);
                     historial.setComentario(comentario);
                     conexionBD.insert("envios.registrarHistorial", historial);
                     conexionBD.commit();
@@ -188,4 +196,20 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    public static List<Envio> obtenerTodos() {
+        List<Envio> listado = null;
+        SqlSession conexionBD = MybatisUtil.getSession();
+        if (conexionBD != null) {
+            try {
+                listado = conexionBD.selectList("envios.obtenerTodos");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                conexionBD.close();
+            }
+        }
+        return listado;
+    }
+    
 }

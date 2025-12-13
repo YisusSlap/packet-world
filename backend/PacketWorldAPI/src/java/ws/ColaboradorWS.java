@@ -7,6 +7,7 @@ import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -102,5 +103,23 @@ public class ColaboradorWS {
             throw new BadRequestException("Número de personal requerido");
         }
         return ColaboradorImp.obtenerFoto(numeroPersonal);
+    }
+    
+    @Path("cambiarContrasenia")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta cambiarContrasenia(
+            @FormParam("numeroPersonal") String numeroPersonal,
+            @FormParam("passwordActual") String passwordActual,
+            @FormParam("passwordNuevo") String passwordNuevo) {
+        
+        if (numeroPersonal == null || numeroPersonal.isEmpty() || 
+            passwordActual == null || passwordActual.isEmpty() || 
+            passwordNuevo == null || passwordNuevo.isEmpty()) {
+            
+            throw new BadRequestException("Faltan datos (número personal, contraseña actual o nueva).");
+        }
+        
+        return ColaboradorImp.cambiarContrasenia(numeroPersonal, passwordActual, passwordNuevo);
     }
 }
