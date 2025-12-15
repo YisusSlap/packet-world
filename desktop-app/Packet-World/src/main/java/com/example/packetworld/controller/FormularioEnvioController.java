@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.*;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Validaciones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -57,6 +58,25 @@ public class FormularioEnvioController {
                 c.getValue().getDimAltoCm() + "x" + c.getValue().getDimAnchoCm() + "x" + c.getValue().getDimProfundidadCm()
         ));
         tblPaquetes.setItems(listaPaquetesLocal);
+
+
+        // Destinatario: Solo letras
+        Validaciones.soloLetras(txtDestNombre);
+        Validaciones.soloLetras(txtDestAp1);
+        Validaciones.soloLetras(txtDestAp2);
+        Validaciones.limitarLongitud(txtDestNombre, 50);
+
+        // Dirección Destino
+        Validaciones.limitarLongitud(txtCalle, 100);
+        Validaciones.limitarLongitud(txtNumero, 10);
+
+        // Paquete
+        Validaciones.limitarLongitud(txtPaqDesc, 100);
+        // Limitamos a solo decimales
+        Validaciones.soloDecimales(txtPaqPeso);
+        Validaciones.soloDecimales(txtPaqAlto);
+        Validaciones.soloDecimales(txtPaqAncho);
+        Validaciones.soloDecimales(txtPaqProf);
     }
 
     private void configurarListenersDireccion() {

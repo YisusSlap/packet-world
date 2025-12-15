@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.*;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Validaciones;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -25,6 +26,22 @@ public class FormularioClienteController {
     public void initialize() {
         cbEstado.setItems(FXCollections.observableArrayList(ApiService.obtenerEstados()));
         configurarListeners();
+
+        // Nombres: Solo letras y máx 50 caracteres
+        Validaciones.soloLetras(txtNombre);
+        Validaciones.soloLetras(txtPaterno);
+        Validaciones.soloLetras(txtMaterno);
+        Validaciones.limitarLongitud(txtNombre, 50);
+        Validaciones.limitarLongitud(txtPaterno, 50);
+        Validaciones.limitarLongitud(txtMaterno, 50);
+
+        // Teléfono: Solo números y máx 10 dígitos (Estándar móvil)
+        Validaciones.soloNumerosLimitado(txtTelefono, 10);
+
+        // Correo y Dirección: Limitar longitud para no desbordar BD
+        Validaciones.limitarLongitud(txtCorreo, 100);
+        Validaciones.limitarLongitud(txtCalle, 100);
+        Validaciones.limitarLongitud(txtNumero, 10);
     }
 
     private void configurarListeners() {
@@ -130,9 +147,21 @@ public class FormularioClienteController {
         c.setNumero(txtNumero.getText());
         c.setEstatus("Activo");
 
+        // Validaciones
+
         if (cbColonia.getValue() == null) {
             new Alert(Alert.AlertType.WARNING, "Selecciona la colonia").show();
             return;
+        }
+
+        if (txtNombre.getText().isEmpty() || txtCorreo.getText().isEmpty()) {
+            new Alert(Alert.AlertType.WARNING, "Nombre y Correo son obligatorios.").show();
+            return;
+        }
+
+        if (!Validaciones.esEmailValido(txtCorreo.getText())) {
+            new Alert(Alert.AlertType.WARNING, "El formato del correo es incorrecto (ejemplo: usuario@dominio.com).").show();
+            return; // ¡IMPORTANTE! El return detiene el proceso para que no guarde nada.
         }
 
         // Datos de dirección

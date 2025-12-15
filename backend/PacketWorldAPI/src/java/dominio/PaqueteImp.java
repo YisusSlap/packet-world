@@ -2,6 +2,7 @@ package dominio;
 
 import dto.Respuesta;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import modelo.mybatis.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -16,7 +17,7 @@ public class PaqueteImp {
         
         if (conexionBD != null) {
             try {
-                int filas = conexionBD.insert("envios.registrarPaquete", paquete);
+                int filas = conexionBD.insert("paquetes.registrarPaquete", paquete);
                 
                 if (filas > 0) {
                     // Recalcular Costo (+50 dummy)
@@ -52,7 +53,7 @@ public class PaqueteImp {
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {
             try {
-                int filas = conexionBD.update("envios.editarPaquete", paquete);
+                int filas = conexionBD.update("paquetes.editarPaquete", paquete);
                 conexionBD.commit();
                 if (filas > 0) {
                     respuesta.setError(false);
@@ -79,8 +80,8 @@ public class PaqueteImp {
         SqlSession conexionBD = MybatisUtil.getSession();
         if (conexionBD != null) {
             try {
-                Integer idEnvio = conexionBD.selectOne("envios.obtenerIdEnvioPorPaquete", idPaquete);
-                int filas = conexionBD.delete("envios.eliminarPaquete", idPaquete);
+                Integer idEnvio = conexionBD.selectOne("paquetes.obtenerIdEnvioPorPaquete", idPaquete);
+                int filas = conexionBD.delete("paquetes.eliminarPaquete", idPaquete);
                 
                 if (filas > 0 && idEnvio != null) {
                     Map<String, Object> params = new HashMap<>();
@@ -107,5 +108,20 @@ public class PaqueteImp {
             respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
         }
         return respuesta;
+    }
+    
+    public static List<Paquete> obtenerTodos() {
+        List<Paquete> listado = null;
+        SqlSession conexionBD = MybatisUtil.getSession();
+        if (conexionBD != null) {
+            try {
+                listado = conexionBD.selectList("paquetes.obtenerTodos");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                conexionBD.close();
+            }
+        }
+        return listado;
     }
 }

@@ -1,10 +1,12 @@
 package com.example.packetworld.controller;
 
 import com.example.packetworld.model.Envio;
-import com.example.packetworld.model.Paquete;
 import com.example.packetworld.service.ApiService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,80 +18,117 @@ import java.io.IOException;
 
 public class EnviosController {
 
-    @FXML private TextField txtGuia;
-    @FXML private Label lblCliente;
-    @FXML private Label lblDestino;
-    @FXML private Label lblEstatus;
-    @FXML private Label lblCosto;
+    @FXML private TextField txtBuscar;
+    @FXML private TableView<Envio> tblEnvios;
+    @FXML private TableColumn<Envio, String> colGuia;
+    @FXML private TableColumn<Envio, String> colCliente;
+    @FXML private TableColumn<Envio, String> colDestino;
+    @FXML private TableColumn<Envio, String> colEstatus;
+    @FXML private TableColumn<Envio, String> colConductor;
+    @FXML private TableColumn<Envio, String> colCosto;
 
-    @FXML private TableView<Paquete> tblPaquetes;
-    @FXML private TableColumn<Paquete, String> colDescripcion;
-    @FXML private TableColumn<Paquete, String> colPeso;
-    @FXML private TableColumn<Paquete, String> colDimensiones;
+    private ObservableList<Envio> listaMaster;
+    private FilteredList<Envio> listaFiltrada;
 
     @FXML
     public void initialize() {
-        // Configurar columnas de la tabla de paquetes
-        colDescripcion.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescripcion()));
-        colPeso.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPesoKg() + " kg"));
-        colDimensiones.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getDimAltoCm() + "x" + c.getValue().getDimAnchoCm() + "x" + c.getValue().getDimProfundidadCm()
-        ));
+        configurarColumnas();
+        cargarDatos();
+        configurarBuscador();
     }
 
-    @FXML
-    public void btnBuscar() {
-        String guia = txtGuia.getText().trim();
-        if (guia.isEmpty()) {
-            mostrarAlerta("Ingrese un número de guía.");
-            return;
-        }
+    private void configurarColumnas() {
+        colGuia.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNumeroGuia()));
+        colCliente.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombreCliente()));
+        colDestino.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCiudad()));
+        colEstatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEstatusActual()));
+        colCosto.setCellValueFactory(c -> new SimpleStringProperty("$" + c.getValue().getCostoTotal()));
 
-        Envio envio = ApiService.rastrearEnvio(guia);
-
-        if (envio != null) {
-            // Llenar datos
-            lblCliente.setText(envio.getNombreCliente()); // Asegúrate que tu POJO Envio tenga este campo mapeado
-            lblDestino.setText(envio.getCiudad() + ", " + envio.getEstado());
-            lblEstatus.setText(envio.getEstatusActual());
-            lblCosto.setText("$" + envio.getCostoTotal());
-
-            // Llenar tabla de paquetes
-            if (envio.getListaPaquetes() != null) {
-                tblPaquetes.setItems(FXCollections.observableArrayList(envio.getListaPaquetes()));
-            } else {
-                tblPaquetes.getItems().clear();
-            }
-        } else {
-            limpiar();
-            mostrarAlerta("No se encontró ningún envío con esa guía.");
-        }
+        // Columna Conductor con lógica visual "Por Asignar"
+        colConductor.setCellValueFactory(c -> {
+            String conductor = c.getValue().getIdConductorAsignado();
+            if (conductor == null || conductor.isEmpty()) return new SimpleStringProperty("🔴 POR ASIGNAR");
+            return new SimpleStringProperty(conductor);
+        });
     }
 
-    @FXML
-    public void btnNuevo() {
+    private void cargarDatos() {
+        listaMaster = FXCollections.observableArrayList(ApiService.obtenerTodosEnvios());
+        listaFiltrada = new FilteredList<>(listaMaster, p -> true);
+        SortedList<Envio> sortedData = new SortedList<>(listaFiltrada);
+        sortedData.comparatorProperty().bind(tblEnvios.comparatorProperty());
+        tblEnvios.setItems(sortedData);
+    }
+
+    private void configurarBuscador() {
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            listaFiltrada.setPredicate(envio -> {
+                if (newVal == null || newVal.isEmpty()) return true;
+                String lower = newVal.toLowerCase();
+
+                return envio.getNumeroGuia().toLowerCase().contains(lower) ||
+                        envio.getNombreCliente().toLowerCase().contains(lower) ||
+                        envio.getEstatusActual().toLowerCase().contains(lower);
+            });
+        });
+    }
+
+    // --- ACCIONES DE BOTONES (Ahora usan la selección de la tabla) ---
+
+    private Envio obtenerEnvioSeleccionado() {
+        Envio e = tblEnvios.getSelectionModel().getSelectedItem();
+        if (e == null) mostrarAlerta("Selecciona un envío de la tabla primero.");
+        return e;
+    }
+
+    @FXML public void btnVerDetalle() {
+        Envio e = obtenerEnvioSeleccionado();
+        if (e != null) abrirModal("DetalleEnvio.fxml", "Detalle de Envío", e);
+    }
+
+    @FXML public void btnAsignarConductor() {
+        Envio e = obtenerEnvioSeleccionado();
+        if (e != null) abrirModal("FormularioAsignacion.fxml", "Asignar Conductor", e);
+    }
+
+    @FXML public void btnCambiarEstatus() {
+        Envio e = obtenerEnvioSeleccionado();
+        if (e != null) abrirModal("FormularioEstatus.fxml", "Cambiar Estatus", e);
+    }
+
+    @FXML public void btnAgregarPaquete() {
+        Envio e = obtenerEnvioSeleccionado();
+        if (e != null) abrirModal("FormularioPaquete.fxml", "Agregar Paquete", e);
+    }
+
+    @FXML public void btnNuevo() {
+        abrirModal("FormularioEnvio.fxml", "Nuevo Envío", null);
+    }
+
+    // Método genérico para abrir modales
+    private void abrirModal(String fxml, String titulo, Envio envioParaPasar) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/FormularioEnvio.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/" + fxml));
             Parent root = loader.load();
+
+            // Pasar el envío al controlador si es necesario
+            Object controller = loader.getController();
+            if (envioParaPasar != null) {
+                if (controller instanceof DetalleEnvioController) ((DetalleEnvioController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioAsignacionController) ((FormularioAsignacionController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioEstatusController) ((FormularioEstatusController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioPaqueteController) ((FormularioPaqueteController) controller).setIdEnvio(envioParaPasar.getIdEnvio());
+            }
+
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Nuevo Envío");
+            stage.setTitle(titulo);
             stage.showAndWait();
-            // Al cerrar no recargamos nada porque es búsqueda por guía
-        } catch (IOException e) { e.printStackTrace(); }
+
+            cargarDatos(); // Recargar tabla al cerrar modal
+        } catch (IOException ex) { ex.printStackTrace(); }
     }
 
-    private void limpiar() {
-        lblCliente.setText("---");
-        lblDestino.setText("---");
-        lblEstatus.setText("---");
-        lblCosto.setText("---");
-        tblPaquetes.getItems().clear();
-    }
-
-    private void mostrarAlerta(String msg) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION, msg);
-        a.show();
-    }
+    private void mostrarAlerta(String msg) { new Alert(Alert.AlertType.WARNING, msg).show(); }
 }

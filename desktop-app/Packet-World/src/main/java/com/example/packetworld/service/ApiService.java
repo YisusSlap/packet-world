@@ -360,4 +360,91 @@ public class ApiService {
         return null;
     }
 
+    public static Respuesta actualizarEstatus(String numeroGuia, Integer estatusId, String comentario, String idConductor) {
+        try {
+            HttpResponse<String> response = Unirest.put(BASE_URL + "envios/actualizarEstatus")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .field("numeroGuia", numeroGuia)
+                    .field("estatus", String.valueOf(estatusId)) // Convertimos a String solo para el envío HTTP
+                    .field("comentario", comentario)
+                    .field("idConductor", idConductor)
+                    .asString();
+
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Respuesta error = new Respuesta();
+            error.setError(true);
+            error.setMensaje(obtenerMensajeAmigable(e));
+            return error;
+        }
+    }
+
+    public static List<Envio> obtenerTodosEnvios() {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "envios/obtenerTodos").asString();
+            if (response.getStatus() == 200) {
+                Envio[] array = new Gson().fromJson(response.getBody(), Envio[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
+    }
+
+    public static Respuesta asignarConductor(String numeroGuia, String numeroPersonalConductor) {
+        try {
+            HttpResponse<String> response = Unirest.put(BASE_URL + "envios/asignarConductor")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .field("numeroGuia", numeroGuia)
+                    .field("numeroPersonal", numeroPersonalConductor)
+                    .asString();
+
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Respuesta error = new Respuesta();
+            error.setError(true);
+            error.setMensaje(obtenerMensajeAmigable(e));
+            return error;
+        }
+    }
+
+    // PAQUETES //
+    public static Respuesta registrarPaquete(Paquete paquete) {
+        try {
+            String json = new Gson().toJson(paquete);
+            HttpResponse<String> response = Unirest.post(BASE_URL + "paquetes/registrar")
+                    .header("Content-Type", "application/json")
+                    .body(json)
+                    .asString();
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) { return null; }
+    }
+
+    // Método para traducir errores técnicos a español amigable
+    private static String obtenerMensajeAmigable(Exception e) {
+        String msg = e.getMessage();
+
+        if (msg == null) return "Ocurrió un error inesperado.";
+
+        if (msg.contains("Connection refused") || msg.contains("ConnectException")) {
+            return "No se pudo conectar con el servidor. Verifique su conexión a internet o si el servidor está encendido.";
+        }
+
+        if (msg.contains("SocketTimeoutException")) {
+            return "El servidor tardó demasiado en responder. Intente de nuevo.";
+        }
+
+        if (msg.contains("404")) {
+            return "No se encontró el servicio solicitado (404).";
+        }
+
+        if (msg.contains("500")) {
+            return "Error interno en el servidor (500). Contacte a soporte.";
+        }
+
+        // Si no es ninguno conocido, mostramos el original pero más bonito
+        return "Error técnico: " + msg;
+    }
+
 }

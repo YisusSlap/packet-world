@@ -22,7 +22,12 @@ public class MainController {
             lblUsuario.setText("Hola, " + ApiService.usuarioLogueado.getNombre());
         }
         // Cargar Colaboradores al inicio por defecto
-        irColaboradores();
+        irInicio();
+    }
+
+    @FXML
+    public void irInicio() {
+        cargarVista("DashboardView.fxml");
     }
 
     private void cargarVista(String fxml) {

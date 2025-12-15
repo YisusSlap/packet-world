@@ -5,6 +5,7 @@ public class HistorialEstatus {
     private Integer idHistorial;
     private Integer idEnvio;
     private Integer idEstatus;
+    private String nombreEstatus;
     private String fechaCambio;
     private String comentario;
     private String numeroPersonalColaborador;
@@ -12,13 +13,22 @@ public class HistorialEstatus {
     public HistorialEstatus() {
     }
 
-    public HistorialEstatus(Integer idHistorial, Integer idEnvio, Integer idEstatus, String fechaCambio, String comentario, String numeroPersonalColaborador) {
+    public HistorialEstatus(Integer idHistorial, Integer idEnvio, Integer idEstatus, String nombreEstatus, String fechaCambio, String comentario, String numeroPersonalColaborador) {
         this.idHistorial = idHistorial;
         this.idEnvio = idEnvio;
         this.idEstatus = idEstatus;
+        this.nombreEstatus = nombreEstatus;
         this.fechaCambio = fechaCambio;
         this.comentario = comentario;
         this.numeroPersonalColaborador = numeroPersonalColaborador;
+    }
+
+    public String getNombreEstatus() {
+        return nombreEstatus;
+    }
+
+    public void setNombreEstatus(String nombreEstatus) {
+        this.nombreEstatus = nombreEstatus;
     }
 
     public Integer getIdHistorial() {
@@ -68,8 +78,6 @@ public class HistorialEstatus {
     public void setNumeroPersonalColaborador(String numeroPersonalColaborador) {
         this.numeroPersonalColaborador = numeroPersonalColaborador;
     }
-    
-    
-    
+        
 }
 

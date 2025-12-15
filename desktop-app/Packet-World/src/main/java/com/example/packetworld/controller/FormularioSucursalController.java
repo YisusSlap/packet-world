@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.*;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Validaciones;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -29,6 +30,17 @@ public class FormularioSucursalController {
     public void initialize() {
         cargarEstados();
         configurarListeners();
+
+        // --- VALIDACIONES ---
+        // Código Sucursal: Máximo 10 caracteres (ej. SUC-XAL-01)
+        Validaciones.limitarLongitud(txtCodigo, 10);
+
+        // Nombre corto: Máx 50
+        Validaciones.limitarLongitud(txtNombre, 50);
+
+        // Dirección
+        Validaciones.limitarLongitud(txtCalle, 100);
+        Validaciones.limitarLongitud(txtNumero, 10);
     }
 
     private void cargarEstados() {

@@ -12,6 +12,8 @@ public class HistorialEstatus {
     private String comentario;
     private String numeroPersonalColaborador;
 
+    private String nombreEstatus;
+
     public HistorialEstatus() {
     }
 
@@ -72,5 +74,13 @@ public class HistorialEstatus {
 
     public void setNumeroPersonalColaborador(String numeroPersonalColaborador) {
         this.numeroPersonalColaborador = numeroPersonalColaborador;
+    }
+
+    public String getNombreEstatus() {
+        return nombreEstatus;
+    }
+
+    public void setNombreEstatus(String nombreEstatus) {
+        this.nombreEstatus = nombreEstatus;
     }
 }

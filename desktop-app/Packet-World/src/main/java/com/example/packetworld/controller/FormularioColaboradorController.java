@@ -5,6 +5,7 @@ import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.model.Sucursal;
 import com.example.packetworld.model.Unidad;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Validaciones;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -31,7 +32,7 @@ public class FormularioColaboradorController {
     @FXML
     public void initialize() {
         // Llenar combo de roles
-        cbRol.getItems().addAll("Administrador", "Ejecutivo", "Conductor");
+        cbRol.getItems().addAll("Administrador", "Ejecutivo de tienda", "Conductor");
         cargarSucursales();
 
         // LISTENER: Detectar cambio de Rol en tiempo real
@@ -39,6 +40,24 @@ public class FormularioColaboradorController {
             boolean esConductor = "Conductor".equalsIgnoreCase(newVal);
             mostrarCamposConductor(esConductor);
         });
+
+        // No. Personal: Solo números y máximo 20 caracteres (según tu BD VARCHAR(20))
+        //Validaciones.soloNumerosLimitado(txtNumPersonal, 20);
+
+        // Nombres: Solo letras
+        Validaciones.soloLetras(txtNombre);
+        Validaciones.soloLetras(txtPaterno);
+        Validaciones.soloLetras(txtMaterno);
+
+        // CURP: Limitar a 18 caracteres
+        Validaciones.limitarLongitud(txtCurp, 18);
+
+        // Licencia: Limitar a 20 caracteres (según tu BD)
+        Validaciones.limitarLongitud(txtLicencia, 20);
+
+        // Correo y Password: Solo limitar longitud para no desbordar BD
+        Validaciones.limitarLongitud(txtCorreo, 100);
+        Validaciones.limitarLongitud(txtPassword, 50);
     }
 
     @FXML
@@ -69,6 +88,11 @@ public class FormularioColaboradorController {
         // VALIDACIONES BÁSICAS
         if (c.getNumeroPersonal().isEmpty() || c.getNombre().isEmpty() || c.getRol() == null) {
             mostrarAlerta("Campos vacíos", "Por favor llena los campos obligatorios.");
+            return;
+        }
+
+        if (!txtCorreo.getText().isEmpty() && !Validaciones.esEmailValido(txtCorreo.getText())) {
+            mostrarAlerta("Correo inválido", "Por favor ingrese un correo válido.");
             return;
         }
 

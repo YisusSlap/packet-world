@@ -3,9 +3,11 @@ package ws;
 import com.google.gson.Gson;
 import dominio.PaqueteImp;
 import dto.Respuesta;
+import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -62,5 +64,12 @@ public class PaqueteWS {
              throw new BadRequestException("ID requerido");
         }
         return PaqueteImp.eliminarPaquete(idPaquete);
+    }
+    
+    @Path("obtenerTodos")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Paquete> obtenerTodos() {
+        return PaqueteImp.obtenerTodos();
     }
 }

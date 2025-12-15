@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: #f4f4f4;" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.packetworld.controller.DashboardController">
+
+    <VBox spacing="20" style="-fx-padding: 30;">
+
+        <VBox>
+            <Label text="Resumen de Operaciones" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <Label fx:id="lblFecha" text="Hoy es..." style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+        </VBox>
+
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+                <Label text="📦 En Tránsito" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+                <Label fx:id="lblEnTransito" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
+                <Label text="Envíos activos" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
+            </VBox>
+
+            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+                <Label text="⚠️ Por Asignar" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+                <Label fx:id="lblPorAsignar" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #FF8585;"/>
+                <Label text="Requieren atención" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
+            </VBox>
+
+            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+                <Label text="✅ Entregados" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+                <Label fx:id="lblEntregados" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #98FB98;"/> <Label text="Envíos finalizados" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
+            </VBox>
+
+            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+                <Label text="🚛 Unidades Libres" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+                <Label fx:id="lblUnidades" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
+                <Label text="Listas para ruta" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+            <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20;">
+                <Label text="Distribución de Estatus" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <PieChart fx:id="pieChartEstatus" labelsVisible="false" legendSide="RIGHT"/>
+            </VBox>
+
+            <VBox prefWidth="350" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20;">
+                <Label text="Últimos Pendientes" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <ListView fx:id="listPendientes" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
+                <Button text="Actualizar Datos" onAction="#cargarDatos" style="-fx-background-color: #f0f0f0; -fx-text-fill: #555; -fx-cursor: hand;" maxWidth="Infinity"/>
+            </VBox>
+
+        </HBox>
+    </VBox>
+</ScrollPane>

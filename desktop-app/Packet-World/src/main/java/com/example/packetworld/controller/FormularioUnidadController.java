@@ -3,6 +3,7 @@ package com.example.packetworld.controller;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.model.Unidad;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Validaciones;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -27,6 +28,17 @@ public class FormularioUnidadController {
         // Cada vez que escriban en Año o VIN, recalculamos
         txtAnio.textProperty().addListener((obs, oldVal, newVal) -> calcularNII());
         txtVin.textProperty().addListener((obs, oldVal, newVal) -> calcularNII());
+
+        // Año: Solo números, máximo 4 dígitos
+        Validaciones.soloNumerosLimitado(txtAnio, 4);
+
+        // VIN: Máximo 17 caracteres (Estándar internacional)
+        Validaciones.limitarLongitud(txtVin, 17);
+
+        // Marca y Modelo: Limitar longitud para evitar errores de SQL
+        Validaciones.limitarLongitud(txtMarca, 50);
+        Validaciones.limitarLongitud(txtModelo, 50);
+
     }
 
     private void calcularNII() {
