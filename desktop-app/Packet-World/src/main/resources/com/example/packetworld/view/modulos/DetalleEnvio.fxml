@@ -76,6 +76,9 @@
         <HBox alignment="CENTER_RIGHT" spacing="10">
             <Label text="Acciones:" style="-fx-text-fill: #999; -fx-font-style: italic;"/>
 
+            <Button text="🖨 Imprimir Guía" onAction="#imprimirEtiqueta"
+                    style="-fx-background-color: #333; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
             <Button text="🚚 Asignar" onAction="#btnAsignar" style="-fx-background-color: #FFB347; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <Button text="🔄 Estatus" onAction="#btnEstatus" style="-fx-background-color: #B39CD0; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <Button text="+ Paquete" onAction="#btnPaquete" style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-weight: bold;"/>

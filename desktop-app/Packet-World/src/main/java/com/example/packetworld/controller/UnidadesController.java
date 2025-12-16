@@ -1,5 +1,6 @@
 package com.example.packetworld.controller;
 
+import com.example.packetworld.model.Colaborador;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.model.Unidad;
 import com.example.packetworld.service.ApiService;
@@ -31,12 +32,22 @@ public class UnidadesController {
     @FXML private TableColumn<Unidad, String> colEstatus;
     @FXML private TextField txtBuscar;
 
+    // Para el conductor
+    @FXML private TableColumn<Unidad, String> colConductor; // Declárala
+
     private ObservableList<Unidad> listaMaster;
     private FilteredList<Unidad> listaFiltrada;
 
     @FXML
     public void initialize() {
         configurarColumnas();
+
+        colConductor.setCellValueFactory(c -> {
+            String conductor = c.getValue().getConductorAsignado();
+            if (conductor == null) return new SimpleStringProperty("Sin Asignar");
+            return new SimpleStringProperty(conductor);
+        });
+
         cargarDatos();
 
         // Filtro local (más rápido que ir a la API cada vez que escribes)
@@ -63,8 +74,39 @@ public class UnidadesController {
     }
 
     private void cargarDatos() {
-        List<Unidad> datos = ApiService.obtenerUnidades(); // Usamos el método que ya tenías
-        listaMaster = FXCollections.observableArrayList(datos);
+        // 1. Descargamos la lista de Unidades (Tu código original)
+        List<Unidad> datosUnidades = ApiService.obtenerUnidades();
+
+        // 2. Descargamos la lista de Conductores (para ver quién trae qué)
+        // (null, "Conductor", null) -> Buscamos a todos los que tengan rol de Conductor
+        List<Colaborador> listaConductores = ApiService.buscarColaboradores(null, "Conductor", null);
+
+        // 3. HACEMOS EL CRUCE DE DATOS (MATCH) 🤝
+        if (listaConductores != null && datosUnidades != null) {
+
+            // Recorremos cada conductor
+            for (Colaborador chofer : listaConductores) {
+                // Obtenemos la unidad que el chofer tiene asignada (Ej. "UNI-005")
+                String unidadDelChofer = chofer.getIdUnidadAsignada();
+
+                if (unidadDelChofer != null && !unidadDelChofer.isEmpty()) {
+
+                    // Buscamos esa unidad en la lista de unidades para ponerle el nombre
+                    for (Unidad u : datosUnidades) {
+                        // Comparamos el NII (Número Interno) que es lo que usualmente se asigna
+                        if (u.getVin() != null && u.getVin().equalsIgnoreCase(unidadDelChofer)) {
+
+                            // ¡ENCONTRADA! Le asignamos el nombre temporalmente
+                            u.setConductorAsignado(chofer.getNombre() + " " + chofer.getApellidoPaterno());
+                            break; // Ya encontramos la unidad de este chofer, pasamos al siguiente
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. Ahora sí, mostramos la lista ya con los nombres puestos
+        listaMaster = FXCollections.observableArrayList(datosUnidades);
         listaFiltrada = new FilteredList<>(listaMaster, p -> true);
         tblUnidades.setItems(listaFiltrada);
     }

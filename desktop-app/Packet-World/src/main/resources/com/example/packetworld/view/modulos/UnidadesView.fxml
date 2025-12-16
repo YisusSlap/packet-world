@@ -29,6 +29,7 @@
             <TableColumn fx:id="colVin" text="VIN" prefWidth="180"/>
             <TableColumn fx:id="colTipo" text="Tipo" prefWidth="120"/>
             <TableColumn fx:id="colEstatus" text="Estatus" prefWidth="100"/>
+            <TableColumn fx:id="colConductor" text="Conductor Actual" prefWidth="150" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

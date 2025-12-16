@@ -2,6 +2,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.FormularioColaboradorController"
@@ -9,6 +10,15 @@
 
     <Label fx:id="lblTitulo" text="Registrar Colaborador" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
 
+    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 0 0 10 0;">
+        <VBox alignment="CENTER" spacing="5">
+            <StackPane style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 2;">
+                <ImageView fx:id="imgFoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                <Label text="Sin Foto" style="-fx-text-fill: #999;"/>
+            </StackPane>
+            <Button text="📷 Subir Foto" onAction="#seleccionarFoto" style="-fx-font-size: 10px;"/>
+        </VBox>
+    </HBox>
     <GridPane hgap="15" vgap="15">
         <Label text="No. Personal:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="txtNumPersonal" promptText="Ej. 101" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
@@ -37,7 +47,6 @@
         <Label text="Sucursal ID:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
         <ComboBox fx:id="cbSucursal" promptText="Seleccione Sucursal..." prefWidth="200"
                   GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
 
         <Label fx:id="lblLicencia" text="No. Licencia:" visible="false" managed="false"
                GridPane.rowIndex="5" GridPane.columnIndex="0"/>

@@ -10,6 +10,9 @@ public class Unidad {
     private String estatus;
     private String motivoBaja;
 
+    // para la tabla
+    private String conductorAsignado;
+
     public Unidad() {}
 
     public Unidad(String vin, String marca, String modelo, Integer anio, String tipoUnidad, String nii, String estatus, String motivoBaja) {
@@ -88,6 +91,17 @@ public class Unidad {
 
     public void setMotivoBaja(String motivoBaja) {
         this.motivoBaja = motivoBaja;
+    }
+
+    //Para la tabla
+
+
+    public String getConductorAsignado() {
+        return conductorAsignado;
+    }
+
+    public void setConductorAsignado(String conductorAsignado) {
+        this.conductorAsignado = conductorAsignado;
     }
 
     // ¡ESTO ES LO IMPORTANTE PARA EL COMBOBOX!

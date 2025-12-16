@@ -6,13 +6,21 @@ import com.example.packetworld.model.Paquete;
 import com.example.packetworld.service.ApiService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.print.Printer;
+import javafx.print.PrinterJob; // <--- Importante para imprimir
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.io.IOException;
 
 public class DetalleEnvioController {
@@ -29,7 +37,7 @@ public class DetalleEnvioController {
     @FXML private TableView<HistorialEstatus> tblHistorial;
     @FXML private TableColumn<HistorialEstatus, String> colFecha, colEstatus, colComentario, colUsuario;
 
-    private Envio envioActual; // Guardamos el objeto completo
+    private Envio envioActual;
 
     @FXML
     public void initialize() {
@@ -37,17 +45,14 @@ public class DetalleEnvioController {
         colDesc.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescripcion()));
         colPeso.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPesoKg() + " kg"));
         colMedidas.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getDimAltoCm() + "cm x" + c.getValue().getDimAnchoCm() + "cm x" + c.getValue().getDimProfundidadCm() + "cm"
+                c.getValue().getDimAltoCm() + "x" + c.getValue().getDimAnchoCm() + "x" + c.getValue().getDimProfundidadCm()
         ));
 
         // Configurar Tabla Historial
         colFecha.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFechaCambio()));
-        // Nota: HistorialEstatus ahora tiene idEstatus (Integer), necesitamos el nombre (String).
-        // Si tu backend no manda el nombre en el historial, mostramos el ID o mapeamos manualmente.
-        // Asumiendo que tu JSON sí trae "nombreEstatus" (lo vi en tu ejemplo):
-        // Tendrías que agregar ese campo a tu POJO HistorialEstatus si no lo tienes.
-        // Si no, mostramos el comentario que suele explicarlo.
-        colEstatus.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getIdEstatus())));
+
+        // Usamos el nombre bonito si ya actualizaste el POJO, si no usa getIdEstatus()
+        colEstatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombreEstatus()));
 
         colComentario.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getComentario()));
         colUsuario.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNumeroPersonalColaborador()));
@@ -55,32 +60,24 @@ public class DetalleEnvioController {
 
     public void setEnvio(Envio envioSimple) {
         if (envioSimple != null) {
-            // Recargamos desde la API para asegurar tener Historial y Paquetes frescos
             this.envioActual = ApiService.rastrearEnvio(envioSimple.getNumeroGuia());
             if (this.envioActual == null) this.envioActual = envioSimple;
 
-            // 1. Header
+            // Llenar Datos
             lblGuia.setText(envioActual.getNumeroGuia());
             lblEstatusHeader.setText(envioActual.getEstatusActual().toUpperCase());
-
-            // 2. Datos Generales
             lblCliente.setText(envioActual.getNombreCliente());
             lblOrigen.setText(envioActual.getCodigoSucursalOrigen());
             lblDestinatario.setText(envioActual.getDestinatarioNombre() + " " + envioActual.getDestinatarioAp1());
             lblCosto.setText("$" + envioActual.getCostoTotal());
 
-            // Dirección Completa Concatenada
             String dir = String.format("%s #%s, Col. %s\nCP %s, %s, %s",
-                    envioActual.getDestinoCalle(),
-                    envioActual.getDestinoNumero(),
-                    envioActual.getNombreColonia(),
-                    envioActual.getCodigoPostal(),
-                    envioActual.getCiudad(),
-                    envioActual.getEstado()
+                    envioActual.getDestinoCalle(), envioActual.getDestinoNumero(),
+                    envioActual.getNombreColonia(), envioActual.getCodigoPostal(),
+                    envioActual.getCiudad(), envioActual.getEstado()
             );
             lblDireccionCompleta.setText(dir);
 
-            // Conductor
             String conductor = envioActual.getIdConductorAsignado();
             if (conductor == null || conductor.isEmpty()) {
                 lblConductor.setText("🔴 PENDIENTE");
@@ -88,7 +85,6 @@ public class DetalleEnvioController {
                 lblConductor.setText(conductor);
             }
 
-            // 3. Tablas
             if (envioActual.getListaPaquetes() != null) {
                 tblPaquetes.setItems(FXCollections.observableArrayList(envioActual.getListaPaquetes()));
             }
@@ -98,19 +94,109 @@ public class DetalleEnvioController {
         }
     }
 
-    // --- ACCIONES (Redundancia Útil) ---
-    // Reutilizamos los formularios modales
+    // --- ACCIONES ---
 
     @FXML public void btnAsignar() { abrirModal("FormularioAsignacion.fxml", "Asignar Conductor"); }
     @FXML public void btnEstatus() { abrirModal("FormularioEstatus.fxml", "Cambiar Estatus"); }
-    @FXML public void btnPaquete() { abrirModal("FormularioPaquete.fxml", "Agregar Paquete"); }
+    @FXML
+    public void btnPaquete() {
+        // --- VALIDACIÓN DE NEGOCIO (Corrección #1) ---
+        String estatus = envioActual.getEstatusActual().toLowerCase();
+
+        if (estatus.contains("tránsito") || estatus.contains("ruta") || estatus.contains("entregado") || estatus.contains("cancelado")) {
+            mostrarAlerta("OPERACIÓN DENEGADA:\nNo se pueden agregar paquetes a un envío que ya salió de sucursal o finalizó.");
+            return;
+        }
+        // ---------------------------------------------
+
+        abrirModal("FormularioPaquete.fxml", "Agregar Paquete");
+    }
+
+    @FXML
+    public void imprimirEtiqueta() {
+        if (envioActual == null) return;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/Etiqueta.fxml"));
+            Parent nodoEtiqueta = loader.load();
+
+            // Llenar datos (Usando tu EtiquetaController que está perfecto)
+            EtiquetaController ctrl = loader.getController();
+            ctrl.setDatos(envioActual);
+
+            // Buscar impresora PDF si no hay default
+            Printer printer = Printer.getDefaultPrinter();
+            if (printer == null) {
+                for (Printer p : Printer.getAllPrinters()) {
+                    if (p.getName().contains("PDF")) {
+                        printer = p;
+                        break;
+                    }
+                }
+            }
+
+            PrinterJob job = (printer != null) ? PrinterJob.createPrinterJob(printer) : PrinterJob.createPrinterJob();
+
+            if (job != null) {
+                // ✨ AQUÍ ESTÁ LA MAGIA ✨
+                // Le decimos a la impresora: "El trabajo se llama así".
+                // Microsoft Print to PDF usa esto como nombre de archivo sugerido.
+                job.getJobSettings().setJobName("Guia_" + envioActual.getNumeroGuia());
+
+                boolean proceder = job.showPrintDialog(lblGuia.getScene().getWindow());
+
+                if (proceder) {
+                    boolean impreso = job.printPage(nodoEtiqueta);
+                    if (impreso) {
+                        job.endJob();
+                        mostrarInfo("Éxito", "Enviado a impresora: " + job.getPrinter().getName());
+                    } else {
+                        mostrarAlerta("Falló la impresión.");
+                    }
+                }
+            } else {
+                // Plan B: Guardar imagen
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Java no detectó impresoras activas.\n¿Deseas guardar la guía como imagen PNG?");
+                confirm.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        guardarComoImagen(nodoEtiqueta);
+                    }
+                });
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta("Error al generar etiqueta: " + e.getMessage());
+        }
+    }
+
+    private void guardarComoImagen(Parent nodo) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar Etiqueta");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imagen PNG", "*.png"));
+
+        // ✨ AQUÍ ESTÁ LA OTRA MAGIA (Para el Plan B) ✨
+        fileChooser.setInitialFileName("Guia_" + envioActual.getNumeroGuia() + ".png");
+
+        File file = fileChooser.showSaveDialog(lblGuia.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                WritableImage snapshot = nodo.snapshot(null, null);
+                ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
+                mostrarInfo("Guardado", "Etiqueta guardada exitosamente.");
+            } catch (IOException ex) {
+                mostrarAlerta("Error al guardar imagen: " + ex.getMessage());
+            }
+        }
+    }
 
     private void abrirModal(String fxml, String titulo) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/" + fxml));
             Parent root = loader.load();
 
-            // Pasamos el envío al controlador
             Object controller = loader.getController();
             if (controller instanceof FormularioAsignacionController)
                 ((FormularioAsignacionController) controller).setEnvio(envioActual);
@@ -124,12 +210,26 @@ public class DetalleEnvioController {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(titulo);
             stage.showAndWait();
-
-            // IMPORTANTE: Recargar este mismo detalle para ver los cambios
             setEnvio(envioActual);
-
         } catch (IOException ex) { ex.printStackTrace(); }
     }
 
     @FXML public void cerrar() { ((Stage) lblGuia.getScene().getWindow()).close(); }
+
+    // --- MÉTODOS QUE FALTABAN ---
+    private void mostrarAlerta(String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Atención");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    private void mostrarInfo(String titulo, String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
 }

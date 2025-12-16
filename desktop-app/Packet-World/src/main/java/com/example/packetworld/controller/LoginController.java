@@ -34,6 +34,16 @@ public class LoginController {
         RSAutenticacionColaborador respuesta = ApiService.login(num, pass);
 
         if (respuesta != null && !respuesta.isError()) {
+
+            // --- VALIDACIÓN DE SEGURIDAD EXTRA ---
+            String rol = respuesta.getColaborador().getRol();
+
+            if (rol != null && rol.equalsIgnoreCase("Conductor")) {
+                mostrarMensaje("Acceso DENEGADO.\nConductores deben usar la Web App.", true);
+                return; // ¡ALTO! No entra al dashboard
+            }
+            // -------------------------------------
+
             // Guardamos el usuario en sesión
             ApiService.usuarioLogueado = respuesta.getColaborador();
             abrirDashboard();
@@ -51,7 +61,6 @@ public class LoginController {
 
     private void abrirDashboard() {
         try {
-            // Carga el dashboard principal
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/MainLayout.fxml"));
             Parent root = loader.load();
 

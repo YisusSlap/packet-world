@@ -35,6 +35,9 @@ public class ColaboradoresController {
     // Si tienes un TextField en tu FXML para buscar, añádelo aquí:
     @FXML private TextField txtBuscar;
 
+    // Para la unidad asignada
+    @FXML private TableColumn<Colaborador, String> colUnidad; // Declárala arriba
+
     private ObservableList<Colaborador> listaColaboradores;
 
     @FXML
@@ -45,6 +48,14 @@ public class ColaboradoresController {
         // Listener para búsqueda (opcional, si tienes el TextField)
          txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             cargarDatos(newValue); // Buscará mientras escribes
+        });
+
+        colUnidad.setCellValueFactory(c -> {
+            String unidad = c.getValue().getIdUnidadAsignada();
+            if (unidad == null || unidad.isEmpty()) {
+                return new SimpleStringProperty("---");
+            }
+            return new SimpleStringProperty("🚛 " + unidad);
         });
 
     }

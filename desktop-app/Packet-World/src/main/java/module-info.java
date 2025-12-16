@@ -3,6 +3,10 @@ module com.example.packetworld {
     requires javafx.fxml;
     requires com.google.gson;
     requires unirest.java;
+    requires javafx.web;
+    requires jdk.jsobject; // A veces necesario para la comunicación JS
+
+    requires javafx.swing;
 
     // A veces necesario para dependencias internas de Unirest
     requires java.sql;
@@ -15,6 +19,9 @@ module com.example.packetworld {
 
     // 3. ¡ESTA FALTABA! Permite a Gson rellenar tus datos (LoginResponse, Colaborador)
     opens com.example.packetworld.model to com.google.gson;
+
+
+
 
     exports com.example.packetworld;
 }

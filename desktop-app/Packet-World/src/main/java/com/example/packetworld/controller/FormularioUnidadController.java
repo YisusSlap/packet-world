@@ -83,7 +83,7 @@ public class FormularioUnidadController {
         u.setTipoUnidad(cbTipo.getValue());
         u.setVin(txtVin.getText());
         u.setNii(txtNii.getText());
-        u.setEstatus("Disponble"); // Por defecto al crear
+        u.setEstatus("activo"); // Por defecto al crear
 
         try {
             u.setAnio(Integer.parseInt(txtAnio.getText()));

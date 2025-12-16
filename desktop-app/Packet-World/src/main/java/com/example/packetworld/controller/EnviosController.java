@@ -96,9 +96,22 @@ public class EnviosController {
         if (e != null) abrirModal("FormularioEstatus.fxml", "Cambiar Estatus", e);
     }
 
-    @FXML public void btnAgregarPaquete() {
+    @FXML
+    public void btnAgregarPaquete() {
         Envio e = obtenerEnvioSeleccionado();
-        if (e != null) abrirModal("FormularioPaquete.fxml", "Agregar Paquete", e);
+
+        if (e != null) {
+            // --- VALIDACIÓN DE NEGOCIO (Corrección #1) ---
+            String estatus = e.getEstatusActual().toLowerCase();
+
+            if (estatus.contains("tránsito") || estatus.contains("ruta") || estatus.contains("entregado") || estatus.contains("cancelado")) {
+                mostrarAlerta("OPERACIÓN DENEGADA:\nNo se pueden agregar paquetes a un envío que ya salió de sucursal o finalizó.");
+                return;
+            }
+            // ---------------------------------------------
+
+            abrirModal("FormularioPaquete.fxml", "Agregar Paquete", e);
+        }
     }
 
     @FXML public void btnNuevo() {

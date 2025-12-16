@@ -12,7 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         curp, 
         correoElectronico, 
         rol, 
-        fotografia, numeroLicencia,
+        TO_BASE64(fotografia) as fotografia, numeroLicencia,
         idCodigoSucursal, idUnidadAsignada, estatus 
     FROM tbl_colaboradores  WHERE numeroPersonal = #{numeroPersonal} 
     AND contrasenia = #{contrasenia}

@@ -105,6 +105,40 @@ public class ApiService {
         }
     }
 
+    // --- SUBIR FOTO  ---
+    public static Respuesta subirFoto(String numeroPersonal, byte[] fotoBytes) {
+        try {
+            // Tu API espera los bytes en el cuerpo (Body)
+            HttpResponse<String> response = Unirest.put(BASE_URL + "colaboradores/guardarFoto/" + numeroPersonal)
+                    .header("Content-Type", "application/octet-stream") // Indicamos que enviamos bytes puros
+                    .body(fotoBytes)
+                    .asString();
+
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Respuesta r = new Respuesta();
+            r.setError(true);
+            r.setMensaje("Error al subir foto: " + e.getMessage());
+            return r;
+        }
+    }
+
+    // --- OBTENER FOTO  ---
+    public static Colaborador obtenerFoto(String numeroPersonal) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "colaboradores/obtenerFoto/" + numeroPersonal)
+                    .asString();
+
+            if (response.getStatus() == 200) {
+                return new Gson().fromJson(response.getBody(), Colaborador.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // --- UNIDADES ---
 
     // 1. OBTENER UNIDADES
@@ -407,6 +441,17 @@ public class ApiService {
             error.setMensaje(obtenerMensajeAmigable(e));
             return error;
         }
+    }
+
+    public static List<Envio> obtenerEnviosPorConductor(String idConductor) {
+        try {
+            HttpResponse<String> response = Unirest.get(BASE_URL + "envios/conductor/" + idConductor).asString();
+            if (response.getStatus() == 200) {
+                Envio[] array = new Gson().fromJson(response.getBody(), Envio[].class);
+                return new ArrayList<>(Arrays.asList(array));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return new ArrayList<>();
     }
 
     // PAQUETES //

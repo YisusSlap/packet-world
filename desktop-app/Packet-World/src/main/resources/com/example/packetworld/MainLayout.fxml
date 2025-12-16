@@ -5,12 +5,17 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.packetworld.controller.MainController"
-            prefHeight="700.0" prefWidth="1100.0" stylesheets="/styles/estilos.css">
+            prefHeight="700.0" prefWidth="1100.0" stylesheets="styles/estilos.css">
 
     <top>
         <HBox spacing="20" style="-fx-background-color: white; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 0, 5, 0, 0);" alignment="CENTER_LEFT">
             <Label text="Packet-World" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
             <Region HBox.hgrow="ALWAYS" />
+            <ImageView fx:id="imgPerfilUsuario" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/usuario_dummy.png" />
+                </image>
+            </ImageView>
             <Label fx:id="lblUsuario" text="Bienvenido" style="-fx-text-fill: #555555; -fx-font-weight: bold;"/>
             <Button text="Cerrar Sesión" styleClass="btn-secondary" onAction="#cerrarSesion"/>
         </HBox>
@@ -20,11 +25,17 @@
         <VBox spacing="10" styleClass="sidebar" prefWidth="240" style="-fx-padding: 30 15;">
             <Label text="MÓDULOS" style="-fx-text-fill: #B3B3B3; -fx-font-size: 10px; -fx-padding: 0 0 10 10;"/>
 
-            <Button text="📦  Gestión de Envíos" styleClass="menu-button" maxWidth="Infinity" onAction="#irEnvios"/>
-            <Button text="👥  Colaboradores" styleClass="menu-button" maxWidth="Infinity" onAction="#irColaboradores"/>
-            <Button text="🚚  Unidades" styleClass="menu-button" maxWidth="Infinity" onAction="#irUnidades"/>
-            <Button text="🏢  Sucursales" styleClass="menu-button" maxWidth="Infinity" onAction="#irSucursales"/>
-            <Button text="🤝  Clientes" styleClass="menu-button" maxWidth="Infinity" onAction="#irClientes"/>
+            <Button fx:id="btnInicio" text="🏠  Inicio" styleClass="menu-button" maxWidth="Infinity" onAction="#irInicio"/>
+
+            <Button fx:id="btnEnvios" text="📦  Gestión de Envíos" styleClass="menu-button" maxWidth="Infinity" onAction="#irEnvios"/>
+
+            <Button fx:id="btnColaboradores" text="👥  Colaboradores" styleClass="menu-button" maxWidth="Infinity" onAction="#irColaboradores"/>
+
+            <Button fx:id="btnUnidades" text="🚚  Unidades" styleClass="menu-button" maxWidth="Infinity" onAction="#irUnidades"/>
+
+            <Button fx:id="btnSucursales" text="🏢  Sucursales" styleClass="menu-button" maxWidth="Infinity" onAction="#irSucursales"/>
+
+            <Button fx:id="btnClientes" text="🤝  Clientes" styleClass="menu-button" maxWidth="Infinity" onAction="#irClientes"/>
         </VBox>
     </left>
 
