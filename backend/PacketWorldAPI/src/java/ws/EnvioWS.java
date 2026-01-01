@@ -103,4 +103,23 @@ public class EnvioWS {
     public List<Envio> obtenerTodos() {
         return EnvioImp.obtenerTodos();
     }
+    
+    @Path("cotizar")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Respuesta cotizarEnvio(String json) {
+        Gson gson = new Gson();
+        try {
+            Envio envioDatos = gson.fromJson(json, Envio.class);
+            if (envioDatos.getCodigoSucursalOrigen() == null || envioDatos.getIdColoniaDestino() == null) {
+                throw new BadRequestException("Se requiere origen y destino para cotizar");
+            }
+
+            return EnvioImp.cotizarEnvio(envioDatos);
+        } catch (Exception e) {
+            throw new BadRequestException("JSON mal formado");
+        }
+    }
+
 }

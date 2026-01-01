@@ -10,6 +10,7 @@ import pojo.Envio;
 import pojo.HistorialEstatus;
 import pojo.Paquete;
 import utilidades.Constantes;
+import utilidades.Utilidades;
 
 public class EnvioImp {
 
@@ -19,18 +20,33 @@ public class EnvioImp {
 
         if (conexionBD != null) {
             try {
+                String cpOrigen = conexionBD.selectOne("envios.obtenerCPPorSucursal", envio.getCodigoSucursalOrigen());
+                String cpDestino = conexionBD.selectOne("envios.obtenerCPPorColonia", envio.getIdColoniaDestino());
+
+                if (cpOrigen == null || cpDestino == null) {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No se pudieron obtener los Códigos Postales para calcular el envío.");
+                    return respuesta;
+                }
+
+                Double distancia = Utilidades.obtenerDistancia(cpOrigen, cpDestino);
+                if (distancia == null) {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No se pudo calcular la distancia con el servicio externo.");
+                    return respuesta;
+                }
+
+                int cantidadPaquetes = (envio.getListaPaquetes() != null) ? envio.getListaPaquetes().size() : 0;
+                double costoTotal = Utilidades.calcularCosto(distancia, cantidadPaquetes);
+
+                envio.setCostoTotal(costoTotal);
+
                 String guia = "PW-" + System.currentTimeMillis();
                 envio.setNumeroGuia(guia);
 
                 if (envio.getIdEstatus() == null) {
                     envio.setIdEstatus(1);
                 }
-
-                double costo = 150.0;
-                if (envio.getListaPaquetes() != null) {
-                    costo += envio.getListaPaquetes().size() * 50;
-                }
-                envio.setCostoTotal(costo);
 
                 int filas = conexionBD.insert("envios.registrarEnvio", envio);
                 Integer idEnvioGenerado = envio.getIdEnvio();
@@ -50,7 +66,7 @@ public class EnvioImp {
                 conexionBD.insert("envios.registrarHistorial", historial);
                 conexionBD.commit();
                 respuesta.setError(false);
-                respuesta.setMensaje("Envío creado exitosamente. Guía: " + guia);
+                respuesta.setMensaje("Envío creado. Guía: " + guia + ". Costo total calculado: $" + costoTotal);
             } catch (Exception e) {
                 if (conexionBD != null) {
                     conexionBD.rollback();
@@ -70,7 +86,47 @@ public class EnvioImp {
         return respuesta;
     }
 
-    
+    public static Respuesta cotizarEnvio(Envio envio) {
+        Respuesta respuesta = new Respuesta();
+        SqlSession conexionBD = MybatisUtil.getSession();
+
+        if (conexionBD != null) {
+            try {
+                String cpOrigen = conexionBD.selectOne("envios.obtenerCPPorSucursal", envio.getCodigoSucursalOrigen());
+                String cpDestino = conexionBD.selectOne("envios.obtenerCPPorColonia", envio.getIdColoniaDestino());
+
+                if (cpOrigen == null || cpDestino == null) {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No se pueden obtener los CP para la ruta solicitada.");
+                    return respuesta;
+                }
+                Double distancia = Utilidades.obtenerDistancia(cpOrigen, cpDestino);
+                if (distancia == null) {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No hay cobertura o ruta disponible entre estos puntos.");
+                    return respuesta;
+                }
+
+                int cantidadPaquetes = (envio.getListaPaquetes() != null) ? envio.getListaPaquetes().size() : 0;
+                double costoTotal = Utilidades.calcularCosto(distancia, cantidadPaquetes);
+
+                respuesta.setError(false);
+                respuesta.setMensaje(String.valueOf(costoTotal));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                respuesta.setError(true);
+                respuesta.setMensaje("Error al cotizar.");
+            } finally {
+                conexionBD.close();
+            }
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje("Error de conexión a BD");
+        }
+        return respuesta;
+    }
+
     public static Envio obtenerPorGuia(String numeroGuia) {
         Envio envio = null;
         SqlSession conexionBD = MybatisUtil.getSession();
@@ -85,7 +141,7 @@ public class EnvioImp {
         }
         return envio;
     }
-    
+
     public static List<Envio> obtenerPorConductor(String numeroPersonal) {
         List<Envio> lista = null;
         SqlSession conexionBD = MybatisUtil.getSession();
@@ -110,7 +166,7 @@ public class EnvioImp {
                 params.put("numeroGuia", numeroGuia);
                 params.put("idEstatus", idEstatus);
                 int filas = conexionBD.update("envios.actualizarEstatus", params);
-                
+
                 if (filas > 0) {
                     Integer idEnvio = conexionBD.selectOne("envios.obtenerIdPorGuia", numeroGuia);
                     HistorialEstatus historial = new HistorialEstatus();
@@ -196,7 +252,7 @@ public class EnvioImp {
         }
         return respuesta;
     }
-    
+
     public static List<Envio> obtenerTodos() {
         List<Envio> listado = null;
         SqlSession conexionBD = MybatisUtil.getSession();
@@ -211,5 +267,5 @@ public class EnvioImp {
         }
         return listado;
     }
-    
+
 }

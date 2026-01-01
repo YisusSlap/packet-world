@@ -185,5 +185,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         
         ORDER BY e.idEnvio DESC, h.fechaHora DESC 
     </select>
+    
+    <select id="obtenerCPPorSucursal" resultType="string">
+        SELECT c.codigo_postal 
+        FROM tbl_sucursales s
+        INNER JOIN colonias c ON s.idColonia = c.id
+        WHERE s.codigoSucursal = #{codigoSucursal}
+    </select>
+
+    <select id="obtenerCPPorColonia" resultType="string">
+        SELECT codigo_postal 
+        FROM colonias 
+        WHERE id = #{idColonia}
+    </select>
 
 </mapper>
