@@ -8,9 +8,9 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED" >
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/packet_world_db?serverTimezone=UTC"/>   
-                <property name="username" value="packet_user"/>    
-                <property name="password" value="Integracion2025"/>
+                <property name="url" value="${db.url}"/>   
+                <property name="username" value="${db.username}"/>    
+                <property name="password" value="${db.password}"/>
                 <property name="poolMaximumActiveConnections" value="50"/>
             </dataSource>
         </environment>
@@ -23,6 +23,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         <mapper resource="modelo/mybatis/mapper/ClienteMapper.xml"/>
         <mapper resource="modelo/mybatis/mapper/CatalogoMapper.xml"/>
         <mapper resource="modelo/mybatis/mapper/EnvioMapper.xml"/>
+        <mapper resource="modelo/mybatis/mapper/PaqueteMapper.xml"/>
     </mappers>
 
 </configuration>

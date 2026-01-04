@@ -92,13 +92,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             apellidoMaterno = #{apellidoMaterno},
             correoElectronico = #{correoElectronico},
             curp = #{curp},
-            <if test="contrasenia != null and contrasenia != ''">
-                contrasenia = #{contrasenia},
-            </if>
             fotografia = #{fotografia},
             numeroLicencia = #{numeroLicencia},
             idCodigoSucursal = #{idCodigoSucursal},
             idUnidadAsignada = #{idUnidadAsignada}
+        WHERE numeroPersonal = #{numeroPersonal}
+    </update>
+    
+    <update id="actualizarContrasenia" parameterType="map">
+        UPDATE tbl_colaboradores
+        SET contrasenia = #{nuevaContrasenia}
         WHERE numeroPersonal = #{numeroPersonal}
     </update>
 

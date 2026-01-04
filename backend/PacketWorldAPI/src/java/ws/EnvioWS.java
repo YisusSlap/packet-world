@@ -77,13 +77,13 @@ public class EnvioWS {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     public Respuesta actualizarEstatus(@FormParam("numeroGuia") String guia,
-            @FormParam("estatus") String estatus,
+            @FormParam("estatus") Integer idEstatus,
             @FormParam("comentario") String comentario,
             @FormParam("idConductor") String idConductor) {
-        if (guia == null || estatus == null || idConductor == null) {
+        if (guia == null || idEstatus == null || idConductor == null) {
             throw new BadRequestException("Datos incompletos");
         }
-        return EnvioImp.actualizarEstatus(guia, estatus, comentario, idConductor);
+        return EnvioImp.actualizarEstatus(guia, idEstatus, comentario, idConductor);
     }
 
     @Path("asignarConductor")
@@ -96,4 +96,30 @@ public class EnvioWS {
         }
         return EnvioImp.asignarConductor(numeroGuia, numeroPersonal);
     }
+    
+    @Path("obtenerTodos")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Envio> obtenerTodos() {
+        return EnvioImp.obtenerTodos();
+    }
+    
+    @Path("cotizar")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Respuesta cotizarEnvio(String json) {
+        Gson gson = new Gson();
+        try {
+            Envio envioDatos = gson.fromJson(json, Envio.class);
+            if (envioDatos.getCodigoSucursalOrigen() == null || envioDatos.getIdColoniaDestino() == null) {
+                throw new BadRequestException("Se requiere origen y destino para cotizar");
+            }
+
+            return EnvioImp.cotizarEnvio(envioDatos);
+        } catch (Exception e) {
+            throw new BadRequestException("JSON mal formado");
+        }
+    }
+
 }

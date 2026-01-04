@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="paquetes">
+
+    <insert id="registrarPaquete" parameterType="pojo.Paquete">
+        INSERT INTO tbl_paquetes (
+            idEnvio, descripcion, pesoKg, dimAltoCm, dimAnchoCm, dimProfundidadCm
+        ) VALUES (
+            #{idEnvio}, #{descripcion}, #{pesoKg}, #{dimAltoCm}, #{dimAnchoCm}, #{dimProfundidadCm}
+        )
+    </insert>
+
+    <update id="editarPaquete" parameterType="pojo.Paquete">
+        UPDATE tbl_paquetes SET
+            descripcion = #{descripcion},
+            pesoKg = #{pesoKg},
+            dimAltoCm = #{dimAltoCm},
+            dimAnchoCm = #{dimAnchoCm},
+            dimProfundidadCm = #{dimProfundidadCm}
+        WHERE idPaquete = #{idPaquete}
+    </update>
+    
+    <delete id="eliminarPaquete" parameterType="int">
+        DELETE FROM tbl_paquetes WHERE idPaquete = #{idPaquete}
+    </delete>
+    
+    <select id="obtenerIdEnvioPorPaquete" resultType="int">
+        SELECT idEnvio FROM tbl_paquetes WHERE idPaquete = #{idPaquete}
+    </select>
+
+    <select id="obtenerPaquete" resultType="pojo.Paquete">
+        SELECT * FROM tbl_paquetes WHERE idPaquete = #{idPaquete}
+    </select>
+    
+    <select id="obtenerTodos" resultType="pojo.Paquete">
+        SELECT * FROM tbl_paquetes ORDER BY idPaquete DESC
+    </select>
+
+</mapper>

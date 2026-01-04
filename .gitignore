@@ -1,2 +1,14 @@
 /backend/PacketWorldAPI/build/
 /backend/PacketWorldAPI/dist/
+
+# Ignorar carpetas de construcción de NetBeans/Java (solo backend)
+/backend/PacketWorldAPI/dist/
+/backend/PacketWorldAPI/build/
+/backend/PacketWorldAPI/nbproject/private/
+
+# Ignorar Javadoc específicamente (solo backend)
+/backend/PacketWorldAPI/javadoc/
+/backend/PacketWorldAPI/target/
+
+# Ignorar .env en la raíz del proyecto
+/backend/PacketWorldAPI/.env

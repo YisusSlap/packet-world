@@ -18,6 +18,8 @@ public class Colaborador {
     private String estatus;
     
     private byte[] fotografiaBytes;
+    
+    private String contraseniaActual;
 
     public Colaborador() {
     }
@@ -149,5 +151,14 @@ public class Colaborador {
     public void setFotografiaBytes(byte[] fotografiaBytes) {
         this.fotografiaBytes = fotografiaBytes;
     }
+
+    public String getContraseniaActual() {
+        return contraseniaActual;
+    }
+
+    public void setContraseniaActual(String contraseniaActual) {
+        this.contraseniaActual = contraseniaActual;
+    }
+    
 
 }
