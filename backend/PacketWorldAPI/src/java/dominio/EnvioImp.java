@@ -232,11 +232,20 @@ public class EnvioImp {
         if (conexionBD != null) {
             try {
                 int filas = conexionBD.update("envios.editarEnvio", envio);
-                conexionBD.commit();
                 if (filas > 0) {
-                    respuesta.setError(false);
-                    respuesta.setMensaje("Datos del envío actualizados.");
+                    Integer idEnvioReal = conexionBD.selectOne("envios.obtenerIdPorGuia", envio.getNumeroGuia());
+                    boolean recalculoExitoso = recalcularCostoReal(conexionBD, idEnvioReal);
+                    if(recalculoExitoso){
+                        conexionBD.commit();
+                        respuesta.setError(false);
+                        respuesta.setMensaje("Datos del envío actualizados y costo recalculado.");
+                    }else {
+                        conexionBD.rollback();
+                        respuesta.setError(true);
+                        respuesta.setMensaje("Error al recalcular el costo con la nueva ruta.");
+                    }
                 } else {
+                    conexionBD.rollback();
                     respuesta.setError(true);
                     respuesta.setMensaje("No se encontró el envío.");
                 }
@@ -252,6 +261,45 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    public static boolean recalcularCostoReal(SqlSession conexionBD, Integer idEnvio) {
+        try {
+            Envio envio = conexionBD.selectOne("envios.obtenerDatosParaRecalculo", idEnvio);
+            if (envio == null) {
+                return false;
+            }
+
+            String cpOrigen = conexionBD.selectOne("envios.obtenerCPPorSucursal", envio.getCodigoSucursalOrigen());
+            String cpDestino = conexionBD.selectOne("envios.obtenerCPPorColonia", envio.getIdColoniaDestino());
+
+            Double distancia = Utilidades.obtenerDistancia(cpOrigen, cpDestino);
+            if (distancia == null) {
+                return false;
+            }
+
+            Integer numPaquetes = conexionBD.selectOne("paquetes.contarPaquetesPorEnvio", idEnvio);
+            if (numPaquetes == null) {
+                numPaquetes = 0;
+            }
+
+            double nuevoCosto = Utilidades.calcularCosto(distancia, numPaquetes);
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("idEnvio", idEnvio);
+            params.put("costoTotal", nuevoCosto);
+
+            conexionBD.update("envios.actualizarCostoTotal", params);
+
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    
+    
 
     public static List<Envio> obtenerTodos() {
         List<Envio> listado = null;
