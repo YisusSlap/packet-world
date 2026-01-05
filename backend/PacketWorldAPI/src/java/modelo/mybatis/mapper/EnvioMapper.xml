@@ -198,5 +198,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM colonias 
         WHERE id = #{idColonia}
     </select>
+    
+    <select id="obtenerDatosParaRecalculo" resultType="pojo.Envio">
+        SELECT idEnvio, codigoSucursalOrigenFk AS codigoSucursalOrigen, idColoniaDestino 
+        FROM tbl_envios 
+        WHERE idEnvio = #{idEnvio}
+    </select>
+
+    <update id="actualizarCostoTotal" parameterType="map">
+        UPDATE tbl_envios SET costoTotal = #{costoTotal} WHERE idEnvio = #{idEnvio}
+    </update>
 
 </mapper>

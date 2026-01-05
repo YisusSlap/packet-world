@@ -38,5 +38,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="obtenerTodos" resultType="pojo.Paquete">
         SELECT * FROM tbl_paquetes ORDER BY idPaquete DESC
     </select>
-
+    
+    <select id="contarPaquetesPorEnvio" resultType="int">
+        SELECT COUNT(*) FROM tbl_paquetes WHERE idEnvio = #{idEnvio}
+    </select>
 </mapper>

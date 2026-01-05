@@ -20,15 +20,18 @@ public class PaqueteImp {
                 int filas = conexionBD.insert("paquetes.registrarPaquete", paquete);
                 
                 if (filas > 0) {
-                    // Recalcular Costo (+50 dummy)
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("idEnvio", paquete.getIdEnvio());
-                    params.put("monto", 50.0);
-                    conexionBD.update("envios.sumarCostoDummy", params);
-                    
-                    conexionBD.commit();
-                    respuesta.setError(false);
-                    respuesta.setMensaje("Paquete agregado y costo actualizado.");
+
+                    boolean exito = EnvioImp.recalcularCostoReal(conexionBD, paquete.getIdEnvio());
+
+                    if (exito) {
+                        conexionBD.commit();
+                        respuesta.setError(false);
+                        respuesta.setMensaje("Paquete agregado y costo del envío actualizado correctamente.");
+                    } else {
+                        conexionBD.rollback();
+                        respuesta.setError(true);
+                        respuesta.setMensaje("Paquete guardado, pero error al recalcular costo (API).");
+                    }
                 } else {
                     respuesta.setError(true);
                     respuesta.setMensaje("No se pudo guardar el paquete.");
@@ -84,14 +87,17 @@ public class PaqueteImp {
                 int filas = conexionBD.delete("paquetes.eliminarPaquete", idPaquete);
                 
                 if (filas > 0 && idEnvio != null) {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("idEnvio", idEnvio);
-                    params.put("monto", -50.0);
-                    conexionBD.update("envios.sumarCostoDummy", params);
-                    
-                    conexionBD.commit();
-                    respuesta.setError(false);
-                    respuesta.setMensaje("Paquete eliminado y costo actualizado.");
+                    boolean exito = EnvioImp.recalcularCostoReal(conexionBD, idEnvio);
+                
+                if(exito){
+                        conexionBD.commit();
+                        respuesta.setError(false);
+                        respuesta.setMensaje("Paquete eliminado y costo actualizado.");
+                    } else {
+                        conexionBD.rollback();
+                        respuesta.setError(true);
+                        respuesta.setMensaje("Error al recalcular costo.");
+                    }
                 } else {
                     respuesta.setError(true);
                     respuesta.setMensaje("No se pudo eliminar el paquete.");
