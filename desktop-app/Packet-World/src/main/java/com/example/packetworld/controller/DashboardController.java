@@ -19,51 +19,61 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador del Tablero Principal (Dashboard).
+ * Muestra KPIs en tiempo real, lista de pendientes y un mapa de calor interactivo.
+ */
 public class DashboardController {
 
     @FXML private Label lblFecha;
     @FXML private Label lblEnTransito, lblPorAsignar, lblEntregados, lblUnidades;
     @FXML private ListView<String> listPendientes;
 
-    // Elementos del Mapa
+    // Componentes del Mapa Web (Google GeoChart)
     @FXML private WebView webViewMapa;
     private WebEngine webEngine;
-    private boolean mapaListo = false;
+    private boolean mapaListo = false; // Bandera para saber si el HTML ya cargó
 
     @FXML
     public void initialize() {
+        // Fecha bonita en español
         lblFecha.setText("Fecha: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy")));
 
-        // INICIALIZAR EL MAPA
+        // --- INICIALIZACIÓN DEL MAPA ---
         if (webViewMapa != null) {
             webEngine = webViewMapa.getEngine();
-            // Cargar archivo HTML local
+
+            // Cargar el HTML local que contiene el JS de Google Charts
             URL url = getClass().getResource("/com/example/packetworld/html/mapa.html");
             if (url != null) {
                 webEngine.load(url.toExternalForm());
             } else {
-                System.out.println("⚠️ ERROR: No se encontró /html/mapa.html");
+                System.out.println("⚠️ ERROR CRÍTICO: No se encontró el archivo /html/mapa.html");
             }
 
-            // Esperar a que cargue el HTML para inyectar datos
+            // Listener: Esperar a que la página cargue completamente antes de mandarle datos
             webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                 if (newState == Worker.State.SUCCEEDED) {
                     mapaListo = true;
-                    cargarDatos(); // Cargamos datos cuando el mapa esté listo
+                    cargarDatos(); // Ahora sí, inyectamos los datos al mapa
                 }
             });
         } else {
-            // Si por alguna razón falla el FXML, cargamos al menos los datos numéricos
+            // Fallback: Si el WebView falla, al menos cargamos los números
             cargarDatos();
         }
     }
 
+    /**
+     * Descarga toda la información del servidor y calcula las métricas.
+     */
     @FXML
     public void cargarDatos() {
+        // Obtenemos datos frescos
         List<Envio> todosEnvios = ApiService.obtenerTodosEnvios();
         List<Unidad> todasUnidades = ApiService.obtenerUnidades();
 
-        // --- CÁLCULO DE KPIs ---
+        // --- CÁLCULO DE KPIs (Key Performance Indicators) ---
         int transitCount = 0;
         int unassignedCount = 0;
         int deliveredCount = 0;
@@ -74,6 +84,7 @@ public class DashboardController {
             if (estatus.contains("tránsito") || estatus.contains("ruta")) transitCount++;
             else if (estatus.contains("entregado")) deliveredCount++;
 
+            // Lógica de "Por Asignar": Activo pero sin conductor
             boolean esActivo = !estatus.contains("entregado") && !estatus.contains("cancelado");
             if (esActivo && (e.getIdConductorAsignado() == null || e.getIdConductorAsignado().isEmpty())) {
                 unassignedCount++;
@@ -82,76 +93,74 @@ public class DashboardController {
 
         long unidadesLibres = todasUnidades.stream().filter(u -> "activo".equalsIgnoreCase(u.getEstatus())).count();
 
+        // Actualizar etiquetas
         lblEnTransito.setText(String.valueOf(transitCount));
         lblPorAsignar.setText(String.valueOf(unassignedCount));
         lblEntregados.setText(String.valueOf(deliveredCount));
         lblUnidades.setText(String.valueOf(unidadesLibres));
 
-        // --- LISTA DE PENDIENTES ---
+        // --- LISTA DE PENDIENTES (Top 10 urgentes) ---
         ObservableList<String> itemsPendientes = FXCollections.observableArrayList();
         for (Envio e : todosEnvios) {
+            // Priorizamos los que no tienen conductor
             if (e.getIdConductorAsignado() == null || e.getIdConductorAsignado().isEmpty()) {
                 if (itemsPendientes.size() < 10) {
-                    itemsPendientes.add(e.getNumeroGuia() + " - " + e.getCiudad());
+                    itemsPendientes.add("⚠️ Guía " + e.getNumeroGuia() + " -> " + e.getCiudad());
                 }
             }
         }
-        if (itemsPendientes.isEmpty()) itemsPendientes.add("¡Todo al día! 🎉");
+        if (itemsPendientes.isEmpty()) itemsPendientes.add("¡Todo al día! 🎉 No hay pendientes.");
         listPendientes.setItems(itemsPendientes);
 
-        // --- ACTUALIZAR EL MAPA ---
+        // --- ENVIAR DATOS AL MAPA ---
         if (mapaListo) {
             actualizarMapaCalor(todosEnvios);
         }
     }
 
+    /**
+     * Procesa los envíos por estado geográfico y los envía al JavaScript del mapa.
+     */
     private void actualizarMapaCalor(List<Envio> envios) {
-        System.out.println("--- INICIANDO MAPA DE CALOR ---");
-        System.out.println("Total envíos recibidos: " + envios.size());
-
         Map<String, Integer> conteo = new HashMap<>();
 
         for (Envio e : envios) {
-            String estado = e.getEstado();
-            String guia = e.getNumeroGuia();
+            String estadoNombre = e.getEstado();
+            String isoCode = obtenerCodigoISO(estadoNombre);
 
-            // EL CHISMOSO 1: ¿Qué tiene el estado?
-            System.out.println("Guía: " + guia + " | Estado RAW: '" + estado + "'");
-
-            String iso = obtenerCodigoISO(estado);
-
-            // EL CHISMOSO 2: ¿En qué se convirtió?
-            System.out.println("   -> Código ISO: '" + iso + "'");
-
-            if (!iso.isEmpty()) {
-                conteo.put(iso, conteo.getOrDefault(iso, 0) + 1);
+            if (!isoCode.isEmpty()) {
+                conteo.put(isoCode, conteo.getOrDefault(isoCode, 0) + 1);
             }
         }
 
-        // Construcción del JSON
+        // Construir JSON manualmente para Google Charts: [['Estado', 'Envíos'], ['MX-VER', 5], ...]
         StringBuilder sb = new StringBuilder("[['Estado', 'Envíos']");
         for (Map.Entry<String, Integer> entry : conteo.entrySet()) {
             sb.append(",['").append(entry.getKey()).append("', ").append(entry.getValue()).append("]");
         }
         sb.append("]");
 
-        // EL CHISMOSO 3: ¿Qué le mandamos al HTML?
         String jsonFinal = sb.toString();
-        System.out.println("JSON ENVIADO AL MAPA: " + jsonFinal);
-        System.out.println("---------------------------------");
 
+        // Ejecutar JS en el hilo de JavaFX
         Platform.runLater(() -> {
-            webEngine.executeScript("actualizarMapa(" + jsonFinal + ")");
+            try {
+                webEngine.executeScript("actualizarMapa(" + jsonFinal + ")");
+            } catch (Exception ex) {
+                System.out.println("Error comunicando con JS: " + ex.getMessage());
+            }
         });
     }
 
+    /**
+     * Convierte nombres de estados (ej. "Nuevo León") a códigos ISO-3166-2 (ej. "MX-NLE").
+     * Es vital para que el mapa entienda dónde pintar.
+     */
     private String obtenerCodigoISO(String nombreBD) {
         if (nombreBD == null) return "";
-
-        // 1. Normalizar: Todo a minúsculas para comparar fácil
         String nombre = nombreBD.toLowerCase().trim();
 
-        // 2. Comparaciones (Usando minúsculas y palabras clave únicas)
+        // Mapeo manual de nombres comunes a códigos ISO
         if (nombre.contains("aguascalientes")) return "MX-AGU";
         if (nombre.contains("baja california") && !nombre.contains("sur")) return "MX-BCN";
         if (nombre.contains("baja california sur")) return "MX-BCS";
@@ -160,41 +169,32 @@ public class DashboardController {
         if (nombre.contains("colima")) return "MX-COL";
         if (nombre.contains("chiapas")) return "MX-CHP";
         if (nombre.contains("chihuahua")) return "MX-CHH";
-
-        // CDMX tiene muchas variantes
-        if (nombre.contains("ciudad de méxico") || nombre.contains("cdmx") || nombre.contains("distrito federal")) return "MX-DIF";
-
+        if (nombre.contains("ciudad de méxico") || nombre.contains("cdmx") || nombre.contains("distrito")) return "MX-DIF";
         if (nombre.contains("durango")) return "MX-DUR";
-
-        // Estado de México vs Ciudad de México (Cuidado aquí)
-        // Como ya filtramos CDMX arriba, si dice "mexico" o "méxico" suele ser el EdoMex
-        if (nombre.contains("estado de méxico") || nombre.contains("estado de mexico") || nombre.equals("méxico") || nombre.equals("mexico")) return "MX-MEX";
-
         if (nombre.contains("guanajuato")) return "MX-GUA";
         if (nombre.contains("guerrero")) return "MX-GRO";
         if (nombre.contains("hidalgo")) return "MX-HID";
         if (nombre.contains("jalisco")) return "MX-JAL";
         if (nombre.contains("michoacán") || nombre.contains("michoacan")) return "MX-MIC";
         if (nombre.contains("morelos")) return "MX-MOR";
+        // Nota: "México" a secas suele ser Estado de México
+        if (nombre.equals("méxico") || nombre.equals("mexico") || nombre.contains("estado de")) return "MX-MEX";
         if (nombre.contains("nayarit")) return "MX-NAY";
         if (nombre.contains("nuevo león") || nombre.contains("nuevo leon")) return "MX-NLE";
         if (nombre.contains("oaxaca")) return "MX-OAX";
         if (nombre.contains("puebla")) return "MX-PUE";
         if (nombre.contains("querétaro") || nombre.contains("queretaro")) return "MX-QUE";
-        if (nombre.contains("quintana roo")) return "MX-ROO";
-        if (nombre.contains("san luis potosí") || nombre.contains("san luis potosi")) return "MX-SLP";
+        if (nombre.contains("quintana")) return "MX-ROO";
+        if (nombre.contains("san luis")) return "MX-SLP";
         if (nombre.contains("sinaloa")) return "MX-SIN";
         if (nombre.contains("sonora")) return "MX-SON";
         if (nombre.contains("tabasco")) return "MX-TAB";
         if (nombre.contains("tamaulipas")) return "MX-TAM";
         if (nombre.contains("tlaxcala")) return "MX-TLA";
-        if (nombre.contains("veracruz")) return "MX-VER";
+        if (nombre.contains("veracruz")) return "MX-VER"; // ¡Tu estado! 🌴
         if (nombre.contains("yucatán") || nombre.contains("yucatan")) return "MX-YUC";
         if (nombre.contains("zacatecas")) return "MX-ZAC";
 
-        // Debug para encontrar los rebeldes
-        System.out.println("⚠️ Estado no reconocido para el mapa: " + nombreBD);
-        return "";
+        return ""; // No encontrado
     }
-
 }

@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.*;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Notificacion; // UX Moderna
 import com.example.packetworld.util.Validaciones;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -10,7 +11,12 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+/**
+ * Controlador para gestionar Sucursales (Tiendas físicas).
+ * Incluye lógica de dirección en cascada (Estado > Municipio > CP > Colonia).
+ */
 public class FormularioSucursalController {
+
     @FXML private Label lblTitulo;
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
@@ -24,14 +30,14 @@ public class FormularioSucursalController {
     @FXML private TextField txtCalle;
     @FXML private TextField txtNumero;
 
-    private boolean esEdicion = false;
+    private boolean esEdicion = false; // Bandera de estado
 
     @FXML
     public void initialize() {
         cargarEstados();
         configurarListeners();
 
-        // --- VALIDACIONES ---
+        // --- VALIDACIONES DE ENTRADA ---
         // Código Sucursal: Máximo 10 caracteres (ej. SUC-XAL-01)
         Validaciones.limitarLongitud(txtCodigo, 10);
 
@@ -48,15 +54,15 @@ public class FormularioSucursalController {
         cbEstado.setItems(FXCollections.observableArrayList(estados));
     }
 
+    /**
+     * Configura los triggers para limpiar y recargar los combos dependientes.
+     */
     private void configurarListeners() {
         // 1. Cuando cambia Estado -> Cargar Municipios
         cbEstado.valueProperty().addListener((obs, oldVal, newVal) -> {
-            cbMunicipio.getItems().clear();
-            cbCP.getItems().clear();
-            cbColonia.getItems().clear();
-            cbMunicipio.setDisable(true);
-            cbCP.setDisable(true);
-            cbColonia.setDisable(true);
+            // Limpieza en cascada
+            cbMunicipio.getItems().clear(); cbCP.getItems().clear(); cbColonia.getItems().clear();
+            cbMunicipio.setDisable(true); cbCP.setDisable(true); cbColonia.setDisable(true);
 
             if (newVal != null) {
                 List<Municipio> muns = ApiService.obtenerMunicipios(newVal.getIdEstado());
@@ -67,10 +73,8 @@ public class FormularioSucursalController {
 
         // 2. Cuando cambia Municipio -> Cargar CPs
         cbMunicipio.valueProperty().addListener((obs, oldVal, newVal) -> {
-            cbCP.getItems().clear();
-            cbColonia.getItems().clear();
-            cbCP.setDisable(true);
-            cbColonia.setDisable(true);
+            cbCP.getItems().clear(); cbColonia.getItems().clear();
+            cbCP.setDisable(true); cbColonia.setDisable(true);
 
             if (newVal != null) {
                 List<String> cps = ApiService.obtenerCPs(newVal.getIdMunicipio());
@@ -81,8 +85,7 @@ public class FormularioSucursalController {
 
         // 3. Cuando cambia CP -> Cargar Colonias
         cbCP.valueProperty().addListener((obs, oldVal, newVal) -> {
-            cbColonia.getItems().clear();
-            cbColonia.setDisable(true);
+            cbColonia.getItems().clear(); cbColonia.setDisable(true);
 
             if (newVal != null) {
                 List<Colonia> cols = ApiService.obtenerColonias(newVal);
@@ -92,6 +95,10 @@ public class FormularioSucursalController {
         });
     }
 
+    /**
+     * Prepara el formulario para EDICIÓN cargando datos existentes.
+     * Reconstruye la selección de combos paso a paso.
+     */
     public void setSucursal(Sucursal s) {
         if (s != null) {
             this.esEdicion = true;
@@ -99,44 +106,42 @@ public class FormularioSucursalController {
 
             // 1. Datos Simples
             txtCodigo.setText(s.getCodigoSucursal());
-            txtCodigo.setDisable(true);
+            txtCodigo.setDisable(true); // Código es llave primaria, no editable
             txtNombre.setText(s.getNombreCorto());
             txtCalle.setText(s.getCalle());
             txtNumero.setText(s.getNumero());
 
-            // 2. RECONSTRUCCIÓN DE LA CASCADA (La parte mágica) 🪄
+            // 2. RECONSTRUCCIÓN DE LA CASCADA 🪄
 
-            // A. Seleccionar Estado
-            // Recorremos los estados cargados en el combo
+            // A. Estado
             for (Estado e : cbEstado.getItems()) {
                 if (e.getNombre().equalsIgnoreCase(s.getEstado())) {
-                    cbEstado.setValue(e); // Esto dispara el listener y carga Municipios
+                    cbEstado.setValue(e); // Dispara listener -> Carga Municipios
                     break;
                 }
             }
 
-            // B. Seleccionar Municipio
-            // (Debemos esperar a que el listener de arriba termine, como es síncrono, podemos seguir)
+            // B. Municipio
             if (cbEstado.getValue() != null) {
                 for (Municipio m : cbMunicipio.getItems()) {
                     if (m.getNombre().equalsIgnoreCase(s.getCiudad())) {
-                        cbMunicipio.setValue(m); // Esto dispara carga de CPs
+                        cbMunicipio.setValue(m); // Dispara listener -> Carga CPs
                         break;
                     }
                 }
             }
 
-            // C. Seleccionar Código Postal
+            // C. Código Postal
             if (cbMunicipio.getValue() != null) {
                 for (String cp : cbCP.getItems()) {
                     if (cp.equals(s.getCodigoPostal())) {
-                        cbCP.setValue(cp); // Esto dispara carga de Colonias
+                        cbCP.setValue(cp); // Dispara listener -> Carga Colonias
                         break;
                     }
                 }
             }
 
-            // D. Seleccionar Colonia (Aquí comparamos por ID porque Sucursal guarda idColonia)
+            // D. Colonia (Destino final)
             if (cbCP.getValue() != null) {
                 for (Colonia col : cbColonia.getItems()) {
                     if (col.getIdColonia().equals(s.getIdColonia())) {
@@ -149,6 +154,18 @@ public class FormularioSucursalController {
     }
 
     @FXML public void guardar() {
+        // Validaciones previas
+        if (txtCodigo.getText().isEmpty() || txtNombre.getText().isEmpty()) {
+            mostrarAlerta("Campos vacíos", "El código y el nombre son obligatorios.");
+            return;
+        }
+
+        if (cbColonia.getValue() == null) {
+            mostrarAlerta("Dirección incompleta", "Debes seleccionar hasta la Colonia.");
+            return;
+        }
+
+        // Construir objeto
         Sucursal s = new Sucursal();
         s.setCodigoSucursal(txtCodigo.getText());
         s.setNombreCorto(txtNombre.getText());
@@ -156,27 +173,24 @@ public class FormularioSucursalController {
         s.setCalle(txtCalle.getText());
         s.setNumero(txtNumero.getText());
 
-        // Validar Selección de Colonia
-        if (cbColonia.getValue() == null) {
-            mostrarAlerta("Dirección incompleta", "Selecciona Estado, Municipio y Colonia.");
-            return;
-        }
-
-        // Llenamos los datos desde los ComboBoxes
+        // Datos desde Combos
         Colonia col = cbColonia.getValue();
         s.setIdColonia(col.getIdColonia());
         s.setNombreColonia(col.getNombre());
         s.setCodigoPostal(col.getCodigoPostal());
-
         s.setCiudad(cbMunicipio.getValue().getNombre());
         s.setEstado(cbEstado.getValue().getNombre());
 
+        // Enviar a API
         Respuesta r = esEdicion ? ApiService.editarSucursal(s) : ApiService.registrarSucursal(s);
 
         if (r != null && !r.getError()) {
+            // ÉXITO: Toast Verde
+            Notificacion.mostrar("Operación Exitosa", "La sucursal se guardó correctamente.", Notificacion.EXITO);
             cerrar();
         } else {
-            mostrarAlerta("Error", "Error al guardar: " + (r!=null ? r.getMensaje() : "Conexión"));
+            // ERROR: Alerta Modal
+            mostrarAlerta("Error", "No se pudo guardar: " + (r!=null ? r.getMensaje() : "Error de conexión"));
         }
     }
 
@@ -186,6 +200,6 @@ public class FormularioSucursalController {
         Alert a = new Alert(Alert.AlertType.WARNING);
         a.setTitle(titulo);
         a.setContentText(msg);
-        a.show();
+        a.showAndWait();
     }
 }

@@ -4,6 +4,7 @@ import com.example.packetworld.model.Colaborador;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.model.Unidad;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Notificacion; // UX Moderna
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador para la Gestión de Flotilla (Unidades).
+ * Realiza un cruce de información para mostrar qué conductor tiene asignada cada unidad.
+ */
 public class UnidadesController {
 
     @FXML private TableView<Unidad> tblUnidades;
@@ -30,10 +35,8 @@ public class UnidadesController {
     @FXML private TableColumn<Unidad, String> colVin;
     @FXML private TableColumn<Unidad, String> colTipo;
     @FXML private TableColumn<Unidad, String> colEstatus;
+    @FXML private TableColumn<Unidad, String> colConductor;
     @FXML private TextField txtBuscar;
-
-    // Para el conductor
-    @FXML private TableColumn<Unidad, String> colConductor; // Declárala
 
     private ObservableList<Unidad> listaMaster;
     private FilteredList<Unidad> listaFiltrada;
@@ -41,16 +44,9 @@ public class UnidadesController {
     @FXML
     public void initialize() {
         configurarColumnas();
-
-        colConductor.setCellValueFactory(c -> {
-            String conductor = c.getValue().getConductorAsignado();
-            if (conductor == null) return new SimpleStringProperty("Sin Asignar");
-            return new SimpleStringProperty(conductor);
-        });
-
         cargarDatos();
 
-        // Filtro local (más rápido que ir a la API cada vez que escribes)
+        // Filtro Local (Búsqueda rápida)
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
             listaFiltrada.setPredicate(u -> {
                 if (newVal == null || newVal.isEmpty()) return true;
@@ -71,50 +67,50 @@ public class UnidadesController {
         colVin.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getVin()));
         colTipo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipoUnidad()));
         colEstatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEstatus()));
+
+        // Columna Especial: Conductor Asignado (Calculado)
+        colConductor.setCellValueFactory(c -> {
+            String conductor = c.getValue().getConductorAsignado();
+            if (conductor == null || conductor.isEmpty()) return new SimpleStringProperty("--- Libres ---");
+            return new SimpleStringProperty(conductor);
+        });
     }
 
+    /**
+     * Carga las unidades y realiza el "Match" con los conductores para saber quién trae qué unidad.
+     */
     private void cargarDatos() {
-        // 1. Descargamos la lista de Unidades (Tu código original)
+        // 1. Obtener Unidades
         List<Unidad> datosUnidades = ApiService.obtenerUnidades();
 
-        // 2. Descargamos la lista de Conductores (para ver quién trae qué)
-        // (null, "Conductor", null) -> Buscamos a todos los que tengan rol de Conductor
+        // 2. Obtener Conductores
         List<Colaborador> listaConductores = ApiService.buscarColaboradores(null, "Conductor", null);
 
-        // 3. HACEMOS EL CRUCE DE DATOS (MATCH) 🤝
+        // 3. Cruce de Datos (Algoritmo de búsqueda)
         if (listaConductores != null && datosUnidades != null) {
-
-            // Recorremos cada conductor
             for (Colaborador chofer : listaConductores) {
-                // Obtenemos la unidad que el chofer tiene asignada (Ej. "UNI-005")
                 String unidadDelChofer = chofer.getIdUnidadAsignada();
 
                 if (unidadDelChofer != null && !unidadDelChofer.isEmpty()) {
-
-                    // Buscamos esa unidad en la lista de unidades para ponerle el nombre
+                    // Buscar la unidad que coincida con el VIN
                     for (Unidad u : datosUnidades) {
-                        // Comparamos el NII (Número Interno) que es lo que usualmente se asigna
                         if (u.getVin() != null && u.getVin().equalsIgnoreCase(unidadDelChofer)) {
-
-                            // ¡ENCONTRADA! Le asignamos el nombre temporalmente
+                            // Asignar nombre del conductor a la unidad (solo visual)
                             u.setConductorAsignado(chofer.getNombre() + " " + chofer.getApellidoPaterno());
-                            break; // Ya encontramos la unidad de este chofer, pasamos al siguiente
+                            break;
                         }
                     }
                 }
             }
         }
 
-        // 4. Ahora sí, mostramos la lista ya con los nombres puestos
         listaMaster = FXCollections.observableArrayList(datosUnidades);
         listaFiltrada = new FilteredList<>(listaMaster, p -> true);
         tblUnidades.setItems(listaFiltrada);
     }
 
     @FXML
-    public void btnNueva() {
-        abrirFormulario(null);
-    }
+    public void btnNueva() { abrirFormulario(null); }
 
     @FXML
     public void btnEditar() {
@@ -130,7 +126,7 @@ public class UnidadesController {
     public void btnBaja() {
         Unidad seleccionada = tblUnidades.getSelectionModel().getSelectedItem();
         if (seleccionada != null) {
-            // Tu API pide un motivo para la baja, lo pedimos con un TextInputDialog
+            // Dialogo para pedir motivo de baja
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Dar de Baja");
             dialog.setHeaderText("Baja de unidad: " + seleccionada.getMarca() + " " + seleccionada.getModelo());
@@ -141,8 +137,9 @@ public class UnidadesController {
                 seleccionada.setMotivoBaja(result.get());
 
                 Respuesta resp = ApiService.darBajaUnidad(seleccionada);
+
                 if (resp != null && !resp.getError()) {
-                    mostrarAlerta("Unidad dada de baja correctamente.");
+                    Notificacion.mostrar("Baja Exitosa", "Unidad marcada como inactiva.", Notificacion.EXITO);
                     cargarDatos();
                 } else {
                     mostrarAlerta("Error al dar de baja.");
@@ -158,7 +155,6 @@ public class UnidadesController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/FormularioUnidad.fxml"));
             Parent root = loader.load();
 
-            // Pasamos la unidad al controlador del formulario (IMPLEMENTAREMOS ESTO EN EL SIGUIENTE PASO)
             FormularioUnidadController controller = loader.getController();
             controller.setUnidad(unidad);
 
@@ -168,14 +164,13 @@ public class UnidadesController {
             stage.setTitle(unidad == null ? "Nueva Unidad" : "Editar Unidad");
             stage.showAndWait();
 
-            cargarDatos(); // Recargar al volver
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            cargarDatos();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mostrarAlerta(String msg) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setTitle("Atención");
         a.setContentText(msg);
         a.show();
     }

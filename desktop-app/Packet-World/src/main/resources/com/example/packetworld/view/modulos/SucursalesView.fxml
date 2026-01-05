@@ -4,25 +4,24 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.SucursalesController"
-      spacing="15" style="-fx-padding: 20;">
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20;">
 
     <Label text="Catálogo de Sucursales" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
 
     <HBox alignment="CENTER_RIGHT" spacing="15">
 
-        <TextField fx:id="txtBuscar" promptText="Buscar por nombre, código o ciudad..." prefWidth="280"
-                   style="-fx-background-radius: 20; -fx-padding: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 20;"/>
+        <TextField fx:id="txtBuscar" promptText="🔍 Buscar por nombre, código o ciudad..." prefWidth="280"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <Button text="+ Nueva Sucursal" onAction="#btnNueva"
-                style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;"/>
+        <Button text="+ Nueva Sucursal" onAction="#btnNueva" styleClass="btn-primary"/>
 
-        <Button text="✎ Editar" onAction="#btnEditar"
-                style="-fx-background-color: #B39CD0; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;"/>
+        <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
 
-        <Button text="🗑 Eliminar" onAction="#btnEliminar"
-                style="-fx-background-color: #FF8585; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;"/>
+        <Button text="🗑 Eliminar" onAction="#btnEliminar" styleClass="btn-danger"/>
     </HBox>
 
     <TableView fx:id="tblSucursales" VBox.vgrow="ALWAYS">

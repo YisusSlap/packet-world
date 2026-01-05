@@ -3,9 +3,12 @@ package com.example.packetworld.controller;
 import com.example.packetworld.model.Colaborador;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Notificacion; // UX Moderna
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList; // Importante
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,9 +21,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador para el Catálogo de Colaboradores (Empleados).
+ * Muestra lista general con capacidad de filtrado y gestión CRUD.
+ */
 public class ColaboradoresController {
-
-
 
     @FXML private TableView<Colaborador> tblColaboradores;
     @FXML private TableColumn<Colaborador, String> colNumPersonal;
@@ -31,23 +36,55 @@ public class ColaboradoresController {
     @FXML private TableColumn<Colaborador, String> colCurp;
     @FXML private TableColumn<Colaborador, String> colLicencia;
     @FXML private TableColumn<Colaborador, String> colEstatus;
+    @FXML private TableColumn<Colaborador, String> colUnidad;
 
-    // Si tienes un TextField en tu FXML para buscar, añádelo aquí:
     @FXML private TextField txtBuscar;
 
-    // Para la unidad asignada
-    @FXML private TableColumn<Colaborador, String> colUnidad; // Declárala arriba
-
-    private ObservableList<Colaborador> listaColaboradores;
+    // Listas para filtrado local eficiente
+    private ObservableList<Colaborador> listaMaster;
+    private FilteredList<Colaborador> listaFiltrada;
 
     @FXML
     public void initialize() {
         configurarColumnas();
-        cargarDatos(""); // Carga inicial sin filtros
+        cargarDatos();
 
-        // Listener para búsqueda (opcional, si tienes el TextField)
-         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
-            cargarDatos(newValue); // Buscará mientras escribes
+        // Listener para búsqueda LOCAL (Sin llamar a la API a cada tecla)
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (listaFiltrada == null) return;
+
+            listaFiltrada.setPredicate(col -> {
+                if (newValue == null || newValue.isEmpty()) return true;
+
+                String lower = newValue.toLowerCase();
+
+                // Buscar por Nombre, Numero Personal o Rol
+                return col.getNombre().toLowerCase().contains(lower) ||
+                        col.getApellidoPaterno().toLowerCase().contains(lower) ||
+                        col.getNumeroPersonal().toLowerCase().contains(lower) ||
+                        col.getRol().toLowerCase().contains(lower);
+            });
+        });
+    }
+
+    private void configurarColumnas() {
+        colNumPersonal.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNumeroPersonal()));
+        colNombre.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getNombre() + " " + c.getValue().getApellidoPaterno() + " " + c.getValue().getApellidoMaterno()
+        ));
+        colRol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getRol()));
+        colCorreo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCorreoElectronico()));
+        colSucursal.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getIdCodigoSucursal()));
+        colCurp.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCurp()));
+
+        colLicencia.setCellValueFactory(c -> {
+            String licencia = c.getValue().getNumeroLicencia();
+            return new SimpleStringProperty(licencia != null ? licencia : "N/A");
+        });
+
+        colEstatus.setCellValueFactory(c -> {
+            String estatus = c.getValue().getEstatus();
+            return new SimpleStringProperty(estatus != null ? estatus.toUpperCase() : "INACTIVO");
         });
 
         colUnidad.setCellValueFactory(c -> {
@@ -57,49 +94,35 @@ public class ColaboradoresController {
             }
             return new SimpleStringProperty("🚛 " + unidad);
         });
-
     }
 
-    private void configurarColumnas() {
-        // Enlazar datos con columnas usando lambdas
-        colNumPersonal.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNumeroPersonal()));
-        colNombre.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getNombre() + " " + c.getValue().getApellidoPaterno() + " " + c.getValue().getApellidoMaterno()
-        ));
-        colRol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getRol()));
-        colCorreo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCorreoElectronico()));
-        colSucursal.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getIdCodigoSucursal()));
-        colCurp.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCurp()));
-        colLicencia.setCellValueFactory(c -> {
-            String licencia = c.getValue().getNumeroLicencia();
-            return new SimpleStringProperty(licencia != null ? licencia : "N/A");
-        });
-        colEstatus.setCellValueFactory(c -> {
-            String estatus = c.getValue().getEstatus();
-            return new SimpleStringProperty(estatus != null ? estatus.toUpperCase() : "INACTIVO");
-        });
+    private void cargarDatos() {
+        // Obtenemos TODOS los colaboradores de una vez
+        List<Colaborador> resultados = ApiService.buscarColaboradores(null, null, null);
+
+        listaMaster = FXCollections.observableArrayList(resultados);
+
+        // Configuramos el filtro
+        listaFiltrada = new FilteredList<>(listaMaster, p -> true);
+
+        // Configuramos el ordenamiento
+        SortedList<Colaborador> sortedData = new SortedList<>(listaFiltrada);
+        sortedData.comparatorProperty().bind(tblColaboradores.comparatorProperty());
+
+        tblColaboradores.setItems(sortedData);
     }
 
-    private void cargarDatos(String filtroNombre) {
-        // Llamamos al servicio 'buscar' enviando el filtro de nombre
-        // Rol y Sucursal los mandamos null para que traiga todo
-        List<Colaborador> resultados = ApiService.buscarColaboradores(filtroNombre, null, null);
+    // --- ACCIONES ---
 
-        listaColaboradores = FXCollections.observableArrayList(resultados);
-        tblColaboradores.setItems(listaColaboradores);
-    }
-
-    //Botones
     @FXML
     public void btnNuevo() {
-        abrirFormulario(null); // Null significa crear nuevo
+        abrirFormulario(null);
     }
 
     @FXML
     public void btnEditar() {
         Colaborador seleccionado = tblColaboradores.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
-            // AHORA SÍ: Pasamos el objeto seleccionado al método de apertura
             abrirFormulario(seleccionado);
         } else {
             mostrarAlerta("Atención", "Selecciona un colaborador para editar.");
@@ -112,15 +135,16 @@ public class ColaboradoresController {
         if (seleccionado != null) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Confirmar eliminación");
+            confirm.setHeaderText(null);
             confirm.setContentText("¿Estás seguro de eliminar a " + seleccionado.getNombre() + "?");
 
             Optional<ButtonType> resultado = confirm.showAndWait();
             if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                // Llamar a la API
                 Respuesta resp = ApiService.eliminarColaborador(seleccionado.getNumeroPersonal());
+
                 if (resp != null && !resp.getError()) {
-                    mostrarAlerta("Éxito", "Colaborador eliminado.");
-                    cargarDatos(""); // Recargar tabla
+                    Notificacion.mostrar("Eliminado", "Colaborador dado de baja.", Notificacion.EXITO);
+                    cargarDatos(); // Recargar tabla
                 } else {
                     mostrarAlerta("Error", "No se pudo eliminar.");
                 }
@@ -130,17 +154,12 @@ public class ColaboradoresController {
         }
     }
 
-    // Método auxiliar para abrir la ventana modal
     private void abrirFormulario(Colaborador colaboradorAEditar) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/FormularioColaborador.fxml"));
             Parent root = loader.load();
 
-            // --- LÓGICA DE INYECCIÓN DE DATOS ---
-            // 1. Obtenemos el controlador de la ventana que acabamos de cargar
             FormularioColaboradorController controller = loader.getController();
-
-            // 2. Le pasamos el colaborador (si es null, el formulario sabrá que es nuevo)
             controller.setColaborador(colaboradorAEditar);
 
             Stage stage = new Stage();
@@ -149,7 +168,7 @@ public class ColaboradoresController {
             stage.setTitle(colaboradorAEditar == null ? "Nuevo Colaborador" : "Editar Colaborador");
             stage.showAndWait();
 
-            cargarDatos(""); // Recargar tabla al cerrar
+            cargarDatos();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -158,12 +177,10 @@ public class ColaboradoresController {
     }
 
     private void mostrarAlerta(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(contenido);
         alert.showAndWait();
     }
-
-
 }

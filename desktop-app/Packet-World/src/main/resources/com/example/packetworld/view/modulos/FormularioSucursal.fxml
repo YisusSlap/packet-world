@@ -4,7 +4,9 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.FormularioSucursalController"
-      spacing="15" style="-fx-padding: 20; -fx-background-color: white;">
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white;">
 
     <Label fx:id="lblTitulo" text="Registrar Sucursal" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
 
@@ -35,7 +37,9 @@
     </GridPane>
 
     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-        <Button text="Cancelar" onAction="#cerrar" style="-fx-background-color: #DDD;"/>
-        <Button text="Guardar" onAction="#guardar" style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button text="Cancelar" onAction="#cerrar" styleClass="button"/>
+
+        <Button text="Guardar" onAction="#guardar" styleClass="btn-primary"/>
     </HBox>
+
 </VBox>

@@ -454,6 +454,25 @@ public class ApiService {
         return new ArrayList<>();
     }
 
+    // 2.5 EDITAR ENVÍO (PUT)
+    public static Respuesta editarEnvio(Envio envio) {
+        try {
+            Gson gson = new Gson();
+            String jsonBody = gson.toJson(envio);
+
+            // Asegúrate de que tu API tenga este endpoint @PUT "envios/editar"
+            HttpResponse<String> response = Unirest.put(BASE_URL + "envios/editar")
+                    .header("Content-Type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            return gson.fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // PAQUETES //
     public static Respuesta registrarPaquete(Paquete paquete) {
         try {

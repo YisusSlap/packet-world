@@ -2,8 +2,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane fitToWidth="true" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.packetworld.controller.DetalleEnvioController">
+<ScrollPane fitToWidth="true"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.packetworld.controller.DetalleEnvioController"
+            stylesheets="@../../styles/estilos.css">
+
     <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: white;">
 
         <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-background-radius: 5;">
@@ -79,12 +82,14 @@
             <Button text="🖨 Imprimir Guía" onAction="#imprimirEtiqueta"
                     style="-fx-background-color: #333; -fx-text-fill: white; -fx-font-weight: bold;"/>
 
-            <Button text="🚚 Asignar" onAction="#btnAsignar" style="-fx-background-color: #FFB347; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Button text="🔄 Estatus" onAction="#btnEstatus" style="-fx-background-color: #B39CD0; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Button text="+ Paquete" onAction="#btnPaquete" style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button text="🚚 Asignar" onAction="#btnAsignar" styleClass="btn-warning"/>
+            <Button text="🔄 Estatus" onAction="#btnEstatus" styleClass="btn-secondary"/>
+            <Button text="+ Paquete" onAction="#btnPaquete" styleClass="btn-info"/>
+
+            <Button text="📍 Ver en Mapa" onAction="#abrirGoogleMaps" styleClass="btn-secondary"/>
 
             <Region prefWidth="20"/>
-            <Button text="Cerrar" onAction="#cerrar" style="-fx-background-color: #DDD;"/>
+            <Button text="Cerrar" onAction="#cerrar" styleClass="button"/>
         </HBox>
     </VBox>
 </ScrollPane>

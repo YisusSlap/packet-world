@@ -16,16 +16,15 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * Controlador Principal de la Gestión de Envíos.
+ * Lista todos los envíos y permite acceder a acciones como: Detalle, Asignación, Estatus y Edición.
+ */
 public class EnviosController {
 
     @FXML private TextField txtBuscar;
     @FXML private TableView<Envio> tblEnvios;
-    @FXML private TableColumn<Envio, String> colGuia;
-    @FXML private TableColumn<Envio, String> colCliente;
-    @FXML private TableColumn<Envio, String> colDestino;
-    @FXML private TableColumn<Envio, String> colEstatus;
-    @FXML private TableColumn<Envio, String> colConductor;
-    @FXML private TableColumn<Envio, String> colCosto;
+    @FXML private TableColumn<Envio, String> colGuia, colCliente, colDestino, colEstatus, colConductor, colCosto;
 
     private ObservableList<Envio> listaMaster;
     private FilteredList<Envio> listaFiltrada;
@@ -34,7 +33,7 @@ public class EnviosController {
     public void initialize() {
         configurarColumnas();
         cargarDatos();
-        configurarBuscador();
+        configurarBuscadorEnTiempoReal();
     }
 
     private void configurarColumnas() {
@@ -44,28 +43,30 @@ public class EnviosController {
         colEstatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEstatusActual()));
         colCosto.setCellValueFactory(c -> new SimpleStringProperty("$" + c.getValue().getCostoTotal()));
 
-        // Columna Conductor con lógica visual "Por Asignar"
+        // Formateo visual si no hay conductor
         colConductor.setCellValueFactory(c -> {
             String conductor = c.getValue().getIdConductorAsignado();
-            if (conductor == null || conductor.isEmpty()) return new SimpleStringProperty("🔴 POR ASIGNAR");
-            return new SimpleStringProperty(conductor);
+            return new SimpleStringProperty((conductor == null || conductor.isEmpty()) ? "🔴 POR ASIGNAR" : conductor);
         });
     }
 
     private void cargarDatos() {
         listaMaster = FXCollections.observableArrayList(ApiService.obtenerTodosEnvios());
         listaFiltrada = new FilteredList<>(listaMaster, p -> true);
+
+        // SortedList permite ordenar las columnas al dar clic en el encabezado
         SortedList<Envio> sortedData = new SortedList<>(listaFiltrada);
         sortedData.comparatorProperty().bind(tblEnvios.comparatorProperty());
+
         tblEnvios.setItems(sortedData);
     }
 
-    private void configurarBuscador() {
+    private void configurarBuscadorEnTiempoReal() {
         txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
             listaFiltrada.setPredicate(envio -> {
                 if (newVal == null || newVal.isEmpty()) return true;
                 String lower = newVal.toLowerCase();
-
+                // Búsqueda por Guía, Cliente o Estatus
                 return envio.getNumeroGuia().toLowerCase().contains(lower) ||
                         envio.getNombreCliente().toLowerCase().contains(lower) ||
                         envio.getEstatusActual().toLowerCase().contains(lower);
@@ -73,64 +74,95 @@ public class EnviosController {
         });
     }
 
-    // --- ACCIONES DE BOTONES (Ahora usan la selección de la tabla) ---
 
-    private Envio obtenerEnvioSeleccionado() {
-        Envio e = tblEnvios.getSelectionModel().getSelectedItem();
-        if (e == null) mostrarAlerta("Selecciona un envío de la tabla primero.");
-        return e;
-    }
+    //                        BOTONES DE ACCIÓN
 
-    @FXML public void btnVerDetalle() {
-        Envio e = obtenerEnvioSeleccionado();
-        if (e != null) abrirModal("DetalleEnvio.fxml", "Detalle de Envío", e);
-    }
-
-    @FXML public void btnAsignarConductor() {
-        Envio e = obtenerEnvioSeleccionado();
-        if (e != null) abrirModal("FormularioAsignacion.fxml", "Asignar Conductor", e);
-    }
-
-    @FXML public void btnCambiarEstatus() {
-        Envio e = obtenerEnvioSeleccionado();
-        if (e != null) abrirModal("FormularioEstatus.fxml", "Cambiar Estatus", e);
-    }
-
-    @FXML
-    public void btnAgregarPaquete() {
-        Envio e = obtenerEnvioSeleccionado();
-
-        if (e != null) {
-            // --- VALIDACIÓN DE NEGOCIO (Corrección #1) ---
-            String estatus = e.getEstatusActual().toLowerCase();
-
-            if (estatus.contains("tránsito") || estatus.contains("ruta") || estatus.contains("entregado") || estatus.contains("cancelado")) {
-                mostrarAlerta("OPERACIÓN DENEGADA:\nNo se pueden agregar paquetes a un envío que ya salió de sucursal o finalizó.");
-                return;
-            }
-            // ---------------------------------------------
-
-            abrirModal("FormularioPaquete.fxml", "Agregar Paquete", e);
-        }
-    }
 
     @FXML public void btnNuevo() {
         abrirModal("FormularioEnvio.fxml", "Nuevo Envío", null);
     }
 
-    // Método genérico para abrir modales
+    @FXML public void btnEditar() {
+        Envio e = obtenerSeleccion();
+        if (e != null) {
+            // Regla de Negocio: Solo editar si Estatus es 1 (Recibido) o 2 (Procesado)
+            int estatus = e.getIdEstatus();
+            if (estatus == 1 || estatus == 2) {
+                abrirModal("FormularioEnvio.fxml", "Editar Envío", e);
+            } else {
+                mostrarAlerta("Operación Denegada", "Solo se pueden editar envíos que no han salido de sucursal.");
+            }
+        }
+    }
+
+    @FXML public void btnVerDetalle() {
+        Envio e = obtenerSeleccion();
+        if (e != null) abrirModal("DetalleEnvio.fxml", "Detalle de Envío", e);
+    }
+
+    @FXML public void btnAsignarConductor() {
+        Envio e = obtenerSeleccion();
+        if (e != null) abrirModal("FormularioAsignacion.fxml", "Asignar Conductor", e);
+    }
+
+    @FXML public void btnCambiarEstatus() {
+        Envio e = obtenerSeleccion();
+        if (e != null) abrirModal("FormularioEstatus.fxml", "Cambiar Estatus", e);
+    }
+
+    @FXML public void btnAgregarPaquete() {
+        Envio e = obtenerSeleccion();
+        if (e != null) {
+            // Validar que el envío no haya salido
+            String estatus = e.getEstatusActual().toLowerCase();
+            if (estatus.contains("tránsito") || estatus.contains("ruta") || estatus.contains("entregado") || estatus.contains("cancelado")) {
+                mostrarAlerta("Operación Denegada", "No se pueden agregar paquetes a envíos en tránsito o finalizados.");
+            } else {
+                abrirModal("FormularioPaquete.fxml", "Agregar Paquete Extra", e);
+            }
+        }
+    }
+
+
+    //                        MÉTODOS AUXILIARES
+
+    private Envio obtenerSeleccion() {
+        Envio e = tblEnvios.getSelectionModel().getSelectedItem();
+        if (e == null) mostrarAlerta("Atención", "Selecciona un envío de la tabla primero.");
+        return e;
+    }
+
+    private void mostrarAlerta(String titulo, String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    /**
+     * Gestor centralizado para abrir ventanas modales.
+     * Inyecta el objeto 'envio' al controlador destino según corresponda.
+     */
     private void abrirModal(String fxml, String titulo, Envio envioParaPasar) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/packetworld/view/modulos/" + fxml));
             Parent root = loader.load();
 
-            // Pasar el envío al controlador si es necesario
             Object controller = loader.getController();
+
+            // Inyección de Dependencias Manual
             if (envioParaPasar != null) {
-                if (controller instanceof DetalleEnvioController) ((DetalleEnvioController) controller).setEnvio(envioParaPasar);
-                else if (controller instanceof FormularioAsignacionController) ((FormularioAsignacionController) controller).setEnvio(envioParaPasar);
-                else if (controller instanceof FormularioEstatusController) ((FormularioEstatusController) controller).setEnvio(envioParaPasar);
-                else if (controller instanceof FormularioPaqueteController) ((FormularioPaqueteController) controller).setIdEnvio(envioParaPasar.getIdEnvio());
+                if (controller instanceof DetalleEnvioController)
+                    ((DetalleEnvioController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioEnvioController)
+                    ((FormularioEnvioController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioAsignacionController)
+                    ((FormularioAsignacionController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioEstatusController)
+                    ((FormularioEstatusController) controller).setEnvio(envioParaPasar);
+                else if (controller instanceof FormularioPaqueteController)
+                    ((FormularioPaqueteController) controller).setIdEnvio(envioParaPasar.getIdEnvio());
             }
 
             Stage stage = new Stage();
@@ -140,8 +172,9 @@ public class EnviosController {
             stage.showAndWait();
 
             cargarDatos(); // Recargar tabla al cerrar modal
-        } catch (IOException ex) { ex.printStackTrace(); }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            mostrarAlerta("Error Crítico", "No se pudo cargar la ventana: " + fxml);
+        }
     }
-
-    private void mostrarAlerta(String msg) { new Alert(Alert.AlertType.WARNING, msg).show(); }
 }

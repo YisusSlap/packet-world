@@ -3,11 +3,12 @@ package com.example.packetworld.controller;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.model.Sucursal;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Notificacion; // UX Moderna
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList; // IMPORTANTE: Agrega este import
+import javafx.collections.transformation.SortedList; // Para ordenar al filtrar
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +17,12 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.Optional;
 
+/**
+ * Controlador para el Catálogo de Sucursales.
+ * Permite visualizar, filtrar, agregar, editar y eliminar sucursales.
+ */
 public class SucursalesController {
 
     @FXML private TableView<Sucursal> tblSucursales;
@@ -28,53 +34,52 @@ public class SucursalesController {
 
     @FXML private TextField txtBuscar;
 
-    // Listas para el filtrado
-    private ObservableList<Sucursal> listaMaster;
-    private FilteredList<Sucursal> listaFiltrada;
+    // Listas para el manejo eficiente de datos en memoria
+    private ObservableList<Sucursal> listaMaster; // Lista original
+    private FilteredList<Sucursal> listaFiltrada; // Lista dinámica según búsqueda
 
     @FXML
     public void initialize() {
+        // Configuración de Columnas
         colCodigo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCodigoSucursal()));
         colNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombreCorto()));
 
+        // Columna calculada: Dirección Completa
         colDireccion.setCellValueFactory(c -> {
             Sucursal s = c.getValue();
-            // Validamos nulos para evitar errores si la dirección viene incompleta
+            // Validación defensiva contra nulos
             String calle = s.getCalle() != null ? s.getCalle() : "";
             String num = s.getNumero() != null ? s.getNumero() : "";
             String col = s.getNombreColonia() != null ? s.getNombreColonia() : "";
             String cp = s.getCodigoPostal() != null ? s.getCodigoPostal() : "";
 
-            String dir = calle + " #" + num + ", Col. " + col + ", CP: " + cp;
-            return new SimpleStringProperty(dir);
+            return new SimpleStringProperty(calle + " #" + num + ", Col. " + col + ", CP: " + cp);
         });
 
         colCiudad.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCiudad() + ", " + c.getValue().getEstado()));
         colEstatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEstatus()));
 
-        // Cargamos los datos iniciales
+        // Cargar datos al inicio
         cargarDatos();
 
-        // LISTENER CORREGIDO: Usamos 'newValue' en ambos lados
+        // CONFIGURACIÓN DEL BUSCADOR EN TIEMPO REAL
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
-
-            // Si listaFiltrada no se inicializó, salimos para evitar crash
             if (listaFiltrada == null) return;
 
             listaFiltrada.setPredicate(sucursal -> {
-                // Si el buscador está vacío, muestra todo
+                // Si el buscador está vacío, mostramos todo
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
 
-                String lowerCaseFilter = newValue.toLowerCase();
+                String filtro = newValue.toLowerCase();
 
-                // Validaciones de nulos antes de usar .toLowerCase() para evitar crash
-                if (sucursal.getCodigoSucursal() != null && sucursal.getCodigoSucursal().toLowerCase().contains(lowerCaseFilter)) {
+                // Buscamos coincidencias en Código, Nombre o Ciudad
+                if (sucursal.getCodigoSucursal() != null && sucursal.getCodigoSucursal().toLowerCase().contains(filtro)) {
                     return true;
-                } else if (sucursal.getNombreCorto() != null && sucursal.getNombreCorto().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (sucursal.getNombreCorto() != null && sucursal.getNombreCorto().toLowerCase().contains(filtro)) {
                     return true;
-                } else if (sucursal.getCiudad() != null && sucursal.getCiudad().toLowerCase().contains(lowerCaseFilter)) {
+                } else if (sucursal.getCiudad() != null && sucursal.getCiudad().toLowerCase().contains(filtro)) {
                     return true;
                 }
 
@@ -84,37 +89,50 @@ public class SucursalesController {
     }
 
     private void cargarDatos() {
-        // 1. Obtenemos datos de la API
+        // 1. Descargar datos de la API
         listaMaster = FXCollections.observableArrayList(ApiService.obtenerSucursales());
 
-        // 2. Inicializamos la lista filtrada con los datos maestros
+        // 2. Envolver en una lista filtrable
         listaFiltrada = new FilteredList<>(listaMaster, p -> true);
 
-        // 3. (Opcional pero recomendado) Envolver en SortedList para que funcionen los clics en cabeceras
+        // 3. Envolver en una lista ordenable (SortedList)
+        // Esto permite que al dar clic en el encabezado de la columna, se ordene
         SortedList<Sucursal> sortedData = new SortedList<>(listaFiltrada);
         sortedData.comparatorProperty().bind(tblSucursales.comparatorProperty());
 
-        // 4. Seteamos la lista con capacidades de filtro a la tabla
+        // 4. Asignar a la tabla
         tblSucursales.setItems(sortedData);
     }
+
+    // --- ACCIONES ---
 
     @FXML public void btnNueva() { abrirFormulario(null); }
 
     @FXML public void btnEditar() {
         Sucursal s = tblSucursales.getSelectionModel().getSelectedItem();
         if (s != null) abrirFormulario(s);
-        else mostrarAlerta("Selecciona una sucursal.");
+        else mostrarAlerta("Atención", "Selecciona una sucursal para editar.");
     }
 
     @FXML public void btnEliminar() {
         Sucursal s = tblSucursales.getSelectionModel().getSelectedItem();
         if (s != null) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Eliminar sucursal " + s.getNombreCorto() + "?");
-            if (confirm.showAndWait().get() == ButtonType.OK) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de eliminar la sucursal " + s.getNombreCorto() + "?");
+            confirm.setHeaderText(null); // Limpiar header para que se vea mejor
+
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
                 Respuesta r = ApiService.eliminarSucursal(s.getCodigoSucursal());
-                if (r != null && !r.getError()) cargarDatos();
-                else mostrarAlerta("Error al eliminar");
+
+                if (r != null && !r.getError()) {
+                    Notificacion.mostrar("Eliminado", "La sucursal fue eliminada.", Notificacion.EXITO);
+                    cargarDatos(); // Recargar tabla
+                } else {
+                    mostrarAlerta("Error", "No se pudo eliminar la sucursal.");
+                }
             }
+        } else {
+            mostrarAlerta("Atención", "Selecciona una sucursal para eliminar.");
         }
     }
 
@@ -128,11 +146,18 @@ public class SucursalesController {
 
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.APPLICATION_MODAL); // Bloquear ventana de atrás
+            stage.setTitle(s == null ? "Nueva Sucursal" : "Editar Sucursal");
             stage.showAndWait();
-            cargarDatos();
+
+            cargarDatos(); // Recargar al volver
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    private void mostrarAlerta(String msg) { new Alert(Alert.AlertType.INFORMATION, msg).show(); }
+    private void mostrarAlerta(String titulo, String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(titulo);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
 }

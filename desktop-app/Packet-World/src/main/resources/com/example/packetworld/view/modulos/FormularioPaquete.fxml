@@ -4,9 +4,11 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.FormularioPaqueteController"
-      spacing="15" style="-fx-padding: 20; -fx-background-color: white;">
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white;">
 
-    <Label text="Agregar Paquete Extra" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
+    <Label fx:id="lblTitulo" text="Agregar Paquete Extra" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
 
     <GridPane hgap="10" vgap="10">
         <Label text="Descripción:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -24,7 +26,8 @@
     </GridPane>
 
     <HBox alignment="CENTER_RIGHT" spacing="10">
-        <Button text="Cancelar" onAction="#cerrar"/>
-        <Button text="Guardar" onAction="#guardar" style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button text="Cancelar" onAction="#cerrar" styleClass="button"/>
+
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardar" styleClass="btn-primary"/>
     </HBox>
 </VBox>

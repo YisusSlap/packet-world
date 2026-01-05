@@ -232,4 +232,37 @@ public class DetalleEnvioController {
         alert.setContentText(msg);
         alert.showAndWait();
     }
+
+    // Importar java.net.URLEncoder y java.nio.charset.StandardCharsets
+
+    @FXML
+    public void abrirGoogleMaps() {
+        if (envioActual == null) return;
+
+        try {
+            // Construimos la dirección completa
+            String direccion = String.format("%s %s, %s, %s, %s",
+                    envioActual.getDestinoCalle(),
+                    envioActual.getDestinoNumero(),
+                    envioActual.getNombreColonia(),
+                    envioActual.getCiudad(),
+                    envioActual.getEstado()
+            );
+
+            // Codificamos para URL (espacios -> %20, etc.)
+            String direccionEncoded = java.net.URLEncoder.encode(direccion, "UTF-8");
+
+            // URL Mágica de Google Maps
+            String url = "https://www.google.com/maps/search/?api=1&query=" + direccionEncoded;
+
+            // Llamamos al método estático de App
+            com.example.packetworld.App.abrirNavegador(url);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("No se pudo abrir el mapa.");
+        }
+    }
+
 }
+

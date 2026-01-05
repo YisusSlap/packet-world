@@ -3,63 +3,78 @@ package com.example.packetworld.controller;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.model.Unidad;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Notificacion; // Importar notificaciones bonitas
 import com.example.packetworld.util.Validaciones;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * Controlador para la ventana de Registro/Edición de Unidades de Transporte.
+ * Maneja la lógica de validación, generación de NII y comunicación con la API.
+ */
 public class FormularioUnidadController {
 
+    // Referencias a los elementos visuales del FXML (Cajas de texto, Combos, etc.)
     @FXML private Label lblTitulo;
     @FXML private TextField txtMarca;
     @FXML private TextField txtModelo;
     @FXML private TextField txtAnio;
     @FXML private ComboBox<String> cbTipo;
     @FXML private TextField txtVin;
-    @FXML private TextField txtNii;
+    @FXML private TextField txtNii; // Número de Identificación Interno (Automático)
 
-    private boolean esEdicion = false;
+    private boolean esEdicion = false; // Bandera para saber si estamos creando o editando
 
+    /**
+     * Método que se ejecuta automáticamente al abrir la ventana.
+     * Aquí configuramos las listas desplegables y las reglas de validación.
+     */
     @FXML
     public void initialize() {
+        // 1. Llenar el combo de Tipos de Unidad
         cbTipo.getItems().addAll("Gasolina", "Diesel", "Hibrida", "Eléctrica");
 
-        // LISTENERS PARA NII AUTOMÁTICO
-        // Cada vez que escriban en Año o VIN, recalculamos
+        // 2. LOGICA DE NEGOCIO: Generación Automática de NII
+        // El NII se forma combinando el Año + los primeros 4 dígitos del VIN.
+        // Agregamos "escuchas" (listeners) para que se recalcule en tiempo real.
         txtAnio.textProperty().addListener((obs, oldVal, newVal) -> calcularNII());
         txtVin.textProperty().addListener((obs, oldVal, newVal) -> calcularNII());
 
-        // Año: Solo números, máximo 4 dígitos
-        Validaciones.soloNumerosLimitado(txtAnio, 4);
-
-        // VIN: Máximo 17 caracteres (Estándar internacional)
-        Validaciones.limitarLongitud(txtVin, 17);
-
-        // Marca y Modelo: Limitar longitud para evitar errores de SQL
+        // 3. Validaciones de Entrada (Para evitar errores de usuario)
+        Validaciones.soloNumerosLimitado(txtAnio, 4); // Año: máx 4 dígitos
+        Validaciones.limitarLongitud(txtVin, 17);     // VIN: máx 17 caracteres
         Validaciones.limitarLongitud(txtMarca, 50);
         Validaciones.limitarLongitud(txtModelo, 50);
-
     }
 
+    /**
+     * Calcula el NII en base a las reglas de negocio.
+     * Regla: Año + Primeros 4 caracteres del VIN.
+     */
     private void calcularNII() {
-        // Regla: Año + Primeros 4 del VIN
         String anio = txtAnio.getText().trim();
         String vin = txtVin.getText().trim();
 
+        // Solo generamos si hay año y al menos 4 caracteres de VIN
         if (!anio.isEmpty() && vin.length() >= 4) {
             String niiGenerado = anio + vin.substring(0, 4);
             txtNii.setText(niiGenerado.toUpperCase());
         } else {
-            txtNii.setText("");
+            txtNii.setText(""); // Si faltan datos, limpiamos el campo
         }
     }
 
-    // Este método lo llama la ventana anterior si es EDICIÓN
+    /**
+     * Método para recibir una unidad existente desde la pantalla anterior.
+     * Si se llama a este método, el formulario entra en modo "Edición".
+     */
     public void setUnidad(Unidad unidad) {
         if (unidad != null) {
             esEdicion = true;
-            lblTitulo.setText("Editar Unidad");
+            lblTitulo.setText("Editar Unidad"); // Cambiamos el título visual
 
+            // Rellenamos los campos con los datos existentes
             txtMarca.setText(unidad.getMarca());
             txtModelo.setText(unidad.getModelo());
             txtAnio.setText(String.valueOf(unidad.getAnio()));
@@ -67,24 +82,26 @@ public class FormularioUnidadController {
             txtVin.setText(unidad.getVin());
             txtNii.setText(unidad.getNii());
 
-            // REGLA: En edición NO se puede cambiar el VIN
+            // REGLA DE NEGOCIO: El VIN es la llave primaria, no se puede editar una vez creado.
             txtVin.setDisable(true);
-            // El NII tampoco debería cambiar si el VIN no cambia,
-            // aunque si cambias el año, el NII cambiará (lo cual es correcto según la regla).
         }
     }
 
+    /**
+     * Acción del botón "Guardar". Recoge datos, valida y envía a la API.
+     */
     @FXML
     public void btnGuardar() {
-        // Recoger datos
+        // 1. Crear objeto Unidad y llenarlo con los datos del formulario
         Unidad u = new Unidad();
         u.setMarca(txtMarca.getText());
         u.setModelo(txtModelo.getText());
         u.setTipoUnidad(cbTipo.getValue());
         u.setVin(txtVin.getText());
         u.setNii(txtNii.getText());
-        u.setEstatus("activo"); // Por defecto al crear
+        u.setEstatus("activo"); // Por defecto siempre nacen activas
 
+        // Validación de Año (puede lanzar error si no es número)
         try {
             u.setAnio(Integer.parseInt(txtAnio.getText()));
         } catch (NumberFormatException e) {
@@ -92,26 +109,28 @@ public class FormularioUnidadController {
             return;
         }
 
-        // Validaciones
+        // 2. Validar campos obligatorios
         if (u.getVin().isEmpty() || u.getMarca().isEmpty() || u.getModelo().isEmpty()) {
             mostrarAlerta("Faltan datos", "Por favor llena todos los campos.");
             return;
         }
 
-        // Enviar a API
+        // 3. Enviar a la API (Backend)
         Respuesta resp;
         if (esEdicion) {
-            // En tu API editar requiere el objeto completo, el VIN es la llave
             resp = ApiService.editarUnidad(u);
         } else {
             resp = ApiService.registrarUnidad(u);
         }
 
+        // 4. Manejar la respuesta del servidor
         if (resp != null && !resp.getError()) {
-            mostrarAlerta("Éxito", "Unidad guardada correctamente.");
+            // ÉXITO: Usamos Notificación Toast (No interrumpe)
+            Notificacion.mostrar("¡Operación Exitosa!", "La unidad se guardó correctamente.", Notificacion.EXITO);
             cerrarVentana();
         } else {
-            mostrarAlerta("Error", "Error al guardar: " + (resp != null ? resp.getMensaje() : "Desconocido"));
+            // ERROR: Usamos Alerta Modal (El usuario debe leer el error)
+            mostrarAlerta("Error", "No se pudo guardar: " + (resp != null ? resp.getMensaje() : "Error de conexión"));
         }
     }
 
@@ -126,7 +145,7 @@ public class FormularioUnidadController {
     }
 
     private void mostrarAlerta(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.WARNING); // Warning es mejor para errores de validación
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(contenido);

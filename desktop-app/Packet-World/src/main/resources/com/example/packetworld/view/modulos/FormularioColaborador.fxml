@@ -6,7 +6,9 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.FormularioColaboradorController"
-      spacing="15" style="-fx-padding: 20; -fx-background-color: white;">
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white;">
 
     <Label fx:id="lblTitulo" text="Registrar Colaborador" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
 
@@ -16,9 +18,10 @@
                 <ImageView fx:id="imgFoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
                 <Label text="Sin Foto" style="-fx-text-fill: #999;"/>
             </StackPane>
-            <Button text="📷 Subir Foto" onAction="#seleccionarFoto" style="-fx-font-size: 10px;"/>
+            <Button text="📷 Subir Foto" onAction="#seleccionarFoto" styleClass="btn-secondary" style="-fx-font-size: 10px; -fx-padding: 5 10;"/>
         </VBox>
     </HBox>
+
     <GridPane hgap="15" vgap="15">
         <Label text="No. Personal:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="txtNumPersonal" promptText="Ej. 101" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
@@ -60,8 +63,8 @@
     </GridPane>
 
     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-        <Button text="Cancelar" onAction="#btnCancelar" style="-fx-background-color: #DDD; -fx-cursor: hand;"/>
-        <Button text="Guardar" onAction="#btnGuardar" styleClass="btn-primary" style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="Cancelar" onAction="#btnCancelar" styleClass="button"/>
+        <Button text="Guardar" onAction="#btnGuardar" styleClass="btn-primary"/>
     </HBox>
 
 </VBox>

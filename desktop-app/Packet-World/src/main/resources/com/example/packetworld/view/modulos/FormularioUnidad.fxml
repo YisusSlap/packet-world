@@ -4,7 +4,9 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.FormularioUnidadController"
-      spacing="20" style="-fx-padding: 20; -fx-background-color: white;">
+      spacing="20"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white;">
 
     <Label fx:id="lblTitulo" text="Registrar Unidad" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
 
@@ -25,14 +27,14 @@
         <TextField fx:id="txtVin" promptText="17 Caracteres" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
         <Label text="NII (Automático):" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-        <TextField fx:id="txtNii" disable="true" style="-fx-opacity: 1; -fx-background-color: #F0F0F0;"
+        <TextField fx:id="txtNii" disable="true" style="-fx-opacity: 0.8; -fx-background-color: #F0F0F0;"
                    GridPane.rowIndex="2" GridPane.columnIndex="3"/>
     </GridPane>
 
     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-        <Button text="Cancelar" onAction="#btnCancelar" style="-fx-background-color: #DDD; -fx-cursor: hand;"/>
-        <Button text="Guardar" onAction="#btnGuardar"
-                style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="Cancelar" onAction="#btnCancelar" styleClass="button"/>
+
+        <Button text="Guardar" onAction="#btnGuardar" styleClass="btn-primary"/>
     </HBox>
 
 </VBox>

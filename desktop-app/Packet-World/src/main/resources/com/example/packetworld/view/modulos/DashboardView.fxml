@@ -14,25 +14,25 @@
         </VBox>
 
         <HBox spacing="20" alignment="CENTER_LEFT">
-            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+            <VBox styleClass="card" minWidth="200">
                 <Label text="📦 En Tránsito" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
                 <Label fx:id="lblEnTransito" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
                 <Label text="Envíos activos" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
             </VBox>
 
-            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+            <VBox styleClass="card" minWidth="200">
                 <Label text="⚠️ Por Asignar" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
                 <Label fx:id="lblPorAsignar" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #FF8585;"/>
                 <Label text="Requieren atención" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
             </VBox>
 
-            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+            <VBox styleClass="card" minWidth="200">
                 <Label text="✅ Entregados" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
                 <Label fx:id="lblEntregados" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #98FB98;"/>
                 <Label text="Envíos finalizados" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
             </VBox>
 
-            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 200;">
+            <VBox styleClass="card" minWidth="200">
                 <Label text="🚛 Unidades Libres" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
                 <Label fx:id="lblUnidades" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
                 <Label text="Listas para ruta" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
@@ -41,13 +41,15 @@
 
         <HBox spacing="20" VBox.vgrow="ALWAYS">
 
-            <VBox prefWidth="300" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20;">
+            <VBox prefWidth="300" styleClass="card">
                 <Label text="Últimos Pendientes" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+
                 <ListView fx:id="listPendientes" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
-                <Button text="Actualizar Datos" onAction="#cargarDatos" style="-fx-background-color: #f0f0f0; -fx-text-fill: #555; -fx-cursor: hand;" maxWidth="Infinity"/>
+
+                <Button text="Actualizar Datos" onAction="#cargarDatos" maxWidth="Infinity" styleClass="button"/>
             </VBox>
 
-            <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 10;">
+            <VBox HBox.hgrow="ALWAYS" styleClass="card" style="-fx-padding: 10;">
                 <HBox alignment="CENTER_LEFT" spacing="10">
                     <Label text="Concentración de Envíos" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
                     <Region HBox.hgrow="ALWAYS"/>

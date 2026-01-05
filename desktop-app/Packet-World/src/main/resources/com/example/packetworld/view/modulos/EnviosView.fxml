@@ -9,27 +9,24 @@
     <Label text="Tablero de Envíos Activos" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
 
     <HBox alignment="CENTER_LEFT" spacing="15">
-        <TextField fx:id="txtBuscar" promptText="Filtrar por Guía, Cliente o Estatus..." prefWidth="300"
-                   style="-fx-background-radius: 20; -fx-padding: 8;"/>
+        <TextField fx:id="txtBuscar" promptText="🔍 Filtrar por Guía, Cliente o Estatus..." prefWidth="300"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <Button text="👁 Ver Detalle" onAction="#btnVerDetalle"
-                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="👁 Ver Detalle" onAction="#btnVerDetalle" styleClass="button"/>
 
-        <Button text="🚚 Asignar Chofer" onAction="#btnAsignarConductor"
-                style="-fx-background-color: #FFB347; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
 
-        <Button text="🔄 Estatus" onAction="#btnCambiarEstatus"
-                style="-fx-background-color: #B39CD0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="🚚 Asignar Chofer" onAction="#btnAsignarConductor" styleClass="btn-warning"/>
 
-        <Button text="+ Agregar Paquete" onAction="#btnAgregarPaquete"
-                style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="🔄 Estatus" onAction="#btnCambiarEstatus" styleClass="btn-secondary"/>
+
+        <Button text="+ Paquete Extra" onAction="#btnAgregarPaquete" styleClass="btn-info"/>
 
         <Separator orientation="VERTICAL" />
 
-        <Button text="+ NUEVO ENVÍO" onAction="#btnNuevo"
-                style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 13px;"/>
+        <Button text="+ NUEVO ENVÍO" onAction="#btnNuevo" styleClass="btn-primary" style="-fx-font-size: 13px;"/>
     </HBox>
 
     <TableView fx:id="tblEnvios" VBox.vgrow="ALWAYS">

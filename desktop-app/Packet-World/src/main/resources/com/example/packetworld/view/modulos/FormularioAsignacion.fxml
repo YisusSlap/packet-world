@@ -4,7 +4,9 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.FormularioAsignacionController"
-      spacing="15" style="-fx-padding: 20; -fx-background-color: white; -fx-min-width: 400;">
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white; -fx-min-width: 400;">
 
     <Label text="Asignar Conductor" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFB347;"/>
 
@@ -23,9 +25,9 @@
     <Separator />
 
     <HBox alignment="CENTER_RIGHT" spacing="15">
-        <Button text="Cancelar" onAction="#cerrar" style="-fx-background-color: #DDD; -fx-cursor: hand;"/>
-        <Button text="Asignar" onAction="#guardar"
-                style="-fx-background-color: #FFB347; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="Cancelar" onAction="#cerrar" styleClass="button"/>
+
+        <Button text="Asignar" onAction="#guardar" styleClass="btn-warning"/>
     </HBox>
 
 </VBox>

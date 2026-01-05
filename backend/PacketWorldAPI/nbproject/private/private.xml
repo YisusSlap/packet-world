@@ -3,10 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/yoplait/Desktop/Integracion/packet-world/backend/PacketWorldAPI/src/java/dominio/ColaboradorImp.java</file>
-            <file>file:/C:/Users/yoplait/Desktop/Integracion/packet-world/backend/PacketWorldAPI/src/java/modelo/mybatis/mapper/ColaboradorMapper.xml</file>
-            <file>file:/C:/Users/yoplait/Desktop/Integracion/packet-world/backend/PacketWorldAPI/src/java/ws/ColaboradorWS.java</file>
-            <file>file:/C:/Users/yoplait/Desktop/Integracion/packet-world/backend/PacketWorldAPI/src/java/modelo/mybatis/mapper/AutenticacionMapper.xml</file>
+            <file>file:/C:/Users/yoplait/Desktop/Integracion/packet-world/backend/PacketWorldAPI/src/java/ws/EnvioWS.java</file>
         </group>
     </open-files>
 </project-private>

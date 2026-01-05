@@ -12,14 +12,14 @@
     <HBox alignment="CENTER_LEFT" spacing="10">
         <Label text="PACKET WORLD" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-font-style: italic;"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Label text="PRIORITY" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-border-color: black; -fx-padding: 5;"/>
+        <Label text="PRIORITY" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-border-color: black; -fx-padding: 5; -fx-border-width: 2;"/>
     </HBox>
 
     <Line endX="360" strokeWidth="2"/>
 
     <VBox alignment="CENTER" spacing="5">
         <Label text="TRK #" style="-fx-font-size: 12px;"/>
-        <Label fx:id="lblGuia" text="PW-1765579297407" style="-fx-font-size: 26px; -fx-font-family: 'Courier New'; -fx-font-weight: bold;"/>
+        <Label fx:id="lblGuia" text="PW-000000000" style="-fx-font-size: 26px; -fx-font-family: 'Courier New'; -fx-font-weight: bold;"/>
         <Pane prefHeight="40" prefWidth="300" style="-fx-background-color: black;"/>
     </VBox>
 
@@ -27,12 +27,12 @@
 
     <GridPane hgap="10" vgap="10" alignment="CENTER_LEFT">
         <Label text="ORIGEN (FROM):" style="-fx-font-weight: bold; -fx-font-size: 10px;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <Label fx:id="lblOrigen" text="Sucursal Xalapa Centro..." wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="lblOrigen" text="..." wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
 
         <Label text="DESTINO (TO):" style="-fx-font-weight: bold; -fx-font-size: 10px;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <Label fx:id="lblDestino" text="Juan Pérez..." wrapText="true" style="-fx-font-size: 14px;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="lblDestino" text="..." wrapText="true" style="-fx-font-size: 14px; -fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
 
-        <Label fx:id="lblDireccion" text="Calle Falsa 123..." wrapText="true" style="-fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Label fx:id="lblDireccion" text="..." wrapText="true" style="-fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
     </GridPane>
 
     <Region VBox.vgrow="ALWAYS"/>
@@ -42,15 +42,15 @@
     <HBox spacing="20">
         <VBox>
             <Label text="FECHA:" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-            <Label fx:id="lblFecha" text="14-DIC-2025"/>
+            <Label fx:id="lblFecha" text="--/--/----"/>
         </VBox>
         <VBox>
             <Label text="PESO TOTAL:" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-            <Label fx:id="lblPeso" text="5.5 KG"/>
+            <Label fx:id="lblPeso" text="0.0 KG"/>
         </VBox>
         <VBox>
             <Label text="PIEZAS:" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-            <Label fx:id="lblPiezas" text="2"/>
+            <Label fx:id="lblPiezas" text="0"/>
         </VBox>
     </HBox>
 

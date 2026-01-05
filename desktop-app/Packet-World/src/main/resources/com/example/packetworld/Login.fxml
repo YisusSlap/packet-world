@@ -4,7 +4,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #F4F6F8;"
+<AnchorPane prefHeight="500.0" prefWidth="800.0"
+            style="-fx-background-color: #F4F6F8;"
+            stylesheets="@styles/estilos.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.packetworld.controller.LoginController">
 
@@ -25,19 +27,21 @@
 
         <VBox maxWidth="250.0" spacing="10.0">
             <Label text="Número de Personal" textFill="#666666" />
-            <TextField fx:id="txtNumPersonal" promptText="Ej. 10001" style="-fx-background-radius: 5; -fx-padding: 8;" />
+            <TextField fx:id="txtNumPersonal" promptText="Ej. 10001" styleClass="text-field"/>
         </VBox>
 
         <VBox maxWidth="250.0" spacing="10.0">
             <Label text="Contraseña" textFill="#666666" />
-            <PasswordField fx:id="txtPassword" style="-fx-background-radius: 5; -fx-padding: 8;" />
+            <PasswordField fx:id="txtPassword" styleClass="password-field"/>
         </VBox>
 
         <Label fx:id="lblError" textFill="RED" visible="false" />
 
         <Button defaultButton="true" onAction="#btnIngresarAction"
-                style="-fx-background-color: #B39CD0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 10 30;"
-                text="Iniciar Sesión" />
+                maxWidth="250.0"
+                text="Iniciar Sesión"
+                styleClass="btn-primary"
+                style="-fx-font-size: 14px; -fx-padding: 10 30;"/>
     </VBox>
 
 </AnchorPane>

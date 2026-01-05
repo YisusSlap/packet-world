@@ -9,14 +9,14 @@
     <Label text="Directorio de Clientes" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
 
     <HBox alignment="CENTER_LEFT" spacing="15">
-        <TextField fx:id="txtBuscar" promptText="Buscar por nombre, correo o teléfono..." prefWidth="300"
-                   style="-fx-background-radius: 20; -fx-padding: 8;"/>
+        <TextField fx:id="txtBuscar" promptText="🔍 Buscar por nombre, correo o teléfono..." prefWidth="300"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <Button text="+ Nuevo Cliente" onAction="#btnNuevo" style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold;"/>
-        <Button text="✎ Editar" onAction="#btnEditar" style="-fx-background-color: #B39CD0; -fx-text-fill: white;"/>
-        <Button text="🗑 Eliminar" onAction="#btnEliminar" style="-fx-background-color: #FF8585; -fx-text-fill: white;"/>
+        <Button text="+ Nuevo Cliente" onAction="#btnNuevo" styleClass="btn-primary"/>
+        <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
+        <Button text="🗑 Eliminar" onAction="#btnEliminar" styleClass="btn-danger"/>
     </HBox>
 
     <TableView fx:id="tblClientes" VBox.vgrow="ALWAYS">

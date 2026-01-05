@@ -4,20 +4,23 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.packetworld.controller.UnidadesController"
-      spacing="15" style="-fx-padding: 20;">
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20;">
 
     <Label text="Gestión de Unidades" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
 
     <HBox alignment="CENTER_LEFT" spacing="15">
-        <TextField fx:id="txtBuscar" promptText="Buscar por VIN o Marca..." prefWidth="300"
-                   style="-fx-background-radius: 20; -fx-padding: 8;"/>
+        <TextField fx:id="txtBuscar" promptText="🔍 Buscar por VIN o Marca..." prefWidth="300"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
+
         <Region HBox.hgrow="ALWAYS" />
-        <Button text="+ Nueva Unidad" onAction="#btnNueva"
-                style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
-        <Button text="✎ Editar" onAction="#btnEditar"
-                style="-fx-background-color: #B39CD0; -fx-text-fill: white; -fx-cursor: hand;"/>
-        <Button text="⛔ Dar de Baja" onAction="#btnBaja"
-                style="-fx-background-color: #FF8585; -fx-text-fill: white; -fx-cursor: hand;"/>
+
+        <Button text="+ Nueva Unidad" onAction="#btnNueva" styleClass="btn-primary"/>
+
+        <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
+
+        <Button text="⛔ Dar de Baja" onAction="#btnBaja" styleClass="btn-danger"/>
     </HBox>
 
     <TableView fx:id="tblUnidades" VBox.vgrow="ALWAYS">
