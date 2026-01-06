@@ -33,7 +33,7 @@
             </VBox>
 
             <VBox styleClass="card" minWidth="200">
-                <Label text="🚛 Unidades Libres" style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+                <Label text="🚛 Unidades " style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
                 <Label fx:id="lblUnidades" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
                 <Label text="Listas para ruta" style="-fx-font-size: 11px; -fx-text-fill: #aaa;"/>
             </VBox>
@@ -42,7 +42,7 @@
         <HBox spacing="20" VBox.vgrow="ALWAYS">
 
             <VBox prefWidth="300" styleClass="card">
-                <Label text="Últimos Pendientes" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
+                <Label text="Envios Pendientes" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #555;"/>
 
                 <ListView fx:id="listPendientes" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
 

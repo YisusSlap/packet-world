@@ -206,7 +206,9 @@ public class DetalleEnvioController {
                 ((FormularioPaqueteController) controller).setIdEnvio(envioActual.getIdEnvio());
 
             Stage stage = new Stage();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            com.example.packetworld.util.Tema.aplicar(scene); // Aplicamos el tema
+            stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(titulo);
             stage.showAndWait();

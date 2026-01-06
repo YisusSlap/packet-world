@@ -25,6 +25,7 @@ public class FormularioEnvioController {
 
     // --- ELEMENTOS DE LA INTERFAZ (FXML) ---
 
+
     // Sección 1: Datos Generales
     @FXML private ComboBox<Cliente> cbCliente;
     @FXML private TextField txtSucursalOrigen;
@@ -47,10 +48,15 @@ public class FormularioEnvioController {
     // Botones
     @FXML private Button btnGuardar;
 
+    //cotizacion
+    @FXML private Label lblCostoTotal;
+
+
     // --- VARIABLES DE ESTADO ---
     private ObservableList<Paquete> listaPaquetesLocal = FXCollections.observableArrayList();
     private boolean esEdicion = false;
     private String numeroGuiaEdicion = null;
+
 
     /**
      * Semáforo para controlar los Listeners de los ComboBox.
@@ -285,9 +291,16 @@ public class FormularioEnvioController {
             Double prof = parseDoubleSeguro(txtPaqProf.getText());
 
             Paquete p = new Paquete(desc, peso, alto, ancho, prof);
+
+            // 1. Agregamos el paquete a la lista
             listaPaquetesLocal.add(p);
 
-            // Limpiar campos
+            // 2. NUEVO: Si ya hay destino seleccionado, actualizamos el precio automáticamente
+            if (cbColonia.getValue() != null) {
+                cotizar();
+            }
+
+            // 3. Limpiamos campos para el siguiente
             txtPaqDesc.clear(); txtPaqPeso.clear();
             txtPaqAlto.clear(); txtPaqAncho.clear(); txtPaqProf.clear();
             txtPaqDesc.requestFocus();
@@ -390,4 +403,39 @@ public class FormularioEnvioController {
         contextMenu.getItems().addAll(itemEditar, itemEliminar);
         tblPaquetes.setContextMenu(contextMenu);
     }
+
+    @FXML
+    public void cotizar() {
+        // Validaciones mínimas para cotizar
+        if (cbColonia.getValue() == null) {
+            mostrarAlerta("Faltan datos", "Seleccione la colonia de destino para calcular la distancia.");
+            return;
+        }
+
+        // Armamos un objeto Envio temporal solo con lo necesario para el cálculo
+        Envio envioCotizacion = new Envio();
+
+        // 1. Origen
+        if (ApiService.usuarioLogueado != null) {
+            envioCotizacion.setCodigoSucursalOrigen(ApiService.usuarioLogueado.getIdCodigoSucursal());
+        }
+
+        // 2. Destino (ID Colonia es lo que usa tu API para sacar el CP)
+        envioCotizacion.setIdColoniaDestino(cbColonia.getValue().getIdColonia());
+
+        // 3. Paquetes (Solo importa la cantidad para tu fórmula actual, pero mandamos la lista)
+        envioCotizacion.setListaPaquetes(new ArrayList<>(listaPaquetesLocal));
+
+        // Llamada a la API
+        Double costo = ApiService.cotizarEnvio(envioCotizacion);
+
+        if (costo != null) {
+            lblCostoTotal.setText(String.format("$%.2f", costo));
+            Notificacion.mostrar("Cotización Exitosa", "Costo calculado correctamente.", Notificacion.EXITO);
+        } else {
+            lblCostoTotal.setText("$0.00");
+            mostrarAlerta("Error al cotizar", "Verifique que los CPs tengan cobertura o la conexión.");
+        }
+    }
+
 }

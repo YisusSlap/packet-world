@@ -77,6 +77,17 @@
     -fx-background-color: #138496;
 }
 
+/* Botón Excel (Verde Hoja de Cálculo) */
+.btn-success {
+    -fx-background-color: #2E7D32; /* Verde Excel */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.btn-success:hover {
+    -fx-background-color: #1B5E20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
 /* =========================================
    3. FORMULARIOS (Inputs)
    ========================================= */
@@ -170,7 +181,7 @@
 }
 
 /* =========================================
-   5. BARRAS DE DESPLAZAMIENTO (Scrollbars)
+   5. Scrollbars
    ========================================= */
 /* Fondo de la barra (track) */
 .scroll-bar:horizontal .track,
@@ -228,7 +239,7 @@
 }
 
 /* =========================================
-   7. NOTIFICACIONES (TOASTS) - Para mañana
+   7. NOTIFICACIONES (TOASTS)
    ========================================= */
 .toast {
     -fx-padding: 12px 20px;
@@ -275,4 +286,183 @@
     -fx-border-color: #E0E0E0;
     -fx-border-radius: 0 0 5 5;
     -fx-border-top-width: 0;
+}
+
+/* =========================================
+   MENU BUTTON "FACHERO" (Edición Naranja)
+   ========================================= */
+
+/* 1. El cuerpo del botón */
+.btn-menu-modern {
+    -fx-background-color: #FFB74D; /* Naranja Pastel Vibrante */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px; /* Píldora */
+    -fx-border-radius: 20px;
+    -fx-padding: 8 15 8 15;
+    -fx-cursor: hand;
+    /* Sombra suave naranja */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 183, 77, 0.4), 5, 0, 0, 2);
+    -fx-alignment: CENTER;
+}
+
+.btn-menu-modern:hover {
+    -fx-background-color: #FFA726; /* Un poco más intenso al pasar el mouse */
+    -fx-translate-y: -1; /* Elevación */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 167, 38, 0.6), 8, 0, 0, 3);
+}
+
+.btn-menu-modern:showing {
+    -fx-background-color: #FB8C00; /* Naranja oscuro cuando el menú está abierto */
+}
+
+/* 2. La Flechita (Arrow) */
+.btn-menu-modern .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 5;
+}
+
+.btn-menu-modern .arrow {
+    -fx-background-color: white; /* Flecha blanca */
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+
+/* 3. El Menú Desplegable (El Popup) */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #FFE0B2; /* Borde naranja muy pálido */
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-padding: 5px 0 5px 0;
+}
+
+/* 4. Los Items dentro del menú */
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 15px;
+}
+
+.menu-item .label {
+    -fx-text-fill: #555;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+}
+
+/* Hover sobre los items (El toque final) */
+.menu-item:focused {
+    -fx-background-color: #FFF3E0; /* Fondo naranja crema muy suave */
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: #EF6C00; /* Texto naranja fuerte al seleccionar */
+    -fx-font-weight: bold;
+}
+
+/* =========================================
+   MODO OSCURO (DARK MODE) - VERSIÓN FINAL REFORZADA 🦇
+   ========================================= */
+
+/* 1. Fondo General y Textos */
+.root.dark-mode {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #f0f0f0;
+}
+
+/* Forzar color de etiquetas */
+.root.dark-mode .label,
+.root.dark-mode .text {
+    -fx-text-fill: #f0f0f0;
+}
+
+/* 2. Contenedores (La clave para quitar lo blanco) */
+.root.dark-mode .vbox-container, /* Clase que pusimos en el FXML */
+.root.dark-mode .scroll-pane,
+.root.dark-mode .scroll-pane > .viewport,
+.root.dark-mode .grid-pane,
+.root.dark-mode .vbox,
+.root.dark-mode .hbox {
+    -fx-background-color: #252526;
+}
+
+/* TitledPane (Acordeones) */
+.root.dark-mode .titled-pane > .title {
+    -fx-background-color: #333;
+    -fx-text-fill: white;
+    -fx-border-color: #444;
+}
+.root.dark-mode .titled-pane > .content {
+    -fx-background-color: #252526; /* Contenido del acordeón oscuro */
+    -fx-border-color: #444;
+}
+
+/* 3. Inputs */
+.root.dark-mode .text-field,
+.root.dark-mode .text-area,
+.root.dark-mode .combo-box {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaa;
+    -fx-border-color: #555;
+}
+
+/* ComboBox desplegado */
+.root.dark-mode .combo-box-popup .list-view {
+    -fx-background-color: #252526;
+    -fx-text-fill: white;
+}
+.root.dark-mode .combo-box-popup .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #252526;
+}
+.root.dark-mode .combo-box-popup .list-cell:hover {
+    -fx-background-color: #0D47A1;
+}
+
+/* 4. TABLAS (Arreglo de letra gris) */
+.root.dark-mode .table-view {
+    -fx-background-color: transparent;
+}
+
+/* Celda Normal */
+.root.dark-mode .table-row-cell {
+    -fx-background-color: #252526;
+    -fx-text-fill: white;
+}
+/* Forzamos el color del texto dentro de la celda */
+.root.dark-mode .table-cell {
+    -fx-text-fill: white;
+}
+.root.dark-mode .table-row-cell .text {
+    -fx-fill: white;
+}
+
+/* Celda Impar (Zebra) */
+.root.dark-mode .table-row-cell:odd {
+    -fx-background-color: #2d2d30;
+}
+
+/* Selección */
+.root.dark-mode .table-row-cell:selected {
+    -fx-background-color: #0D47A1;
+}
+.root.dark-mode .table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+/* Encabezados */
+.root.dark-mode .table-view .column-header-background {
+    -fx-background-color: #333;
+}
+.root.dark-mode .table-view .column-header .label {
+    -fx-text-fill: #e0e0e0;
+}
+
+/* 5. Otros */
+.root.dark-mode .separator *.line {
+    -fx-border-color: #555;
+    -fx-background-color: #555;
 }

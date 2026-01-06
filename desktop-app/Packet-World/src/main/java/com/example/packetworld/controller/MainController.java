@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.Colaborador;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Tema;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -110,6 +111,12 @@ public class MainController {
             e.printStackTrace();
             System.out.println("Error crítico cargando vista: " + fxml);
         }
+    }
+
+    @FXML
+    public void toggleTema() {
+        // Obtenemos la escena actual desde cualquier elemento (ej. btnInicio)
+        Tema.toggle(btnInicio.getScene());
     }
 
     @FXML

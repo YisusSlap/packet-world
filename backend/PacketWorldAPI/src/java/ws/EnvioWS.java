@@ -103,4 +103,31 @@ public class EnvioWS {
     public List<Envio> obtenerTodos() {
         return EnvioImp.obtenerTodos();
     }
+    
+    @Path("cotizar")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Respuesta cotizar(String json) {
+        Gson gson = new Gson();
+        try {
+            // Reutilizamos el objeto Envio para pasar los datos necesarios (Origen, Destino, Paquetes)
+            Envio envio = gson.fromJson(json, Envio.class);
+            
+            // Validaciones mínimas para poder cotizar
+            if (envio.getCodigoSucursalOrigen() == null) {
+                throw new BadRequestException("Falta Sucursal de Origen");
+            }
+            if (envio.getIdColoniaDestino() == null) {
+                throw new BadRequestException("Falta Colonia de Destino");
+            }
+            
+            // Llamamos a la lógica de negocio (que ya tienes en EnvioImp)
+            return EnvioImp.cotizarEnvio(envio);
+            
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+    
 }

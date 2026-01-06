@@ -2,6 +2,7 @@ package com.example.packetworld.controller;
 
 import com.example.packetworld.model.Envio;
 import com.example.packetworld.service.ApiService;
+import com.example.packetworld.util.Exportador;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -123,6 +124,24 @@ public class EnviosController {
         }
     }
 
+    @FXML
+    public void btnExportar() {
+        // Obtenemos la lista actual (respetando si hay filtros aplicados o no)
+        // Si quieres exportar SOLO lo que se ve en pantalla usa 'tblEnvios.getItems()'
+        // Si quieres exportar TODO siempre, usa 'listaMaster'
+
+        if (tblEnvios.getItems().isEmpty()) {
+            mostrarAlerta("Error al exportar","No hay datos para exportar.");
+            return;
+        }
+
+        // Obtener el Stage actual para centrar la ventana de guardar
+        Stage stage = (Stage) tblEnvios.getScene().getWindow();
+
+        // Llamar a nuestra utilería mágica
+        Exportador.exportarEnviosExcel(tblEnvios.getItems(), stage);
+    }
+
 
     //                        MÉTODOS AUXILIARES
 
@@ -165,8 +184,12 @@ public class EnviosController {
                     ((FormularioPaqueteController) controller).setIdEnvio(envioParaPasar.getIdEnvio());
             }
 
+
+
             Stage stage = new Stage();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            com.example.packetworld.util.Tema.aplicar(scene); // Aplicamos el tema
+            stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(titulo);
             stage.showAndWait();

@@ -8,25 +8,30 @@
 
     <Label text="Tablero de Envíos Activos" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
 
-    <HBox alignment="CENTER_LEFT" spacing="15">
-        <TextField fx:id="txtBuscar" promptText="🔍 Filtrar por Guía, Cliente o Estatus..." prefWidth="300"
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <TextField fx:id="txtBuscar" promptText="🔍 Buscar por Guía, Cliente..." prefWidth="250"
                    style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <Button text="👁 Ver Detalle" onAction="#btnVerDetalle" styleClass="button"/>
+        <Button text="👁 Detalle" onAction="#btnVerDetalle" styleClass="button"/>
 
         <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
 
-        <Button text="🚚 Asignar Chofer" onAction="#btnAsignarConductor" styleClass="btn-warning"/>
-
-        <Button text="🔄 Estatus" onAction="#btnCambiarEstatus" styleClass="btn-secondary"/>
-
-        <Button text="+ Paquete Extra" onAction="#btnAgregarPaquete" styleClass="btn-info"/>
+        <MenuButton text="⚙️ Gestionar" styleClass="btn-menu-modern">
+            <items>
+                <MenuItem text="🚚 Asignar Chofer" onAction="#btnAsignarConductor"/>
+                <MenuItem text="🔄 Actualizar Estatus" onAction="#btnCambiarEstatus"/>
+                <SeparatorMenuItem />
+                <MenuItem text="📦 Agregar Paquete Extra" onAction="#btnAgregarPaquete"/>
+            </items>
+        </MenuButton>
 
         <Separator orientation="VERTICAL" />
 
-        <Button text="+ NUEVO ENVÍO" onAction="#btnNuevo" styleClass="btn-primary" style="-fx-font-size: 13px;"/>
+        <Button text="📊 Generar reporte EXCEL" onAction="#btnExportar" styleClass="btn-success"/>
+
+        <Button text="+ NUEVO" onAction="#btnNuevo" styleClass="btn-primary" style="-fx-font-weight: bold;"/>
     </HBox>
 
     <TableView fx:id="tblEnvios" VBox.vgrow="ALWAYS">

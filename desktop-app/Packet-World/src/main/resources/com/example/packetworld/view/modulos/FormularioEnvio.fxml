@@ -75,9 +75,18 @@
         </TitledPane>
 
         <HBox spacing="15" alignment="CENTER_RIGHT">
+            <VBox alignment="CENTER_RIGHT">
+                <Label text="Costo Estimado:" style="-fx-font-size: 10px; -fx-text-fill: #666;"/>
+                <Label fx:id="lblCostoTotal" text="\$0.00" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #4CAF50;"/>
+            </VBox>
+
+            <Button text="💰 Cotizar" onAction="#cotizar" styleClass="btn-secondary"/>
+
+            <Separator orientation="VERTICAL" />
+
             <Button text="Cancelar" onAction="#cerrar" styleClass="button"/>
 
-            <Button text="Registrar Envío" onAction="#guardarEnvio" styleClass="btn-primary"
+            <Button fx:id="btnGuardar" text="Registrar Envío" onAction="#guardarEnvio" styleClass="btn-primary"
                     style="-fx-font-size: 14px; -fx-padding: 10 30;"/>
         </HBox>
 

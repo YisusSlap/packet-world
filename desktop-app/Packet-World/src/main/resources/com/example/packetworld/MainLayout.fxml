@@ -16,40 +16,42 @@
 
             <ImageView fx:id="imgPerfilUsuario" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                 <image>
-                    <Image url="@images/usuario_dummy.png" />
+                    <Image url="@images/usuarioDummy.png" />
                 </image>
             </ImageView>
 
             <Label fx:id="lblUsuario" text="Bienvenido" style="-fx-text-fill: #555555; -fx-font-weight: bold;"/>
 
-            <Button text="Cerrar Sesión" styleClass="btn-secondary" onAction="#cerrarSesion"/>
-        </HBox>
-    </top>
+            <!-- <Button text="🌙 Modo Oscuro" onAction="#toggleTema" styleClass="menu-button"/>-->
 
-    <left>
-        <VBox spacing="10" styleClass="sidebar" prefWidth="240" style="-fx-padding: 30 15;">
-            <Label text="MÓDULOS" style="-fx-text-fill: #B3B3B3; -fx-font-size: 10px; -fx-padding: 0 0 10 10;"/>
+             <Button text="Cerrar Sesión" styleClass="btn-secondary" onAction="#cerrarSesion"/>
+         </HBox>
+     </top>
 
-            <Button fx:id="btnInicio" text="🏠  Inicio" styleClass="menu-button" maxWidth="Infinity" onAction="#irInicio"/>
+     <left>
+         <VBox spacing="10" styleClass="sidebar" prefWidth="240" style="-fx-padding: 30 15;">
+             <Label text="MÓDULOS" style="-fx-text-fill: #B3B3B3; -fx-font-size: 10px; -fx-padding: 0 0 10 10;"/>
 
-            <Button fx:id="btnEnvios" text="📦  Gestión de Envíos" styleClass="menu-button" maxWidth="Infinity" onAction="#irEnvios"/>
+             <Button fx:id="btnInicio" text="🏠  Inicio" styleClass="menu-button" maxWidth="Infinity" onAction="#irInicio"/>
 
-            <Button fx:id="btnColaboradores" text="👥  Colaboradores" styleClass="menu-button" maxWidth="Infinity" onAction="#irColaboradores"/>
+             <Button fx:id="btnEnvios" text="📦  Gestión de Envíos" styleClass="menu-button" maxWidth="Infinity" onAction="#irEnvios"/>
 
-            <Button fx:id="btnUnidades" text="🚚  Unidades" styleClass="menu-button" maxWidth="Infinity" onAction="#irUnidades"/>
+             <Button fx:id="btnColaboradores" text="👥  Colaboradores" styleClass="menu-button" maxWidth="Infinity" onAction="#irColaboradores"/>
 
-            <Button fx:id="btnSucursales" text="🏢  Sucursales" styleClass="menu-button" maxWidth="Infinity" onAction="#irSucursales"/>
+             <Button fx:id="btnUnidades" text="🚚  Unidades" styleClass="menu-button" maxWidth="Infinity" onAction="#irUnidades"/>
 
-            <Button fx:id="btnClientes" text="🤝  Clientes" styleClass="menu-button" maxWidth="Infinity" onAction="#irClientes"/>
+             <Button fx:id="btnSucursales" text="🏢  Sucursales" styleClass="menu-button" maxWidth="Infinity" onAction="#irSucursales"/>
 
-            <Button fx:id="btnPaquetes" text="📦  Inventario Paquetes" styleClass="menu-button" maxWidth="Infinity" onAction="#irPaquetes"/>
+             <Button fx:id="btnClientes" text="🤝  Clientes" styleClass="menu-button" maxWidth="Infinity" onAction="#irClientes"/>
 
-        </VBox>
-    </left>
+             <Button fx:id="btnPaquetes" text="📦  Inventario Paquetes" styleClass="menu-button" maxWidth="Infinity" onAction="#irPaquetes"/>
 
-    <center>
-        <StackPane fx:id="contentArea" style="-fx-background-color: #F4F6F8; -fx-padding: 20;">
-        </StackPane>
-    </center>
+         </VBox>
+     </left>
 
-</BorderPane>
+     <center>
+         <StackPane fx:id="contentArea" style="-fx-background-color: #F4F6F8; -fx-padding: 20;">
+         </StackPane>
+     </center>
+
+ </BorderPane>

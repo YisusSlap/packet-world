@@ -8,7 +8,8 @@
       fx:controller="com.example.packetworld.controller.FormularioColaboradorController"
       spacing="15"
       stylesheets="@../../styles/estilos.css"
-      style="-fx-padding: 20; -fx-background-color: white;">
+      style="-fx-padding: 20; -fx-background-color: white;"
+      prefWidth="600" prefHeight="700">
 
     <Label fx:id="lblTitulo" text="Registrar Colaborador" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
 
@@ -61,6 +62,8 @@
         <ComboBox fx:id="cbUnidad" promptText="Seleccione Vehículo..." visible="false" managed="false"
                   prefWidth="200" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
     </GridPane>
+
+    <Region VBox.vgrow="ALWAYS" />
 
     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
         <Button text="Cancelar" onAction="#btnCancelar" styleClass="button"/>

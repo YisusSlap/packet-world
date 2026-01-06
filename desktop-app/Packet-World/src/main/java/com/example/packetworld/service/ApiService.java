@@ -473,6 +473,30 @@ public class ApiService {
         }
     }
 
+    // 2.6 COTIZAR ENVÍO (Calcula costo sin guardar)
+    public static Double cotizarEnvio(Envio envio) {
+        try {
+            Gson gson = new Gson();
+            String jsonBody = gson.toJson(envio);
+
+            HttpResponse<String> response = Unirest.post(BASE_URL + "envios/cotizar")
+                    .header("Content-Type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            if (response.getStatus() == 200) {
+                Respuesta apiResp = gson.fromJson(response.getBody(), Respuesta.class);
+                if (!apiResp.getError()) {
+                    // La API devuelve el costo en el campo "mensaje"
+                    return Double.parseDouble(apiResp.getMensaje());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; // Si falla
+    }
+
     // PAQUETES //
     public static Respuesta registrarPaquete(Paquete paquete) {
         try {
