@@ -22,9 +22,11 @@ export interface PaqueteDTO {
 
 export interface HistorialDTO {
   id_historial: number;
-  estatus: EstatusEnvio;
+  estatus: EstatusEnvio;   // viene de nombreEstatus
   fecha_hora: string;
   comentario: string;
+
+  id_estatus?: number;
 }
 
 export interface EnvioDTO {
