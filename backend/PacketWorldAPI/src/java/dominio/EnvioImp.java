@@ -64,7 +64,7 @@ public class EnvioImp {
                 // Aleatorio (3 dígitos)
                 int random = (int) (Math.random() * 900) + 100;
 
-                String guiaInteligente = String.format("%s-%s-%s-%d", origen, destino, fecha, random);
+                String guiaInteligente = String.format("PW-%s-%s-%s-%d", origen, destino, fecha, random);
                 envio.setNumeroGuia(guiaInteligente);
                 // ------------------------------------------
 
