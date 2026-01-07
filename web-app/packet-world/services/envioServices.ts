@@ -15,7 +15,8 @@ interface HistorialRaw {
     idHistorial: number;
     idEnvio: number;
     numeroPersonalColaborador: string;
-    estatus: string; 
+    nombreEstatus: string;
+    idEstatus: number;
     fechaCambio: string;
     comentario: string;
 }
@@ -87,7 +88,7 @@ export async function consultarEnvio(numeroGuia: string): Promise<EnvioDTO | nul
 
             historial: data.historial.map(h => ({
                 id_historial: h.idHistorial,
-                estatus: h.estatus.toLowerCase() as EstatusEnvio,
+                estatus: h.nombreEstatus.toLowerCase() as EstatusEnvio,
                 fecha_hora: h.fechaCambio,
                 comentario: h.comentario,
             }))
@@ -96,7 +97,7 @@ export async function consultarEnvio(numeroGuia: string): Promise<EnvioDTO | nul
         return envioAdaptado;
 
     } catch (error) {
-        console.error("Error en servicio consultarEnvio:", error);
+        //console.error("Error en servicio consultarEnvio:", error);
         throw error;
     }
 }

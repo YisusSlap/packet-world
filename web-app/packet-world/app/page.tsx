@@ -32,7 +32,7 @@ export default function TrackingPage() {
         setTrackingData(resultado);
       }
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       setError('Ocurrió un error al consultar el envío.');
     }
 
