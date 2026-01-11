@@ -12,7 +12,7 @@ export async function GET(_req: Request, context: { params: Promise<{ guia: stri
   }
 
   try {
-    const res = await fetch(`${baseUrl}/PacketWorldAPI/api/envios/rastrear/${guia}`);
+    const res = await fetch(`${baseUrl}//api/envios/rastrear/${guia}`);
 
     if (!res.ok) {
       return NextResponse.json(
