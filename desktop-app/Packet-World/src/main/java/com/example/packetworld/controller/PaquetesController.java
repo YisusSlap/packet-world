@@ -155,17 +155,17 @@ public class PaquetesController {
         Optional<ButtonType> result = confirm.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // 1. Eliminar de la lista del padre
-            padre.getListaPaquetes().remove(p);
 
-            // 2. Actualizar Envío Completo
-            Respuesta resp = ApiService.editarEnvio(padre);
+            // --- CORRECCIÓN IMPORTANTE ---
+            // Antes editabas el envío padre. Ahora eliminamos el paquete directamente.
+
+            Respuesta resp = ApiService.eliminarPaquete(p.getIdPaquete());
 
             if (resp != null && !resp.getError()) {
                 Notificacion.mostrar("Paquete Eliminado", "Inventario actualizado.", Notificacion.EXITO);
-                cargarDatos();
+                cargarDatos(); // Recargar tabla desde la BD
             } else {
-                mostrarAlerta("Error al actualizar: " + (resp != null ? resp.getMensaje() : "Red"));
+                mostrarAlerta("Error al eliminar: " + (resp != null ? resp.getMensaje() : "Red"));
             }
         }
     }

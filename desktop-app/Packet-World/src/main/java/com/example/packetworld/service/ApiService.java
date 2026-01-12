@@ -12,7 +12,7 @@ import java.util.List;
 public class ApiService {
 
     // URL BASE: Ajusta el puerto o nombre del war si cambia
-    private static final String BASE_URL = "http://localhost:8084/PacketWorldAPI/api/";
+    private static final String BASE_URL = "http://52.14.69.249:8080/api/";
 
     public static Colaborador usuarioLogueado;
 
@@ -533,6 +533,37 @@ public class ApiService {
 
         // Si no es ninguno conocido, mostramos el original pero más bonito
         return "Error técnico: " + msg;
+    }
+
+    // 2. EDITAR PAQUETE (PUT)
+    public static Respuesta editarPaquete(Paquete paquete) {
+        try {
+            Gson gson = new Gson();
+            String jsonBody = gson.toJson(paquete);
+
+            HttpResponse<String> response = Unirest.put(BASE_URL + "paquetes/editar")
+                    .header("Content-Type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            return gson.fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // 3. ELIMINAR PAQUETE (DELETE)
+    public static Respuesta eliminarPaquete(Integer idPaquete) {
+        try {
+            HttpResponse<String> response = Unirest.delete(BASE_URL + "paquetes/eliminar/" + idPaquete)
+                    .asString();
+
+            return new Gson().fromJson(response.getBody(), Respuesta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

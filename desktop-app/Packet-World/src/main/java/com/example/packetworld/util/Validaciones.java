@@ -76,4 +76,29 @@ public class Validaciones {
         String patron = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
         return email.matches(patron);
     }
+
+    // 7. VALIDAR CÓDIGO SUCURSAL (Formato: SUC-XXXX)
+    public static boolean esCodigoSucursalValido(String codigo) {
+        if (codigo == null || codigo.isEmpty()) return false;
+        // Debe ser SUC- seguido de exactamente 4 dígitos
+        return codigo.matches("^SUC-\\d{3}$");
+    }
+
+    // 8. SOLO LETRAS CON LÍMITE (Combina las dos reglas en uno solo)
+    public static void soloLetrasLimitado(TextField field, int maxLen) {
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String newText = change.getControlNewText();
+
+            // Regla 1: Solo letras y espacios
+            boolean esTextoValido = newText.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*");
+
+            // Regla 2: No exceder longitud
+            boolean longitudValida = newText.length() <= maxLen;
+
+            // Si ambas pasan, aceptamos el cambio. Si no, lo rechazamos.
+            return (esTextoValido && longitudValida) ? change : null;
+        };
+        field.setTextFormatter(new TextFormatter<>(filter));
+    }
+
 }

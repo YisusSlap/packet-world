@@ -4,8 +4,6 @@ import dto.Respuesta;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import modelo.mybatis.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Envio;
@@ -22,62 +20,37 @@ public class EnvioImp {
 
         if (conexionBD != null) {
             try {
-                // 1. Obtener Códigos Postales para el cálculo
                 String cpOrigen = conexionBD.selectOne("envios.obtenerCPPorSucursal", envio.getCodigoSucursalOrigen());
                 String cpDestino = conexionBD.selectOne("envios.obtenerCPPorColonia", envio.getIdColoniaDestino());
 
                 if (cpOrigen == null || cpDestino == null) {
                     respuesta.setError(true);
-                    respuesta.setMensaje("No se pudieron obtener los Códigos Postales para la ruta.");
+                    respuesta.setMensaje("No se pudieron obtener los Códigos Postales para calcular el envío.");
                     return respuesta;
                 }
 
-                // 2. Calcular Distancia y Costo
                 Double distancia = Utilidades.obtenerDistancia(cpOrigen, cpDestino);
                 if (distancia == null) {
                     respuesta.setError(true);
-                    respuesta.setMensaje("No se pudo calcular la distancia (Servicio externo no disponible).");
+                    respuesta.setMensaje("No se pudo calcular la distancia con el servicio externo.");
                     return respuesta;
                 }
 
                 int cantidadPaquetes = (envio.getListaPaquetes() != null) ? envio.getListaPaquetes().size() : 0;
                 double costoTotal = Utilidades.calcularCosto(distancia, cantidadPaquetes);
+
                 envio.setCostoTotal(costoTotal);
 
-                // --- 3. GENERACIÓN DE GUÍA INTELIGENTE ---
-                // Formato: ORG-DES-YYYYMMDD-RANDOM (Ej. XAL-VER-20260105-123)
-                
-                // Origen (Primeras 3 letras de la sucursal o "ORI")
-                String origen = (envio.getCodigoSucursalOrigen() != null && envio.getCodigoSucursalOrigen().length() >= 3)
-                        ? envio.getCodigoSucursalOrigen().substring(0, 3).toUpperCase() : "ORI";
+                String guia = "PW-" + System.currentTimeMillis();
+                envio.setNumeroGuia(guia);
 
-                // Destino (Primeras 3 letras del Estado o "DES")
-                String destino = "DES";
-                if (envio.getEstado() != null && envio.getEstado().length() >= 3) {
-                    destino = envio.getEstado().substring(0, 3).toUpperCase();
-                }
-
-                // Fecha
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                String fecha = sdf.format(new Date());
-
-                // Aleatorio (3 dígitos)
-                int random = (int) (Math.random() * 900) + 100;
-
-                String guiaInteligente = String.format("PW-%s-%s-%s-%d", origen, destino, fecha, random);
-                envio.setNumeroGuia(guiaInteligente);
-                // ------------------------------------------
-
-                // 4. Asignar Estatus Inicial (Si no viene)
                 if (envio.getIdEstatus() == null) {
-                    envio.setIdEstatus(1); // 1 = Recibido en Sucursal
+                    envio.setIdEstatus(1);
                 }
 
-                // 5. Insertar Envío
                 int filas = conexionBD.insert("envios.registrarEnvio", envio);
                 Integer idEnvioGenerado = envio.getIdEnvio();
 
-                // 6. Insertar Paquetes
                 if (envio.getListaPaquetes() != null) {
                     for (Paquete p : envio.getListaPaquetes()) {
                         p.setIdEnvio(idEnvioGenerado);
@@ -85,25 +58,26 @@ public class EnvioImp {
                     }
                 }
 
-                // 7. Insertar Historial Inicial
                 HistorialEstatus historial = new HistorialEstatus();
                 historial.setIdEnvio(idEnvioGenerado);
                 historial.setNumeroPersonalColaborador(envio.getNumeroPersonalUsuario());
                 historial.setIdEstatus(1);
-                historial.setComentario("Envío registrado en sistema. Costo calculado: $" + costoTotal);
+                historial.setComentario("Envío registrado en sistema.");
                 conexionBD.insert("envios.registrarHistorial", historial);
-
                 conexionBD.commit();
                 respuesta.setError(false);
-                respuesta.setMensaje(guiaInteligente); // Retornamos la guía generada
-
+                respuesta.setMensaje("Envío creado. Guía: " + guia + ". Costo total calculado: $" + costoTotal);
             } catch (Exception e) {
-                if (conexionBD != null) conexionBD.rollback();
+                if (conexionBD != null) {
+                    conexionBD.rollback();
+                }
                 respuesta.setError(true);
                 respuesta.setMensaje("Error al crear envío: " + e.getMessage());
                 e.printStackTrace();
             } finally {
-                if (conexionBD != null) conexionBD.close();
+                if (conexionBD != null) {
+                    conexionBD.close();
+                }
             }
         } else {
             respuesta.setError(true);
@@ -137,7 +111,7 @@ public class EnvioImp {
                 double costoTotal = Utilidades.calcularCosto(distancia, cantidadPaquetes);
 
                 respuesta.setError(false);
-                respuesta.setMensaje(String.valueOf(costoTotal)); // Retornamos el costo como String
+                respuesta.setMensaje(String.valueOf(costoTotal));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -148,40 +122,9 @@ public class EnvioImp {
             }
         } else {
             respuesta.setError(true);
-            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+            respuesta.setMensaje("Error de conexión a BD");
         }
         return respuesta;
-    }
-
-    // --- MÉTODOS DE APOYO (Ya existentes, se mantienen igual) ---
-
-    public static boolean recalcularCostoReal(SqlSession conexionBD, Integer idEnvio) {
-        try {
-            Envio envio = conexionBD.selectOne("envios.obtenerDatosParaRecalculo", idEnvio);
-            if (envio == null) return false;
-
-            String cpOrigen = conexionBD.selectOne("envios.obtenerCPPorSucursal", envio.getCodigoSucursalOrigen());
-            String cpDestino = conexionBD.selectOne("envios.obtenerCPPorColonia", envio.getIdColoniaDestino());
-
-            Double distancia = Utilidades.obtenerDistancia(cpOrigen, cpDestino);
-            if (distancia == null) return false;
-
-            Integer numPaquetes = conexionBD.selectOne("paquetes.contarPaquetesPorEnvio", idEnvio);
-            if (numPaquetes == null) numPaquetes = 0;
-
-            double nuevoCosto = Utilidades.calcularCosto(distancia, numPaquetes);
-
-            Map<String, Object> params = new HashMap<>();
-            params.put("idEnvio", idEnvio);
-            params.put("costoTotal", nuevoCosto);
-
-            conexionBD.update("envios.actualizarCostoTotal", params);
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public static Envio obtenerPorGuia(String numeroGuia) {
@@ -290,17 +233,16 @@ public class EnvioImp {
             try {
                 int filas = conexionBD.update("envios.editarEnvio", envio);
                 if (filas > 0) {
-                    // Recalcular Costo por si cambió el destino
                     Integer idEnvioReal = conexionBD.selectOne("envios.obtenerIdPorGuia", envio.getNumeroGuia());
                     boolean recalculoExitoso = recalcularCostoReal(conexionBD, idEnvioReal);
-                    if (recalculoExitoso) {
+                    if(recalculoExitoso){
                         conexionBD.commit();
                         respuesta.setError(false);
-                        respuesta.setMensaje("Datos actualizados y costo recalculado.");
-                    } else {
+                        respuesta.setMensaje("Datos del envío actualizados y costo recalculado.");
+                    }else {
                         conexionBD.rollback();
                         respuesta.setError(true);
-                        respuesta.setMensaje("Error al recalcular costos.");
+                        respuesta.setMensaje("Error al recalcular el costo con la nueva ruta.");
                     }
                 } else {
                     conexionBD.rollback();
@@ -319,6 +261,45 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    public static boolean recalcularCostoReal(SqlSession conexionBD, Integer idEnvio) {
+        try {
+            Envio envio = conexionBD.selectOne("envios.obtenerDatosParaRecalculo", idEnvio);
+            if (envio == null) {
+                return false;
+            }
+
+            String cpOrigen = conexionBD.selectOne("envios.obtenerCPPorSucursal", envio.getCodigoSucursalOrigen());
+            String cpDestino = conexionBD.selectOne("envios.obtenerCPPorColonia", envio.getIdColoniaDestino());
+
+            Double distancia = Utilidades.obtenerDistancia(cpOrigen, cpDestino);
+            if (distancia == null) {
+                return false;
+            }
+
+            Integer numPaquetes = conexionBD.selectOne("paquetes.contarPaquetesPorEnvio", idEnvio);
+            if (numPaquetes == null) {
+                numPaquetes = 0;
+            }
+
+            double nuevoCosto = Utilidades.calcularCosto(distancia, numPaquetes);
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("idEnvio", idEnvio);
+            params.put("costoTotal", nuevoCosto);
+
+            conexionBD.update("envios.actualizarCostoTotal", params);
+
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    
+    
 
     public static List<Envio> obtenerTodos() {
         List<Envio> listado = null;
@@ -334,4 +315,5 @@ public class EnvioImp {
         }
         return listado;
     }
+
 }

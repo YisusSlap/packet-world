@@ -63,13 +63,21 @@ public class FormularioColaboradorController {
         });
 
         // 3. Validaciones de entrada
-        Validaciones.soloLetras(txtNombre);
-        Validaciones.soloLetras(txtPaterno);
-        Validaciones.soloLetras(txtMaterno);
+        Validaciones.soloLetrasLimitado(txtNombre,50);
+        Validaciones.soloLetrasLimitado(txtPaterno,50);
+        Validaciones.soloLetrasLimitado(txtMaterno,50);
         Validaciones.limitarLongitud(txtCurp, 18);
         Validaciones.limitarLongitud(txtLicencia, 20);
         Validaciones.limitarLongitud(txtCorreo, 100);
         Validaciones.limitarLongitud(txtPassword, 50);
+        Validaciones.limitarLongitud(txtNumPersonal, 20);
+
+        txtNumPersonal.textProperty().addListener((ov, oldVal, newVal) -> {
+            if (newVal != null) {
+                txtNumPersonal.setText(newVal.toUpperCase());
+            }
+        });
+
     }
 
     /**
@@ -107,20 +115,19 @@ public class FormularioColaboradorController {
      * Valida datos, verifica reglas de negocio (licencias duplicadas, unidades ocupadas)
      * y envía la petición a la API.
      */
-    @FXML
     public void btnGuardar() {
         Colaborador c = new Colaborador();
-        c.setNumeroPersonal(txtNumPersonal.getText());
-        c.setNombre(txtNombre.getText());
-        c.setApellidoPaterno(txtPaterno.getText());
-        c.setApellidoMaterno(txtMaterno.getText());
-        c.setCurp(txtCurp.getText());
-        c.setCorreoElectronico(txtCorreo.getText());
-        c.setContrasenia(txtPassword.getText());
+
+        // --- 1. LIMPIEZA DE DATOS (TRIM) ---
+        c.setNumeroPersonal(txtNumPersonal.getText().trim());
+        c.setNombre(txtNombre.getText().trim());
+        c.setApellidoPaterno(txtPaterno.getText().trim());
+        c.setApellidoMaterno(txtMaterno.getText().trim());
+        c.setCurp(txtCurp.getText().trim().toUpperCase());
+        c.setCorreoElectronico(txtCorreo.getText().trim());
         c.setRol(cbRol.getValue());
         c.setEstatus("Activo");
 
-        // Validación Sucursal
         Sucursal sucursalSeleccionada = cbSucursal.getValue();
         if (sucursalSeleccionada != null) {
             c.setIdCodigoSucursal(sucursalSeleccionada.getCodigoSucursal());
@@ -129,29 +136,73 @@ public class FormularioColaboradorController {
             return;
         }
 
-        // Validaciones Básicas
-        if (c.getNumeroPersonal().isEmpty() || c.getNombre().isEmpty() || c.getRol() == null) {
-            mostrarAlerta("Campos vacíos", "Por favor llena los campos obligatorios.");
+        // --- 2. VALIDACIONES BÁSICAS (CAMBIO AQUÍ: Validamos TODO) ---
+        // Agregué Materno, Curp y Correo a la validación de vacíos.
+        if (c.getNumeroPersonal().isEmpty() || c.getNombre().isEmpty() ||
+                c.getApellidoPaterno().isEmpty() || c.getApellidoMaterno().isEmpty() ||
+                c.getCurp().isEmpty() || c.getCorreoElectronico().isEmpty() ||
+                c.getRol() == null) {
+
+            mostrarAlerta("Campos vacíos", "Por favor llena TODOS los campos (Nombre, Apellidos, CURP, Correo, etc).");
             return;
         }
 
-        if (!txtCorreo.getText().isEmpty() && !Validaciones.esEmailValido(txtCorreo.getText())) {
+        // Validar Formato Correo
+        if (!Validaciones.esEmailValido(c.getCorreoElectronico())) {
             mostrarAlerta("Correo inválido", "Formato incorrecto (ejemplo: usuario@dominio.com).");
             return;
         }
 
+        // --- 3. VALIDACIÓN: CORREO DUPLICADO ---
+        if (existeCorreoDuplicado(c.getCorreoElectronico())) {
+            return;
+        }
+
+        // --- 4. VALIDACIÓN DE CURP (REGEX) ---
+        String patronCurp = "[A-Z]{4}\\d{6}[HM][A-Z]{5}[A-Z0-9]\\d";
+        if (!c.getCurp().matches(patronCurp)) {
+            mostrarAlerta("CURP Inválida", "El formato de la CURP no es correcto.");
+            return;
+        }
+
+        // --- 5. VALIDACIÓN DE CONTRASEÑA ---
+        String passIngresada = txtPassword.getText();
+
+        if (!esEdicion) {
+            // Creación: Obligatoria
+            if (passIngresada.isEmpty()) {
+                mostrarAlerta("Seguridad", "La contraseña es obligatoria para nuevos usuarios.");
+                return;
+            }
+            if (passIngresada.length() < 6) {
+                mostrarAlerta("Seguridad", "La contraseña debe tener al menos 6 caracteres.");
+                return;
+            }
+            c.setContrasenia(passIngresada);
+        } else {
+            // Edición: Opcional
+            if (passIngresada.isEmpty()) {
+                c.setContrasenia(colaboradorOriginal.getContrasenia());
+            } else {
+                if (passIngresada.length() < 6) {
+                    mostrarAlerta("Seguridad", "La nueva contraseña debe tener al menos 6 caracteres.");
+                    return;
+                }
+                c.setContrasenia(passIngresada);
+            }
+        }
+
         // --- REGLAS DE NEGOCIO PARA CONDUCTORES ---
         if ("Conductor".equalsIgnoreCase(c.getRol())) {
-            if (txtLicencia.getText().isEmpty()) {
+            if (txtLicencia.getText().trim().isEmpty()) {
                 mostrarAlerta("Faltan datos", "El conductor requiere número de licencia.");
                 return;
             }
-            c.setNumeroLicencia(txtLicencia.getText());
+            c.setNumeroLicencia(txtLicencia.getText().trim());
 
-            // Regla: No puede haber dos conductores con la misma licencia
+            // Licencia Duplicada
             List<Colaborador> conductoresExistentes = ApiService.buscarColaboradores(null, "Conductor", null);
             for (Colaborador existente : conductoresExistentes) {
-                // Si editamos, ignoramos al propio usuario
                 if (esEdicion && existente.getNumeroPersonal().equals(c.getNumeroPersonal())) continue;
 
                 if (existente.getNumeroLicencia() != null &&
@@ -161,27 +212,24 @@ public class FormularioColaboradorController {
                 }
             }
 
-            // Regla: Asignación de Unidad
+            // Asignación de Unidad
             Unidad unidadSeleccionada = cbUnidad.getValue();
-            String idUnidadNueva = null; // Por defecto es Suplente (null)
-
-            // Si seleccionó una unidad real (no la opción dummy "SIN_ASIGNAR")
+            String idUnidadNueva = null;
             if (unidadSeleccionada != null && !"SIN_ASIGNAR".equals(unidadSeleccionada.getVin())) {
                 idUnidadNueva = unidadSeleccionada.getVin();
             }
 
-            // Regla: No quitar unidad si tiene carga activa (Solo en edición)
+            // Validación de carga activa en edición
             if (esEdicion) {
                 String idUnidadOriginal = (colaboradorOriginal != null) ? colaboradorOriginal.getIdUnidadAsignada() : null;
-
-                if (!Objects.equals(idUnidadOriginal, idUnidadNueva)) { // Si cambió la unidad
+                if (!Objects.equals(idUnidadOriginal, idUnidadNueva)) {
                     List<Envio> misEnvios = ApiService.obtenerEnviosPorConductor(c.getNumeroPersonal());
                     boolean tieneCargaActiva = misEnvios.stream().anyMatch(e ->
                             e.getEstatusActual().toLowerCase().contains("tránsito") ||
                                     e.getEstatusActual().toLowerCase().contains("ruta"));
 
                     if (tieneCargaActiva) {
-                        mostrarAlerta("Operación Denegada", "El conductor tiene envíos EN TRÁNSITO.\nNo se puede cambiar su unidad hasta que entregue la carga.");
+                        mostrarAlerta("Operación Denegada", "Conductor con carga activa. No se puede cambiar unidad.");
                         return;
                     }
                 }
@@ -189,7 +237,6 @@ public class FormularioColaboradorController {
             c.setIdUnidadAsignada(idUnidadNueva);
 
         } else {
-            // Si no es conductor, limpiamos estos campos por seguridad
             c.setNumeroLicencia(null);
             c.setIdUnidadAsignada(null);
         }
@@ -203,14 +250,12 @@ public class FormularioColaboradorController {
         }
 
         if (resp != null && !resp.getError()) {
-
-            // Si hay foto nueva, la subimos en una segunda petición
             if (fotoBytesNueva != null) {
                 Respuesta respFoto = ApiService.subirFoto(c.getNumeroPersonal(), fotoBytesNueva);
                 if (respFoto.getError()) {
                     Notificacion.mostrar("Advertencia", "Datos guardados, pero falló la foto.", Notificacion.ERROR);
                 } else {
-                    Notificacion.mostrar("Éxito", "Colaborador y foto guardados.", Notificacion.EXITO);
+                    Notificacion.mostrar("Éxito", "Colaborador guardado correctamente.", Notificacion.EXITO);
                 }
             } else {
                 Notificacion.mostrar("Éxito", "Colaborador guardado correctamente.", Notificacion.EXITO);
@@ -240,7 +285,10 @@ public class FormularioColaboradorController {
             txtMaterno.setText(colaborador.getApellidoMaterno());
             txtCurp.setText(colaborador.getCurp());
             txtCorreo.setText(colaborador.getCorreoElectronico());
-            txtPassword.setText(colaborador.getContrasenia());
+
+            // --- CAMBIO: No mostrar la contraseña al editar ---
+            // txtPassword.setText(colaborador.getContrasenia());
+            txtPassword.clear(); // Limpiamos el campo visualmente
 
             // Seleccionar sucursal
             String idSucursalGuardada = colaborador.getIdCodigoSucursal();
@@ -383,4 +431,32 @@ public class FormularioColaboradorController {
         List<Sucursal> lista = ApiService.obtenerSucursales();
         cbSucursal.setItems(FXCollections.observableArrayList(lista));
     }
+
+    private boolean existeCorreoDuplicado(String correo) {
+        if (correo == null || correo.isEmpty()) return false;
+
+        // Obtenemos la lista completa para verificar
+        // Nota: Si tu sistema tuviera miles de empleados, sería mejor hacer un endpoint en el backend
+        // tipo "api/colaboradores/existe-correo?email=...", pero para apps de gestión interna esto funciona bien.
+        List<Colaborador> todos = ApiService.buscarColaboradores(null, null, null);
+
+        for (Colaborador existente : todos) {
+            // Verificamos si los correos coinciden (ignorando mayúsculas)
+            if (existente.getCorreoElectronico() != null &&
+                    existente.getCorreoElectronico().equalsIgnoreCase(correo)) {
+
+                // LÓGICA "SOY YO MISMO":
+                // Si estamos editando y el ID (NumeroPersonal) es igual, NO es un duplicado, soy yo.
+                if (esEdicion && existente.getNumeroPersonal().equals(txtNumPersonal.getText())) {
+                    continue; // Pasa al siguiente
+                }
+
+                // Si llegamos aquí, encontramos un correo igual en OTRA persona
+                mostrarAlerta("Correo Duplicado", "El correo " + correo + " ya está usado por: " + existente.getNombre());
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

@@ -108,26 +108,18 @@ public class EnvioWS {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Respuesta cotizar(String json) {
+    public Respuesta cotizarEnvio(String json) {
         Gson gson = new Gson();
         try {
-            // Reutilizamos el objeto Envio para pasar los datos necesarios (Origen, Destino, Paquetes)
-            Envio envio = gson.fromJson(json, Envio.class);
-            
-            // Validaciones mínimas para poder cotizar
-            if (envio.getCodigoSucursalOrigen() == null) {
-                throw new BadRequestException("Falta Sucursal de Origen");
+            Envio envioDatos = gson.fromJson(json, Envio.class);
+            if (envioDatos.getCodigoSucursalOrigen() == null || envioDatos.getIdColoniaDestino() == null) {
+                throw new BadRequestException("Se requiere origen y destino para cotizar");
             }
-            if (envio.getIdColoniaDestino() == null) {
-                throw new BadRequestException("Falta Colonia de Destino");
-            }
-            
-            // Llamamos a la lógica de negocio (que ya tienes en EnvioImp)
-            return EnvioImp.cotizarEnvio(envio);
-            
+
+            return EnvioImp.cotizarEnvio(envioDatos);
         } catch (Exception e) {
-            throw new BadRequestException(e.getMessage());
+            throw new BadRequestException("JSON mal formado");
         }
     }
-    
+
 }

@@ -29,14 +29,18 @@ public class FormularioPaqueteController {
 
     @FXML
     public void initialize() {
-        // Validaciones
+        // 1. Validaciones de Longitud
         Validaciones.limitarLongitud(txtDescripcion, 100);
-        forzarDecimales(txtPeso);
-        forzarDecimales(txtAlto);
-        forzarDecimales(txtAncho);
-        forzarDecimales(txtProf);
-
         Validaciones.limitarLongitud(txtPeso, 10);
+        Validaciones.limitarLongitud(txtAlto, 10);
+        Validaciones.limitarLongitud(txtAncho, 10);
+        Validaciones.limitarLongitud(txtProf, 10);
+
+        // 2. Validaciones de Tipo
+        Validaciones.soloDecimales(txtPeso);
+        Validaciones.soloDecimales(txtAlto);
+        Validaciones.soloDecimales(txtAncho);
+        Validaciones.soloDecimales(txtProf);
     }
 
     /**
@@ -72,9 +76,14 @@ public class FormularioPaqueteController {
     @FXML
     public void guardar() {
         try {
-            // Validaciones básicas
-            if (txtPeso.getText().isEmpty() || txtDescripcion.getText().isEmpty()) {
-                mostrarAlerta("Descripción y Peso son obligatorios.");
+            // --- 1. VALIDACIÓN DE TODOS LOS CAMPOS VACÍOS ---
+            if (txtDescripcion.getText().trim().isEmpty() ||
+                    txtPeso.getText().trim().isEmpty() ||
+                    txtAlto.getText().trim().isEmpty() ||
+                    txtAncho.getText().trim().isEmpty() ||
+                    txtProf.getText().trim().isEmpty()) {
+
+                mostrarAlerta("Todos los campos (Descripción, Peso y Dimensiones) son obligatorios.");
                 return;
             }
 
@@ -84,24 +93,29 @@ public class FormularioPaqueteController {
             double ancho = parseDouble(txtAncho.getText());
             double prof = parseDouble(txtProf.getText());
 
+            // --- 2. VALIDACIÓN DE VALORES (No ceros ni negativos) ---
+            if (peso <= 0 || alto <= 0 || ancho <= 0 || prof <= 0) {
+                mostrarAlerta("Valores Inválidos, El peso y las dimensiones deben ser mayores a 0.");
+                return;
+            }
+
             Respuesta r;
 
             if (esEdicion) {
-                // --- LÓGICA DE EDICIÓN ---
-                // 1. Actualizamos el objeto en memoria (por referencia)
+                // --- LÓGICA DE EDICIÓN (CORREGIDA) ---
+                // 1. Actualizamos el objeto local con los datos del formulario
                 paqueteEdicion.setDescripcion(txtDescripcion.getText());
                 paqueteEdicion.setPesoKg(peso);
                 paqueteEdicion.setDimAltoCm(alto);
                 paqueteEdicion.setDimAnchoCm(ancho);
                 paqueteEdicion.setDimProfundidadCm(prof);
 
-                // 2. IMPORTANTE: La API no tiene editarPaquete, tiene editarEnvio.
-                // Como 'paqueteEdicion' ya es parte de la lista de 'envioPadreCompleto',
-                // solo mandamos a guardar al padre.
-                r = ApiService.editarEnvio(envioPadreCompleto);
+                // 2. Llamamos al endpoint específico de PAQUETE
+                // Antes llamabas a editarEnvio, ahora usamos editarPaquete
+                r = ApiService.editarPaquete(paqueteEdicion);
 
             } else {
-                // --- LÓGICA DE CREACIÓN (Agregar Extra) ---
+                // --- LÓGICA DE CREACIÓN  ---
                 Paquete p = new Paquete();
                 p.setIdEnvio(idEnvioPadre);
                 p.setDescripcion(txtDescripcion.getText());

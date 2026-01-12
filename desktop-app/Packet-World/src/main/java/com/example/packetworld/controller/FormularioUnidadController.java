@@ -8,6 +8,7 @@ import com.example.packetworld.util.Validaciones;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import java.time.Year;
 import java.util.List;
 
 public class FormularioUnidadController {
@@ -30,8 +31,10 @@ public class FormularioUnidadController {
         txtAnio.textProperty().addListener((obs, oldVal, newVal) -> calcularNII());
         txtVin.textProperty().addListener((obs, oldVal, newVal) -> calcularNII());
 
+        // --- BLINDAJE DE INPUTS ---
         Validaciones.soloNumerosLimitado(txtAnio, 4);
         Validaciones.limitarLongitud(txtVin, 17);
+        // Permitimos letras y números en marca/modelo (ej. Mazda 3)
         Validaciones.limitarLongitud(txtMarca, 50);
         Validaciones.limitarLongitud(txtModelo, 50);
     }
@@ -60,33 +63,58 @@ public class FormularioUnidadController {
             txtVin.setText(unidad.getVin());
             txtNii.setText(unidad.getNii());
 
-            // En edición, el VIN (ID) y el NII no deberían cambiar
+            // En edición, el VIN (ID) y el Año (base del NII) no deberían cambiar
             txtVin.setDisable(true);
-            txtAnio.setDisable(true); // Bloqueamos año para no alterar el NII ya generado
+            txtAnio.setDisable(true);
         }
     }
 
     @FXML
     public void btnGuardar() {
-        Unidad u = new Unidad();
-        u.setMarca(txtMarca.getText());
-        u.setModelo(txtModelo.getText());
-        u.setTipoUnidad(cbTipo.getValue());
-        u.setVin(txtVin.getText());
-        u.setNii(txtNii.getText());
-        u.setEstatus("activo");
+        // 1. Obtener datos limpios (sin espacios al inicio/final)
+        String marca = txtMarca.getText().trim();
+        String modelo = txtModelo.getText().trim();
+        String anioStr = txtAnio.getText().trim();
+        String vin = txtVin.getText().trim();
+        String tipo = cbTipo.getValue();
 
+        // 2. VALIDACIÓN DE CAMPOS VACÍOS (Aquí fallaba antes)
+        if (marca.isEmpty() || modelo.isEmpty() || anioStr.isEmpty() || vin.isEmpty() || tipo == null) {
+            mostrarAlerta("Campos incompletos", "Por favor, llene todos los campos (Marca, Modelo, Tipo, Año, VIN).");
+            return;
+        }
+
+        // 3. VALIDACIÓN DE VIN (Longitud exacta)
+        if (vin.length() != 17) {
+            mostrarAlerta("VIN Inválido", "El VIN debe tener exactamente 17 caracteres.");
+            return;
+        }
+
+        int anioInt;
         try {
-            u.setAnio(Integer.parseInt(txtAnio.getText()));
+            // 4. VALIDACIÓN DE AÑO LÓGICO
+            anioInt = Integer.parseInt(anioStr);
+            int anioActual = Year.now().getValue();
+
+            // Rango razonable: Desde 1980 hasta el año actual + 1 (modelos del siguiente año)
+            if (anioInt < 1980 || anioInt > (anioActual + 1)) {
+                mostrarAlerta("Año Inválido", "El año del vehículo debe ser realista (1980 - " + (anioActual + 1) + ").");
+                return;
+            }
         } catch (NumberFormatException e) {
             mostrarAlerta("Error", "El año debe ser un número válido.");
             return;
         }
 
-        if (u.getVin().isEmpty() || u.getMarca().isEmpty() || u.getModelo().isEmpty()) {
-            mostrarAlerta("Faltan datos", "Por favor llena todos los campos.");
-            return;
-        }
+        // --- Crear Objeto ---
+        Unidad u = new Unidad();
+        u.setMarca(marca);
+        u.setModelo(modelo);
+        u.setTipoUnidad(tipo);
+        u.setVin(vin.toUpperCase()); // VIN siempre mayúsculas
+        u.setNii(txtNii.getText());
+        u.setAnio(anioInt);
+        u.setEstatus("activo");
 
         // --- VALIDACIÓN DE NII DUPLICADO (Solo si es nuevo) ---
         if (!esEdicion) {
@@ -94,12 +122,12 @@ public class FormularioUnidadController {
                 mostrarAlerta("Conflicto de NII",
                         "El NII generado (" + u.getNii() + ") ya existe en el sistema.\n\n" +
                                 "Debido a la regla de negocio (Año + 4 dígitos VIN), esta unidad colisiona con otra.\n" +
-                                "No es posible registrarla con este VIN/Año.");
-                return; // Detenemos el guardado
+                                "No es posible registrarla.");
+                return;
             }
         }
-        // -----------------------------------------------------
 
+        // --- Enviar a API ---
         Respuesta resp;
         if (esEdicion) {
             resp = ApiService.editarUnidad(u);
@@ -111,40 +139,27 @@ public class FormularioUnidadController {
             Notificacion.mostrar("Éxito", "Unidad guardada correctamente.", Notificacion.EXITO);
             cerrarVentana();
         } else {
-            // Si aun así falla (por ejemplo, duplicado de VIN completo), mostramos el error de la BD
             String mensajeError = resp != null ? resp.getMensaje() : "Error desconocido";
-
-            // Si el mensaje de la BD dice "Duplicate entry", lo traducimos
             if (mensajeError.toLowerCase().contains("duplicate")) {
-                mensajeError = "Ya existe una unidad con ese VIN o NII registrado.";
+                mensajeError = "Ya existe una unidad con ese VIN registrado.";
             }
-
             mostrarAlerta("Error al guardar", mensajeError);
         }
     }
 
-    /**
-     * Método auxiliar que descarga las unidades y verifica si el NII ya está ocupado.
-     * Es una validación preventiva en el cliente (Frontend).
-     */
     private boolean existeNiiEnBaseDeDatos(String niiGenerado) {
-        // Descargamos la lista actual (no es lo más óptimo en Big Data, pero perfecto para este proyecto)
         List<Unidad> existentes = ApiService.obtenerUnidades();
-
         if (existentes != null) {
             for (Unidad unit : existentes) {
                 if (unit.getNii() != null && unit.getNii().equalsIgnoreCase(niiGenerado)) {
-                    return true; // Encontrado Es un duplicado
+                    return true;
                 }
             }
         }
         return false;
     }
 
-    @FXML
-    public void btnCancelar() {
-        cerrarVentana();
-    }
+    @FXML public void btnCancelar() { cerrarVentana(); }
 
     private void cerrarVentana() {
         Stage stage = (Stage) txtMarca.getScene().getWindow();

@@ -3,6 +3,7 @@ package com.example.packetworld.controller;
 import com.example.packetworld.model.RSAutenticacionColaborador;
 import com.example.packetworld.service.ApiService;
 import com.example.packetworld.util.Notificacion; // UX Moderna
+import com.example.packetworld.util.Validaciones;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,6 +23,21 @@ public class LoginController {
     @FXML private TextField txtNumPersonal;
     @FXML private PasswordField txtPassword;
     @FXML private Label lblError; // Label discreto para errores rápidos
+
+
+    @FXML
+    public void initialize() {
+        // 1. Blindaje del Número de Personal
+        // Asumimos que en BD es VARCHAR(20). Esto evita que escriban 200 caracteres y explote el query.
+        Validaciones.limitarLongitud(txtNumPersonal, 50);
+
+        // Si tu número de personal fuera SOLO números (ej. 102030), usarías:
+        // Validaciones.soloNumerosLimitado(txtNumPersonal, 20);
+
+        // 2. Blindaje de Contraseña
+        // Limitamos a 30 caracteres (suficiente para una clave segura, evita copy-paste masivo por error)
+        Validaciones.limitarLongitud(txtPassword, 50);
+    }
 
     /**
      * Acción del botón "Ingresar".

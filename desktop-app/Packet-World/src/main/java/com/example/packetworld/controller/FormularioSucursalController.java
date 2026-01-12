@@ -39,7 +39,14 @@ public class FormularioSucursalController {
 
         // --- VALIDACIONES DE ENTRADA ---
         // Código Sucursal: Máximo 10 caracteres (ej. SUC-XAL-01)
-        Validaciones.limitarLongitud(txtCodigo, 10);
+        Validaciones.limitarLongitud(txtCodigo, 8);
+
+        txtCodigo.textProperty().addListener((ov, oldValue, newValue) -> {
+            if (newValue != null) {
+                txtCodigo.setText(newValue.toUpperCase());
+            }
+        });
+
 
         // Nombre corto: Máx 50
         Validaciones.limitarLongitud(txtNombre, 50);
@@ -47,6 +54,7 @@ public class FormularioSucursalController {
         // Dirección
         Validaciones.limitarLongitud(txtCalle, 100);
         Validaciones.limitarLongitud(txtNumero, 10);
+        Validaciones.soloDecimales(txtNumero);
     }
 
     private void cargarEstados() {
@@ -154,10 +162,28 @@ public class FormularioSucursalController {
     }
 
     @FXML public void guardar() {
-        // Validaciones previas
-        if (txtCodigo.getText().isEmpty() || txtNombre.getText().isEmpty()) {
-            mostrarAlerta("Campos vacíos", "El código y el nombre son obligatorios.");
+        //  VALIDACIÓN DE CAMPOS VACÍOS (Completa)
+        String codigo = txtCodigo.getText().trim().toUpperCase();
+        String nombre = txtNombre.getText().trim();
+        String calle = txtCalle.getText().trim();
+        String numero = txtNumero.getText().trim();
+
+        if (codigo.isEmpty() || nombre.isEmpty() || calle.isEmpty() || numero.isEmpty()) {
+            mostrarAlerta("Campos vacíos", "Código, Nombre, Calle y Número son obligatorios.");
             return;
+        }
+
+        // Formato SUC-XXXX
+        if (!Validaciones.esCodigoSucursalValido(codigo)) {
+            mostrarAlerta("Formato Incorrecto", "El código debe ser 'SUC-0000'.\nEjemplo: SUC-1045");
+            return;
+        }
+
+        // VALIDACIÓN DUPLICADOS
+        if (!esEdicion) {
+            if (existeCodigoDuplicado(codigo)) {
+                return; // La alerta se muestra dentro del método
+            }
         }
 
         if (cbColonia.getValue() == null) {
@@ -167,13 +193,12 @@ public class FormularioSucursalController {
 
         // Construir objeto
         Sucursal s = new Sucursal();
-        s.setCodigoSucursal(txtCodigo.getText());
-        s.setNombreCorto(txtNombre.getText());
+        s.setCodigoSucursal(codigo);
+        s.setNombreCorto(nombre);
         s.setEstatus("Activa");
-        s.setCalle(txtCalle.getText());
-        s.setNumero(txtNumero.getText());
+        s.setCalle(txtCalle.getText().trim());
+        s.setNumero(txtNumero.getText().trim());
 
-        // Datos desde Combos
         Colonia col = cbColonia.getValue();
         s.setIdColonia(col.getIdColonia());
         s.setNombreColonia(col.getNombre());
@@ -185,13 +210,36 @@ public class FormularioSucursalController {
         Respuesta r = esEdicion ? ApiService.editarSucursal(s) : ApiService.registrarSucursal(s);
 
         if (r != null && !r.getError()) {
-            // ÉXITO: Toast Verde
             Notificacion.mostrar("Operación Exitosa", "La sucursal se guardó correctamente.", Notificacion.EXITO);
             cerrar();
         } else {
-            // ERROR: Alerta Modal
-            mostrarAlerta("Error", "No se pudo guardar: " + (r!=null ? r.getMensaje() : "Error de conexión"));
+
+            String mensajeOriginal = (r != null) ? r.getMensaje() : "Error de conexión";
+            String mensajeAmigable = mensajeOriginal;
+
+            //  el error de llave duplicada
+            if (mensajeOriginal.toLowerCase().contains("duplicate")) {
+                mensajeAmigable = "El código de sucursal '" + s.getCodigoSucursal() + "' ya está registrado.\n" +
+                        "Por favor, verifique o intente con otro.";
+            }
+
+            mostrarAlerta("No se pudo guardar", mensajeAmigable);
         }
+    }
+
+
+    /**
+     * Verifica si el código de sucursal ya existe en la BD.
+     */
+    private boolean existeCodigoDuplicado(String codigo) {
+        List<Sucursal> todas = ApiService.obtenerSucursales();
+        for (Sucursal s : todas) {
+            if (s.getCodigoSucursal().equalsIgnoreCase(codigo)) {
+                mostrarAlerta("Código Duplicado", "El código " + codigo + " ya está registrado en el sistema.");
+                return true;
+            }
+        }
+        return false;
     }
 
     @FXML public void cerrar() { ((Stage) txtCodigo.getScene().getWindow()).close(); }
