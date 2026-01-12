@@ -86,17 +86,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <update id="editarColaborador" parameterType="pojo.Colaborador">
-        UPDATE tbl_colaboradores SET
-            nombre = #{nombre},
-            apellidoPaterno = #{apellidoPaterno},
-            apellidoMaterno = #{apellidoMaterno},
-            correoElectronico = #{correoElectronico},
-            curp = #{curp},
-            fotografia = #{fotografia},
-            numeroLicencia = #{numeroLicencia},
-            idCodigoSucursal = #{idCodigoSucursal},
-            idUnidadAsignada = #{idUnidadAsignada}
-        WHERE numeroPersonal = #{numeroPersonal}
+            UPDATE tbl_colaboradores SET
+                nombre = #{nombre},
+                apellidoPaterno = #{apellidoPaterno},
+                apellidoMaterno = #{apellidoMaterno},
+                correoElectronico = #{correoElectronico},
+                curp = #{curp},
+                numeroLicencia = #{numeroLicencia},
+                idCodigoSucursal = #{idCodigoSucursal},
+                idUnidadAsignada = #{idUnidadAsignada}
+            WHERE numeroPersonal = #{numeroPersonal}
     </update>
     
     <update id="actualizarContrasenia" parameterType="map">
