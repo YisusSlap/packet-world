@@ -7,11 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import type { HomeScreenProps } from '../navigation/types';
 
-/**
- * Pantalla de Inicio (Home) - Packet-World
- * Presenta la identidad corporativa, el perfil del conductor con su foto,
- * y la hora de acceso para validación del sistema.
- */
+
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -21,14 +17,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [accessTime, setAccessTime] = useState('');
 
   useEffect(() => {
-    // Registramos la fecha y hora actual al montar el componente
+    // Registramos la fecha y hora actual
     const now = new Date();
     const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const formattedDate = now.toLocaleDateString();
     setAccessTime(`${formattedDate} ${formattedTime}`);
   }, []);
 
-  // Datos del conductor con valores de respaldo (fallback)
+  // Datos del conductor
   const conductorName = user ? `${user.nombre} ${user.apellidoPaterno}` : 'Conductor';
   const conductorId = user?.numeroPersonal || 'N/A';
   const unitId = user?.idUnidadAsignada || 'Sin asignar';
@@ -39,9 +35,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       {/* --- CABECERA CORPORATIVA --- */}
       <View style={styles.brandHeader}>
         <View style={styles.logoRow}>
-          {/* Se utiliza .png para asegurar compatibilidad nativa y evitar 
-            errores de resolución de módulos en entornos de desarrollo.
-          */}
           <View style={[styles.logoContainer, { backgroundColor: colors.primary + '10' }]}>
             <Image 
               source={require('../../assets/icono_logo.png')} 

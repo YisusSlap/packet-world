@@ -25,11 +25,7 @@ const API_BASE = 'https://packetworld.izekki.me//';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'EditProfile'>;
 
-/**
- * Pantalla de visualización de perfil y actualización de fotografía.
- * Todos los campos de texto son de solo lectura por reglas de negocio.
- * Permite capturar o seleccionar una imagen y subirla como archivo binario.
- */
+
 export default function EditProfileScreen({ navigation }: Props) {
   const { user, updateUser } = useAuth();
   const { theme } = useTheme();
@@ -38,7 +34,7 @@ export default function EditProfileScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Mapeo de datos del usuario para visualización estática
+  // Mapeo de datos del usuario para visualización
   const userData = {
     numeroPersonal: user?.numeroPersonal || '',
     nombreCompleto: `${user?.nombre} ${user?.apellidoPaterno} ${user?.apellidoMaterno}`,
@@ -104,7 +100,7 @@ export default function EditProfileScreen({ navigation }: Props) {
   };
 
   /**
-   * Realiza la carga de la imagen al servidor como un archivo binario (CU-37)
+   * Realiza la carga de la imagen al servidor como un archivo binario
    */
   const handleSavePhoto = async () => {
     if (!selectedImage) return;
@@ -117,7 +113,7 @@ export default function EditProfileScreen({ navigation }: Props) {
       const responseUri = await fetch(selectedImage);
       const blob = await responseUri.blob();
 
-      console.log('Subiendo archivo binario a:', endpoint);
+      //console.log('Subiendo archivo binario a:', endpoint);
 
       const uploadResponse = await fetch(endpoint, {
         method: 'PUT',
@@ -148,7 +144,7 @@ export default function EditProfileScreen({ navigation }: Props) {
       }
 
     } catch (error: any) {
-      console.error('Error al subir foto:', error);
+      //console.error('Error al subir foto:', error);
       Alert.alert('Error de conexión', 'No se pudo conectar con el servidor. Revisa tu conexión a internet.');
     } finally {
       setLoading(false);
@@ -156,7 +152,7 @@ export default function EditProfileScreen({ navigation }: Props) {
   };
 
   /**
-   * Renderiza una fila de información estática (solo lectura)
+   * Renderiza una fila de información
    */
   const InfoField = ({ label, value }: { label: string; value: string }) => (
     <View style={styles.infoRow}>

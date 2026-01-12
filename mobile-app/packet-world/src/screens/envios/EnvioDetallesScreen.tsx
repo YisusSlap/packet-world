@@ -15,13 +15,12 @@ import {
   View
 } from 'react-native';
 
-// --- MOCKS Y CONSTANTES (Para resolver errores de compilación local) ---
-// Estos valores se definen aquí para asegurar que el archivo funcione independientemente
+
 const SPACING = { xs: 4, s: 8, m: 16, l: 24, xl: 32 };
 const FONT_SIZE = { xs: 12, s: 14, m: 16, l: 18, xl: 20 };
 const BORDER_RADIUS = { s: 4, m: 8, l: 12, full: 99 };
 
-// Importaciones simuladas de contextos si no se resuelven
+
 import { StatusCatalogItem, useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import type { HomeStackParamList } from '../../navigation/types';
@@ -68,7 +67,7 @@ type ShipmentDetail = {
 };
 
 export default function ShipmentDetailScreen({ route, navigation }: Props) {
-  const { shipmentId } = route.params;
+  const { shipmentId } = route.params; // Se recibe de la pantalla anterior
   const { user, shipmentStatuses } = useAuth(); 
   const { theme } = useTheme();
   const colors = theme.colors;
@@ -81,6 +80,7 @@ export default function ShipmentDetailScreen({ route, navigation }: Props) {
   const [comment, setComment] = useState('');
   const [updating, setUpdating] = useState(false);
 
+  //Funcion para el color de los estados
   const getStatusColor = (status: string) => {
     const s = (status || '').toLowerCase();
     if (s.includes('entregado')) return colors.success;
@@ -104,7 +104,7 @@ export default function ShipmentDetailScreen({ route, navigation }: Props) {
           navigation.goBack();
         }
       } catch (e) {
-        console.error('Error parseando JSON de detalle:', textResponse);
+        //console.error('Error parseando JSON de detalle:', textResponse);
         Alert.alert('Error del Servidor', 'Respuesta no válida del servidor.');
         navigation.goBack();
       }
@@ -186,7 +186,7 @@ export default function ShipmentDetailScreen({ route, navigation }: Props) {
       }
 
     } catch (error: any) {
-      console.error('Error en updateStatus:', error);
+      //console.error('Error en updateStatus:', error);
       Alert.alert('Fallo de Conexión', `No pudimos contactar con el servidor. Detalle: ${error.message}`);
     } finally {
       setUpdating(false);

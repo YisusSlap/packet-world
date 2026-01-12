@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 // --- CONFIGURACIÓN DE URL ---
 const IP_Backend = 'https://packetworld.izekki.me//';
 
-// Definimos la estructura del usuario (Colaborador)
+// Estructura del colaborador
 export type UserData = {
   apellidoMaterno: string;
   apellidoPaterno: string;
@@ -55,10 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [shipmentStatuses, setShipmentStatuses] = useState<StatusCatalogItem[]>([]);
 
-  /**
-   * Obtiene el catálogo oficial de estatus desde el servidor.
-   * Esto garantiza que todas las plataformas manejen los mismos IDs.
-   */
+  // Funcion para obtener los catalogos y guardarlos
   const fetchStatusCatalog = async () => {
     try {
       const response = await fetch(`${IP_Backend}api/catalogos/estatusEnvio`);
@@ -67,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (Array.isArray(data)) {
         setShipmentStatuses(data);
       } else {
-        // Fallback preventivo
+        // Por si llega vacio
         setShipmentStatuses([
           { id: 3, nombre: 'en tránsito' },
           { id: 5, nombre: 'entregado' },
@@ -76,7 +73,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ]);
       }
     } catch (error) {
-      console.error('Error al cargar catálogo:', error);
+      //pOR SI HAY ERROR en la peticion
+      //console.error('Error al cargar catálogo:', error);
       setShipmentStatuses([
         { id: 3, nombre: 'en tránsito' },
         { id: 5, nombre: 'entregado' },
