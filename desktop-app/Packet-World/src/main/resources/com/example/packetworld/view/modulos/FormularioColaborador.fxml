@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.packetworld.controller.FormularioColaboradorController"
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white;"
+      prefWidth="600" prefHeight="700">
+
+    <Label fx:id="lblTitulo" text="Registrar Colaborador" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
+
+    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 0 0 10 0;">
+        <VBox alignment="CENTER" spacing="5">
+            <StackPane style="-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 2;">
+                <ImageView fx:id="imgFoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                <Label text="Sin Foto" style="-fx-text-fill: #999;"/>
+            </StackPane>
+            <Button text="📷 Subir Foto" onAction="#seleccionarFoto" styleClass="btn-secondary" style="-fx-font-size: 10px; -fx-padding: 5 10;"/>
+        </VBox>
+    </HBox>
+
+    <GridPane hgap="15" vgap="15">
+        <Label text="No. Personal:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNumPersonal" promptText="Ej. 101" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Rol:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <ComboBox fx:id="cbRol" promptText="Seleccione..." GridPane.rowIndex="0" GridPane.columnIndex="3" prefWidth="150"/>
+
+        <Label text="Nombre:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNombre" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Apellido Paterno:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField fx:id="txtPaterno" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+        <Label text="Apellido Materno:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtMaterno" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="CURP:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+        <TextField fx:id="txtCurp" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+
+        <Label text="Correo:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtCorreo" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Contraseña:" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+        <PasswordField fx:id="txtPassword" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
+
+        <Label text="Sucursal ID:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="cbSucursal" promptText="Seleccione Sucursal..." prefWidth="200"
+                  GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label fx:id="lblLicencia" text="No. Licencia:" visible="false" managed="false"
+               GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtLicencia" promptText="Requerido para conductores" visible="false" managed="false"
+                   GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <Label fx:id="lblUnidad" text="Asignar Unidad:" visible="false" managed="false"
+               GridPane.rowIndex="5" GridPane.columnIndex="2"/>
+        <ComboBox fx:id="cbUnidad" promptText="Seleccione Vehículo..." visible="false" managed="false"
+                  prefWidth="200" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+        <Button text="Cancelar" onAction="#btnCancelar" styleClass="button"/>
+        <Button text="Guardar" onAction="#btnGuardar" styleClass="btn-primary"/>
+    </HBox>
+
+</VBox>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.packetworld.controller.EnviosController"
+      spacing="15" style="-fx-padding: 20;">
+
+    <Label text="Tablero de Envíos Activos" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <TextField fx:id="txtBuscar" promptText="🔍 Buscar por Guía, Cliente..." prefWidth="250"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Button text="👁 Detalle" onAction="#btnVerDetalle" styleClass="button"/>
+
+        <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
+
+        <MenuButton text="⚙️ Gestionar" styleClass="btn-menu-modern">
+            <items>
+                <MenuItem text="🚚 Asignar Chofer" onAction="#btnAsignarConductor"/>
+                <MenuItem text="🔄 Actualizar Estatus" onAction="#btnCambiarEstatus"/>
+                <SeparatorMenuItem />
+                <MenuItem text="📦 Agregar Paquete Extra" onAction="#btnAgregarPaquete"/>
+            </items>
+        </MenuButton>
+
+        <Separator orientation="VERTICAL" />
+
+        <Button text="📊 Generar reporte EXCEL" onAction="#btnExportar" styleClass="btn-success"/>
+
+        <Button text="+ NUEVO" onAction="#btnNuevo" styleClass="btn-primary" style="-fx-font-weight: bold;"/>
+    </HBox>
+
+    <TableView fx:id="tblEnvios" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colGuia" text="No. Guía" prefWidth="150"/>
+            <TableColumn fx:id="colCliente" text="Cliente" prefWidth="150"/>
+            <TableColumn fx:id="colDestino" text="Destino (Ciudad)" prefWidth="150"/>
+            <TableColumn fx:id="colEstatus" text="Estatus Actual" prefWidth="120"/>
+            <TableColumn fx:id="colConductor" text="Conductor" prefWidth="120"/>
+            <TableColumn fx:id="colCosto" text="Costo" prefWidth="80"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+</VBox>

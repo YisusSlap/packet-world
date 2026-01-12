@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.packetworld.controller.ColaboradoresController"
+      spacing="15"
+      style="-fx-padding: 20;"
+      stylesheets="@../../styles/estilos.css">
+
+    <Label text="Módulo de Colaboradores"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #89CFF0;"/>
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+
+        <TextField fx:id="txtBuscar" promptText="🔍 Buscar por nombre..." prefWidth="300"
+                   style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Button text="+ Nuevo" onAction="#btnNuevo" styleClass="btn-primary"/>
+
+        <Button text="✎ Editar" onAction="#btnEditar" styleClass="btn-secondary"/>
+
+        <Button text="🗑 Eliminar" onAction="#btnEliminar" styleClass="btn-danger"/>
+
+    </HBox>
+
+    <TableView fx:id="tblColaboradores" VBox.vgrow="ALWAYS">
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+        <columns>
+            <TableColumn fx:id="colNumPersonal" text="No. Personal" prefWidth="90"/>
+            <TableColumn fx:id="colNombre" text="Nombre Completo" prefWidth="200"/>
+            <TableColumn fx:id="colRol" text="Rol" prefWidth="100"/>
+
+            <TableColumn fx:id="colCurp" text="CURP" prefWidth="140"/>
+            <TableColumn fx:id="colLicencia" text="Licencia" prefWidth="100"/>
+            <TableColumn fx:id="colEstatus" text="Estatus" prefWidth="80"/>
+
+            <TableColumn fx:id="colCorreo" text="Correo" prefWidth="160"/>
+            <TableColumn fx:id="colSucursal" text="Sucursal" prefWidth="90"/>
+
+            <TableColumn fx:id="colUnidad" text="Unidad" prefWidth="110" />
+        </columns>
+    </TableView>
+
+</VBox>
