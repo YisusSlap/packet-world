@@ -1,7 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface SearchBarProps {
     value: string;
@@ -11,6 +11,21 @@ interface SearchBarProps {
 
 export default function SearchBar({ value, loading, onSearch }: SearchBarProps) {
     const [localValue, setLocalValue] = useState(value);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        setLocalValue(value);
+    }, [value]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value.toUpperCase();// COnvertir a mayusculas
+        const regex = /^[PW0-9-]*$/; // Expresion para mayusculas, numeros y guion
+
+        if (inputValue.length <= 16 && regex.test(inputValue)) {
+            setLocalValue(inputValue);
+            setError('');
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,7 +50,7 @@ export default function SearchBar({ value, loading, onSearch }: SearchBarProps) 
                         focus:border-blue-500 shadow-sm text-lg transition-all"
                     placeholder="Ej. PW-1764998055583"
                     value={localValue}
-                    onChange={(e) => setLocalValue(e.target.value)}
+                    onChange={handleChange}
                 />
 
                 {/* Botón */}
