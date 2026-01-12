@@ -17,9 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 /**
- * Caso de Uso: Actualizar Contraseña del Colaborador
- * Endpoint: https://packetworld.izekki.me//api/colaboradores/cambiarContrasenia
- * Método: PUT (URL Encoded)
+ * Actualizar contraseña
  */
 export default function CambiarContraseniaScreen({ navigation }: any) {
   const { user } = useAuth();
@@ -40,21 +38,17 @@ export default function CambiarContraseniaScreen({ navigation }: any) {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  /**
-   * Ejecuta la petición de actualización al servidor utilizando URL Encoded
-   */
+
   const handleUpdate = async () => {
-    // 1. Validaciones locales básicas
+    // Validaciones 
     if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
       Alert.alert('Campos Incompletos', 'Por favor, llena todos los campos para continuar.');
       return;
     }
-
     if (newPassword !== confirmPassword) {
       Alert.alert('Error de Validación', 'La nueva contraseña y su confirmación no coinciden.');
       return;
     }
-
     if (newPassword.length < 4) {
       Alert.alert('Seguridad', 'La nueva contraseña debe tener al menos 4 caracteres.');
       return;
@@ -65,7 +59,6 @@ export default function CambiarContraseniaScreen({ navigation }: any) {
     try {
       const endpoint = `${API_BASE}api/colaboradores/cambiarContrasenia`;
 
-      // 2. Construcción del cuerpo URL Encoded (x-www-form-urlencoded)
       const details: Record<string, string> = {
         'numeroPersonal': user?.numeroPersonal || '',
         'contraseniaActual': currentPassword,
@@ -76,7 +69,7 @@ export default function CambiarContraseniaScreen({ navigation }: any) {
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key]))
         .join('&');
 
-      console.log('Enviando petición PUT a:', endpoint);
+      //console.log('Enviando petición PUT a:', endpoint);
 
       const response = await fetch(endpoint, {
         method: 'PUT',
@@ -87,7 +80,7 @@ export default function CambiarContraseniaScreen({ navigation }: any) {
       });
 
       const textResponse = await response.text();
-      console.log('Respuesta cruda del servidor:', textResponse);
+      //console.log('Respuesta cruda del servidor:', textResponse);
 
       let data;
       try {
@@ -96,7 +89,6 @@ export default function CambiarContraseniaScreen({ navigation }: any) {
         throw new Error('El servidor devolvió una respuesta no válida (no JSON).');
       }
 
-      // 3. Procesamiento de la respuesta según el formato indicado
       if (!data.error) {
         Alert.alert('Éxito', data.mensaje || 'Contraseña actualizada correctamente.', [
           { text: 'Entendido', onPress: () => navigation.goBack() }
@@ -106,7 +98,7 @@ export default function CambiarContraseniaScreen({ navigation }: any) {
       }
 
     } catch (error: any) {
-      console.error('Error en cambio de contraseña:', error);
+      //console.error('Error en cambio de contraseña:', error);
       Alert.alert(
         'Fallo de Conexión', 
         'No pudimos contactar con el servidor. Verifica tu conexión a internet.'

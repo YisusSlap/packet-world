@@ -3,7 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Button,
-  Image, // Importante para manejar estilos por plataforma
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -59,7 +59,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             source={require('../../assets/icono_logo.png')} 
             style={styles.logo}
             resizeMode="contain"
-            // El error de resolución en el previewer es normal ya que el archivo es local en tu proyecto
           />
           <Text style={[styles.title, { color: colors.text }]}>Packet World</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>

@@ -82,6 +82,10 @@ function HomeStackNavigator() {
   );
 }
 
+
+// ----------------------------------------------------------------------
+// Stack de Ajustes
+// ----------------------------------------------------------------------
 function SettingsStackNavigator() {
   const { theme } = useTheme();
   const colors = theme.colors;

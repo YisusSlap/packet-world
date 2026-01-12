@@ -14,12 +14,12 @@ import {
   View
 } from 'react-native';
 
-// Importaciones de contexto y constantes de diseño
+// Importaciones de contexto y constantes 
 import { BORDER_RADIUS, FONT_SIZE, SPACING } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
-// URL base sincronizada con el backend (requiere el doble slash)
+// URL base 
 const API_BASE = 'https://packetworld.izekki.me//';
 
 type ShipmentSummary = {
@@ -28,11 +28,7 @@ type ShipmentSummary = {
   estatusActual: string;
 };
 
-/**
- * Pantalla de Lista de Envíos
- * Muestra los paquetes asignados al conductor y permite filtrar por guía o dirección.
- * Implementa un refresco automático cada vez que la pantalla vuelve a primer plano.
- */
+
 export default function ShipmentsListScreen({ navigation }: any) {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -45,7 +41,7 @@ export default function ShipmentsListScreen({ navigation }: any) {
   const [searchQuery, setSearchQuery] = useState('');
 
   /**
-   * Obtiene la hoja de ruta del conductor desde la API
+   * Obtiene lla lista de paquetes asignados al conductor
    */
   const fetchShipments = useCallback(async () => {
     if (!user?.numeroPersonal) return;
@@ -66,10 +62,10 @@ export default function ShipmentsListScreen({ navigation }: any) {
         // Aseguramos que la respuesta sea un arreglo
         setShipments(Array.isArray(data) ? data : []);
       } else {
-        console.error('Error al obtener envíos. Estatus:', response.status);
+        //console.error('Error al obtener envíos. Estatus:', response.status);
       }
     } catch (error) {
-      console.error('Error de red en fetchShipments:', error);
+      //console.error('Error de red en fetchShipments:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -77,7 +73,7 @@ export default function ShipmentsListScreen({ navigation }: any) {
   }, [user]);
 
   /**
-   * Refresca la lista automáticamente al enfocar la pantalla
+   * Refresca la lista automáticamente al enfocar la pantalla. (Para cuando se regresa de la pantalla de detalles)
    */
   useFocusEffect(
     useCallback(() => {
@@ -86,7 +82,6 @@ export default function ShipmentsListScreen({ navigation }: any) {
   );
 
   /**
-   * Lógica de filtrado reactivo
    * Filtra la lista original basándose en numeroGuia o destinoCalle
    */
   const filteredShipments = useMemo(() => {
