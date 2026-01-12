@@ -1,6 +1,7 @@
 package com.example.packetworld.controller;
 
 import com.example.packetworld.model.Colaborador;
+import com.example.packetworld.model.Envio;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.service.ApiService;
 import com.example.packetworld.util.Notificacion; // UX Moderna
@@ -132,25 +133,64 @@ public class ColaboradoresController {
     @FXML
     public void btnEliminar() {
         Colaborador seleccionado = tblColaboradores.getSelectionModel().getSelectedItem();
-        if (seleccionado != null) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Confirmar eliminación");
-            confirm.setHeaderText(null);
-            confirm.setContentText("¿Estás seguro de eliminar a " + seleccionado.getNombre() + "?");
+        if (seleccionado == null) {
+            mostrarAlerta("Atención", "Selecciona un colaborador para eliminar.");
+            return;
+        }
 
-            Optional<ButtonType> resultado = confirm.showAndWait();
-            if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                Respuesta resp = ApiService.eliminarColaborador(seleccionado.getNumeroPersonal());
+        // --- VALIDACIÓN 1: UNIDAD ASIGNADA ---
+        // Verificamos si tiene el campo 'idUnidadAsignada' lleno
+        if (seleccionado.getIdUnidadAsignada() != null && !seleccionado.getIdUnidadAsignada().isEmpty()) {
+            mostrarAlerta("Operación Denegada",
+                    "No se puede eliminar al colaborador porque tiene la UNIDAD " +
+                            seleccionado.getIdUnidadAsignada() + " asignada.\n\n" +
+                            "Por favor, edite el colaborador y retire la unidad primero.");
+            return;
+        }
 
-                if (resp != null && !resp.getError()) {
-                    Notificacion.mostrar("Eliminado", "Colaborador dado de baja.", Notificacion.EXITO);
-                    cargarDatos(); // Recargar tabla
-                } else {
-                    mostrarAlerta("Error", "No se pudo eliminar.");
+        // --- VALIDACIÓN 2: ENVÍOS ACTIVOS (Solo si es conductor) ---
+        if ("Conductor".equalsIgnoreCase(seleccionado.getRol())) {
+            // Consultamos a la API los envíos de este conductor
+            List<Envio> misEnvios = ApiService.obtenerEnviosPorConductor(seleccionado.getNumeroPersonal());
+
+            // Buscamos si hay alguno que NO esté concluido
+            boolean tieneActivos = false;
+            String guiaActiva = "";
+
+            for (Envio e : misEnvios) {
+                String estatus = e.getEstatusActual() != null ? e.getEstatusActual().toLowerCase() : "";
+                // Si no está entregado ni cancelado, sigue activo
+                if (!estatus.contains("entregado") && !estatus.contains("cancelado")) {
+                    tieneActivos = true;
+                    guiaActiva = e.getNumeroGuia();
+                    break;
                 }
             }
-        } else {
-            mostrarAlerta("Atención", "Selecciona un colaborador para eliminar.");
+
+            if (tieneActivos) {
+                mostrarAlerta("Operación Denegada",
+                        "El conductor tiene envíos ACTIVOS (Ej. Guía " + guiaActiva + ").\n\n" +
+                                "Debe reasignar o concluir los envíos antes de eliminarlo.");
+                return;
+            }
+        }
+
+        // --- SI PASA LAS VALIDACIONES, CONFIRMAMOS ---
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar eliminación");
+        confirm.setHeaderText(null);
+        confirm.setContentText("¿Estás seguro de eliminar a " + seleccionado.getNombre() + "?\nEsta acción es irreversible.");
+
+        Optional<ButtonType> resultado = confirm.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            Respuesta resp = ApiService.eliminarColaborador(seleccionado.getNumeroPersonal());
+
+            if (resp != null && !resp.getError()) {
+                Notificacion.mostrar("Eliminado", "Colaborador dado de baja.", Notificacion.EXITO);
+                cargarDatos();
+            } else {
+                mostrarAlerta("Error", "No se pudo eliminar: " + (resp != null ? resp.getMensaje() : "Error de conexión"));
+            }
         }
     }
 

@@ -125,28 +125,43 @@ public class UnidadesController {
     @FXML
     public void btnBaja() {
         Unidad seleccionada = tblUnidades.getSelectionModel().getSelectedItem();
-        if (seleccionada != null) {
-            // Dialogo para pedir motivo de baja
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Dar de Baja");
-            dialog.setHeaderText("Baja de unidad: " + seleccionada.getMarca() + " " + seleccionada.getModelo());
-            dialog.setContentText("Motivo de la baja:");
 
-            Optional<String> result = dialog.showAndWait();
-            if (result.isPresent() && !result.get().trim().isEmpty()) {
-                seleccionada.setMotivoBaja(result.get());
+        // Validar selección
+        if (seleccionada == null) {
+            mostrarAlerta("Selecciona una unidad para dar de baja.");
+            return;
+        }
 
-                Respuesta resp = ApiService.darBajaUnidad(seleccionada);
+        // --- VALIDACIÓN NUEVA: UNIDAD OCUPADA ---
+        // Usamos el dato que calculamos en cargarDatos().
+        // Si tiene texto, significa que un chofer la tiene asignada.
+        if (seleccionada.getConductorAsignado() != null && !seleccionada.getConductorAsignado().isEmpty()) {
+            mostrarAlerta("Operación Denegada:\n" +
+                    "La unidad está actualmente asignada al conductor:\n" +
+                    "👤 " + seleccionada.getConductorAsignado() + "\n\n" +
+                    "Primero debe retirar la unidad desde el módulo de Colaboradores.");
+            return;
+        }
+        // ----------------------------------------
 
-                if (resp != null && !resp.getError()) {
-                    Notificacion.mostrar("Baja Exitosa", "Unidad marcada como inactiva.", Notificacion.EXITO);
-                    cargarDatos();
-                } else {
-                    mostrarAlerta("Error al dar de baja.");
-                }
+        // Dialogo para pedir motivo de baja
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Dar de Baja");
+        dialog.setHeaderText("Baja de unidad: " + seleccionada.getMarca() + " " + seleccionada.getModelo());
+        dialog.setContentText("Motivo de la baja:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent() && !result.get().trim().isEmpty()) {
+            seleccionada.setMotivoBaja(result.get());
+
+            Respuesta resp = ApiService.darBajaUnidad(seleccionada);
+
+            if (resp != null && !resp.getError()) {
+                Notificacion.mostrar("Baja Exitosa", "Unidad marcada como inactiva.", Notificacion.EXITO);
+                cargarDatos();
+            } else {
+                mostrarAlerta("Error al dar de baja.");
             }
-        } else {
-            mostrarAlerta("Selecciona una unidad.");
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.packetworld.controller;
 
 import com.example.packetworld.model.Cliente;
+import com.example.packetworld.model.Envio;
 import com.example.packetworld.model.Respuesta;
 import com.example.packetworld.service.ApiService;
 import com.example.packetworld.util.Notificacion; // UX Moderna
@@ -17,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -100,23 +102,65 @@ public class ClientesController {
 
     @FXML public void btnEliminar() {
         Cliente c = tblClientes.getSelectionModel().getSelectedItem();
-        if (c != null) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Eliminar a " + c.getNombre() + "?");
-            confirm.setHeaderText(null); // Limpiar cabecera para mejor estética
 
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                Respuesta r = ApiService.eliminarCliente(c.getIdCliente());
+        // 1. Validar selección
+        if (c == null) {
+            mostrarAlerta("Atención", "Selecciona un cliente para eliminar.");
+            return;
+        }
 
-                if (r != null && !r.getError()) {
-                    Notificacion.mostrar("Eliminado", "Cliente eliminado correctamente.", Notificacion.EXITO);
-                    cargarDatos();
-                } else {
-                    mostrarAlerta("Error", "No se pudo eliminar el cliente.");
+        // --- VALIDACIÓN NUEVA: ENVÍOS PENDIENTES ---
+        // Obtenemos todos los envíos (Idealmente tu API debería tener un "obtenerEnviosPorCliente",
+        // pero filtrar la lista general funciona para este propósito).
+        List<Envio> todosLosEnvios = ApiService.obtenerTodosEnvios();
+
+        boolean tienePendientes = false;
+        String guiaPendiente = "";
+
+        for (Envio e : todosLosEnvios) {
+            // Verificamos si el envío pertenece a este cliente
+            if (e.getIdCliente() != null && e.getIdCliente().equals(c.getIdCliente())) {
+
+                // Verificamos el estatus
+                String estatus = e.getEstatusActual() != null ? e.getEstatusActual().toLowerCase() : "";
+
+                // Si NO está entregado Y NO está cancelado, está activo/pendiente
+                if (!estatus.contains("entregado") && !estatus.contains("cancelado")) {
+                    tienePendientes = true;
+                    guiaPendiente = e.getNumeroGuia();
+                    break; // Con encontrar uno basta para bloquear
                 }
             }
-        } else {
-            mostrarAlerta("Atención", "Selecciona un cliente.");
+        }
+
+        if (tienePendientes) {
+            mostrarAlerta("Operación Denegada",
+                    "No se puede eliminar al cliente " + c.getNombre() + ".\n\n" +
+                            "Tiene envíos activos en curso (Ej. Guía: " + guiaPendiente + ").\n" +
+                            "Debe esperar a que se entreguen o cancelarlos primero.");
+            return;
+        }
+        // -------------------------------------------
+
+        // Confirmación y Borrado
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Estás seguro de eliminar a " + c.getNombre() + "?\nEsta acción es irreversible.");
+        confirm.setHeaderText(null);
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Respuesta r = ApiService.eliminarCliente(c.getIdCliente());
+
+            if (r != null && !r.getError()) {
+                Notificacion.mostrar("Eliminado", "Cliente eliminado correctamente.", Notificacion.EXITO);
+                cargarDatos();
+            } else {
+                // Aquí capturamos si la BD falla por alguna llave foránea histórica
+                String msgError = r != null ? r.getMensaje() : "Error desconocido";
+                if(msgError.contains("foreign key") || msgError.contains("constraint")) {
+                    msgError = "El cliente tiene historial de envíos antiguos y no se puede borrar por seguridad.";
+                }
+                mostrarAlerta("Error", "No se pudo eliminar: " + msgError);
+            }
         }
     }
 

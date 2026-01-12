@@ -155,7 +155,7 @@ public class MainController {
                 try {
                     fotoBytes = Base64.getDecoder().decode(base64Limpio);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("⚠️ Foto corrupta, usando default.");
+                  //  System.out.println("⚠️ Foto corrupta, usando default.");
                     return;
                 }
             }

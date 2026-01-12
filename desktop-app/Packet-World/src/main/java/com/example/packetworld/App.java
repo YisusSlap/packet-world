@@ -33,7 +33,7 @@ public class App extends Application {
 
         if (urlCss != null) {
             scene.getStylesheets().add(urlCss.toExternalForm());
-            System.out.println("✅ Estilo cargado correctamente.");
+          //  System.out.println("✅ Estilo cargado correctamente.");
         } else {
             System.out.println("❌ ERROR CRÍTICO: No se encontró el CSS en: " + rutaCss);
             System.out.println("Asegúrate de haber hecho 'Reload Maven Project' o 'Rebuild'.");
