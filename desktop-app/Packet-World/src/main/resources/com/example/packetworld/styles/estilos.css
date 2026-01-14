@@ -1,0 +1,468 @@
+/* =========================================
+   1. BASE Y FUENTES
+   ========================================= */
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-background-color: #F4F6F8; /* Gris muy pálido de fondo */
+    -fx-font-size: 14px;
+}
+
+/* =========================================
+   2. BOTONES (Buttons)
+   ========================================= */
+.button {
+    -fx-background-color: #E0E0E0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 8px; /* Más redondeado */
+    -fx-cursor: hand;
+    -fx-padding: 8 20; /* Más espacio horizontal */
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: #D6D6D6;
+    -fx-translate-y: -1; /* Efecto de elevación sutil */
+}
+
+.button:pressed {
+    -fx-translate-y: 1;
+}
+
+/* --- Variantes de Color --- */
+
+/* Primario (Azul Pastel - Acciones Principales) */
+.btn-primary {
+    -fx-background-color: #89CFF0;
+    -fx-text-fill: white;
+}
+.btn-primary:hover {
+    -fx-background-color: #6EBEDE; /* Un poco más oscuro */
+    -fx-effect: dropshadow(three-pass-box, rgba(137, 207, 240, 0.4), 10, 0, 0, 2); /* Glow azul */
+}
+
+/* Secundario (Violeta Pastel - Navegación/Acciones Secundarias) */
+.btn-secondary {
+    -fx-background-color: #B39CD0;
+    -fx-text-fill: white;
+}
+.btn-secondary:hover {
+    -fx-background-color: #9B82BB;
+}
+
+/* Peligro (Rojo Suave - Eliminar/Baja) */
+.btn-danger {
+    -fx-background-color: #FF8585; /* Ajustado para ser más pastel */
+    -fx-text-fill: white;
+}
+.btn-danger:hover {
+    -fx-background-color: #FF6666;
+}
+
+/* Advertencia / Especial (Naranja - Casos especiales como en Envíos) */
+.btn-warning {
+    -fx-background-color: #FFB74D;
+    -fx-text-fill: white;
+}
+.btn-warning:hover {
+    -fx-background-color: #FFA726;
+}
+
+/* Botón Informativo (Cyan/Teal) */
+.btn-info {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+}
+.btn-info:hover {
+    -fx-background-color: #138496;
+}
+
+/* Botón Excel (Verde Hoja de Cálculo) */
+.btn-success {
+    -fx-background-color: #2E7D32; /* Verde Excel */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.btn-success:hover {
+    -fx-background-color: #1B5E20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+/* =========================================
+   3. FORMULARIOS (Inputs)
+   ========================================= */
+.text-field, .password-field, .text-area, .combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 8;
+    -fx-prompt-text-fill: #999;
+}
+
+.text-field:focused, .password-field:focused, .text-area:focused, .combo-box:focused {
+    -fx-border-color: #89CFF0; /* Borde azul al escribir */
+    -fx-background-color: #FAFCFF; /* Fondo azul muuuuy pálido */
+    -fx-effect: dropshadow(three-pass-box, rgba(137, 207, 240, 0.3), 5, 0, 0, 0);
+}
+
+/* Arreglo para ComboBox (flecha y lista) */
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+.combo-box .arrow {
+    -fx-background-color: #89CFF0;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #E1F5FE;
+    -fx-text-fill: black;
+}
+
+/* =========================================
+   4. TABLAS (TableView) - FIX DEFINITIVO
+   ========================================= */
+.table-view {
+    -fx-background-color: transparent; /* Fondo transparente */
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    /* Sombra suave alrededor de la tabla */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 2);
+}
+
+/* Encabezado General (Contenedor) */
+.table-view .column-header-background {
+    -fx-background-color: #89CFF0; /* Azul Pastel */
+    -fx-background-radius: 8px 8px 0 0; /* Redondear solo esquinas superiores */
+    -fx-background-insets: 0;
+}
+
+/* Celdas individuales del encabezado (IMPORTANTE para ver el color) */
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-size: 40px; /* Altura del encabezado */
+}
+
+/* Texto del encabezado */
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Filas (Cuerpo) */
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #F0F0F0 transparent; /* Línea separadora sutil */
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #FAFAFA; /* Gris muy clarito para alternar */
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #E1F5FE; /* Azul cielo muy claro */
+    -fx-text-fill: black;
+    -fx-background-insets: 0;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: black; /* Asegurar texto negro al seleccionar */
+}
+
+/* Eliminar bordes de celdas vacías */
+.table-view .table-column {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* =========================================
+   5. Scrollbars
+   ========================================= */
+/* Fondo de la barra (track) */
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+}
+
+/* El "dedo" que se mueve (thumb) */
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #D0D0D0; /* Gris suave */
+    -fx-background-radius: 10px;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #B39CD0; /* Violeta al pasar el mouse */
+}
+
+/* Esconder botones de flecha del scrollbar para look moderno */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+    -fx-padding: 0;
+    -fx-shape: " "; /* Quitar forma */
+}
+
+/* =========================================
+   6. MENÚ LATERAL
+   ========================================= */
+.sidebar {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 2, 0);
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+    -fx-padding: 12 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0 0 0 4; /* Borde izquierdo invisible de 4px */
+    -fx-border-color: transparent;
+}
+
+.menu-button:hover {
+    -fx-background-color: #F0F7FF;
+    -fx-text-fill: #89CFF0; /* Texto azul */
+    -fx-border-color: transparent transparent transparent #89CFF0; /* Borde izquierdo azul */
+}
+
+/* =========================================
+   7. NOTIFICACIONES (TOASTS)
+   ========================================= */
+.toast {
+    -fx-padding: 12px 20px;
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 2);
+    -fx-font-weight: bold;
+    -fx-opacity: 0.95;
+}
+
+.toast-success {
+    -fx-background-color: #4CAF50; /* Verde Google */
+    -fx-border-width: 0 0 0 6;
+    -fx-border-color: transparent transparent transparent #2E7D32; /* Borde verde oscuro */
+}
+
+.toast-error {
+    -fx-background-color: #EF5350; /* Rojo Material */
+    -fx-border-width: 0 0 0 6;
+    -fx-border-color: transparent transparent transparent #B71C1C; /* Borde rojo oscuro */
+}
+
+/* --- TARJETAS (DASHBOARD) --- */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 5);
+    -fx-padding: 20px;
+}
+
+/* TitledPane Moderno */
+.titled-pane {
+    -fx-text-fill: #333;
+}
+.titled-pane > .title {
+    -fx-background-color: #F0F4F8; /* Azul grisáceo muy claro */
+    -fx-background-radius: 5 5 0 0;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 5 5 0 0;
+}
+.titled-pane > .content {
+    -fx-background-color: white;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 0 0 5 5;
+    -fx-border-top-width: 0;
+}
+
+/* =========================================
+   MENU BUTTON "FACHERO" (Edición Naranja)
+   ========================================= */
+
+/* 1. El cuerpo del botón */
+.btn-menu-modern {
+    -fx-background-color: #FFB74D; /* Naranja Pastel Vibrante */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px; /* Píldora */
+    -fx-border-radius: 20px;
+    -fx-padding: 8 15 8 15;
+    -fx-cursor: hand;
+    /* Sombra suave naranja */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 183, 77, 0.4), 5, 0, 0, 2);
+    -fx-alignment: CENTER;
+}
+
+.btn-menu-modern:hover {
+    -fx-background-color: #FFA726; /* Un poco más intenso al pasar el mouse */
+    -fx-translate-y: -1; /* Elevación */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 167, 38, 0.6), 8, 0, 0, 3);
+}
+
+.btn-menu-modern:showing {
+    -fx-background-color: #FB8C00; /* Naranja oscuro cuando el menú está abierto */
+}
+
+/* 2. La Flechita (Arrow) */
+.btn-menu-modern .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 5;
+}
+
+.btn-menu-modern .arrow {
+    -fx-background-color: white; /* Flecha blanca */
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+
+/* 3. El Menú Desplegable (El Popup) */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #FFE0B2; /* Borde naranja muy pálido */
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-padding: 5px 0 5px 0;
+}
+
+/* 4. Los Items dentro del menú */
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 15px;
+}
+
+.menu-item .label {
+    -fx-text-fill: #555;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+}
+
+/* Hover sobre los items (El toque final) */
+.menu-item:focused {
+    -fx-background-color: #FFF3E0; /* Fondo naranja crema muy suave */
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: #EF6C00; /* Texto naranja fuerte al seleccionar */
+    -fx-font-weight: bold;
+}
+
+/* =========================================
+   MODO OSCURO (DARK MODE) - VERSIÓN FINAL REFORZADA 🦇
+   ========================================= */
+
+/* 1. Fondo General y Textos */
+.root.dark-mode {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #f0f0f0;
+}
+
+/* Forzar color de etiquetas */
+.root.dark-mode .label,
+.root.dark-mode .text {
+    -fx-text-fill: #f0f0f0;
+}
+
+/* 2. Contenedores (La clave para quitar lo blanco) */
+.root.dark-mode .vbox-container, /* Clase que pusimos en el FXML */
+.root.dark-mode .scroll-pane,
+.root.dark-mode .scroll-pane > .viewport,
+.root.dark-mode .grid-pane,
+.root.dark-mode .vbox,
+.root.dark-mode .hbox {
+    -fx-background-color: #252526;
+}
+
+/* TitledPane (Acordeones) */
+.root.dark-mode .titled-pane > .title {
+    -fx-background-color: #333;
+    -fx-text-fill: white;
+    -fx-border-color: #444;
+}
+.root.dark-mode .titled-pane > .content {
+    -fx-background-color: #252526; /* Contenido del acordeón oscuro */
+    -fx-border-color: #444;
+}
+
+/* 3. Inputs */
+.root.dark-mode .text-field,
+.root.dark-mode .text-area,
+.root.dark-mode .combo-box {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaa;
+    -fx-border-color: #555;
+}
+
+/* ComboBox desplegado */
+.root.dark-mode .combo-box-popup .list-view {
+    -fx-background-color: #252526;
+    -fx-text-fill: white;
+}
+.root.dark-mode .combo-box-popup .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #252526;
+}
+.root.dark-mode .combo-box-popup .list-cell:hover {
+    -fx-background-color: #0D47A1;
+}
+
+/* 4. TABLAS (Arreglo de letra gris) */
+.root.dark-mode .table-view {
+    -fx-background-color: transparent;
+}
+
+/* Celda Normal */
+.root.dark-mode .table-row-cell {
+    -fx-background-color: #252526;
+    -fx-text-fill: white;
+}
+/* Forzamos el color del texto dentro de la celda */
+.root.dark-mode .table-cell {
+    -fx-text-fill: white;
+}
+.root.dark-mode .table-row-cell .text {
+    -fx-fill: white;
+}
+
+/* Celda Impar (Zebra) */
+.root.dark-mode .table-row-cell:odd {
+    -fx-background-color: #2d2d30;
+}
+
+/* Selección */
+.root.dark-mode .table-row-cell:selected {
+    -fx-background-color: #0D47A1;
+}
+.root.dark-mode .table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+/* Encabezados */
+.root.dark-mode .table-view .column-header-background {
+    -fx-background-color: #333;
+}
+.root.dark-mode .table-view .column-header .label {
+    -fx-text-fill: #e0e0e0;
+}
+
+/* 5. Otros */
+.root.dark-mode .separator *.line {
+    -fx-border-color: #555;
+    -fx-background-color: #555;
+}

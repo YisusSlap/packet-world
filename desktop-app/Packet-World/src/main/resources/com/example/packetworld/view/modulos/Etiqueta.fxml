@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox fx:id="contenedorEtiqueta" alignment="TOP_CENTER" spacing="10"
+      style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 20;"
+      prefWidth="400" prefHeight="600"
+      xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.packetworld.controller.EtiquetaController">
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="PACKET WORLD" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-font-style: italic;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="PRIORITY" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-border-color: black; -fx-padding: 5; -fx-border-width: 2;"/>
+    </HBox>
+
+    <Line endX="360" strokeWidth="2"/>
+
+    <VBox alignment="CENTER" spacing="5">
+        <Label text="TRK #" style="-fx-font-size: 12px;"/>
+        <Label fx:id="lblGuia" text="PW-000000000" style="-fx-font-size: 26px; -fx-font-family: 'Courier New'; -fx-font-weight: bold;"/>
+        <Pane prefHeight="40" prefWidth="300" style="-fx-background-color: black;"/>
+    </VBox>
+
+    <Line endX="360" strokeWidth="2"/>
+
+    <GridPane hgap="10" vgap="10" alignment="CENTER_LEFT">
+        <Label text="ORIGEN (FROM):" style="-fx-font-weight: bold; -fx-font-size: 10px;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="lblOrigen" text="..." wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+
+        <Label text="DESTINO (TO):" style="-fx-font-weight: bold; -fx-font-size: 10px;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="lblDestino" text="..." wrapText="true" style="-fx-font-size: 14px; -fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+
+        <Label fx:id="lblDireccion" text="..." wrapText="true" style="-fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+    </GridPane>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <Line endX="360" strokeWidth="1"/>
+
+    <HBox spacing="20">
+        <VBox>
+            <Label text="FECHA:" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
+            <Label fx:id="lblFecha" text="--/--/----"/>
+        </VBox>
+        <VBox>
+            <Label text="PESO TOTAL:" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
+            <Label fx:id="lblPeso" text="0.0 KG"/>
+        </VBox>
+        <VBox>
+            <Label text="PIEZAS:" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
+            <Label fx:id="lblPiezas" text="0"/>
+        </VBox>
+    </HBox>
+
+    <Line endX="360" strokeWidth="2"/>
+
+    <Label text="GRACIAS POR SU PREFERENCIA" style="-fx-font-size: 10px; -fx-font-style: italic;"/>
+
+</VBox>

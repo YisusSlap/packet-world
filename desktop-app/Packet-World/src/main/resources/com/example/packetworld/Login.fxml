@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.packetworld.controller.LoginController"
+           stylesheets="@styles/estilos.css">
+
+    <Region style="-fx-background-color: linear-gradient(to bottom right, #89CFF0, #B39CD0);"/>
+
+    <VBox alignment="TOP_CENTER" spacing="20" maxWidth="400" maxHeight="520"
+          style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 5); -fx-padding: 40;">
+
+        <ImageView fx:id="imgLogo" fitHeight="100" fitWidth="100" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@images/logo.png"/>
+            </image>
+        </ImageView>
+
+        <Label text="Bienvenido" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #333;">
+            <font>
+                <Font name="Segoe UI Bold" size="26.0"/>
+            </font>
+        </Label>
+
+        <Label text="Ingresa tus credenciales para continuar" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+
+        <Region prefHeight="10" />
+
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="No. Personal" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <TextField fx:id="txtNumPersonal" promptText="Ej. ADM001"
+                       style="-fx-background-radius: 8; -fx-padding: 10;" onAction="#btnIngresarAction"/>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Contraseña" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <PasswordField fx:id="txtPassword" promptText="••••••••"
+                           style="-fx-background-radius: 8; -fx-padding: 10;" onAction="#btnIngresarAction"/>
+        </VBox>
+
+        <Region prefHeight="10" />
+
+        <Button text="INICIAR SESIÓN" onAction="#btnIngresarAction" maxWidth="Infinity"
+                style="-fx-background-color: #89CFF0; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;"/>
+
+        <Label fx:id="lblError" text="Credenciales incorrectas" visible="false" wrapText="true" textAlignment="CENTER"
+               style="-fx-text-fill: #FF5252; -fx-font-size: 12px;"/>
+
+    </VBox>
+
+</StackPane>

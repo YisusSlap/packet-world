@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        /* Quitamos márgenes para que el mapa ocupe todo el WebView */
+        body { margin: 0; padding: 0; overflow: hidden; }
+        #regions_div { width: 100%; height: 100vh; }
+    </style>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['geochart']});
+        google.charts.setOnLoadCallback(inicializarMapa);
+
+        var chart;
+        var options = {
+            region: 'MX', // Enfocamos el mapa en México
+            resolution: 'provinces', // Dividir por estados
+            colorAxis: {colors: ['#e0f7fa', '#0288d1']}, // De azul clarito a azul fuerte (PacketWorld colors)
+            backgroundColor: 'transparent',
+            legend: 'none' // Ocultamos leyenda para más limpieza
+        };
+
+        function inicializarMapa() {
+            // Dibujamos un mapa vacío al inicio
+            var data = google.visualization.arrayToDataTable([
+                ['Estado', 'Envíos'],
+                ['MX-VER', 0] // Dato dummy para que cargue
+            ]);
+            chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+            chart.draw(data, options);
+        }
+
+        // ESTA ES LA FUNCIÓN QUE LLAMAREMOS DESDE JAVA
+        // Recibe un array de arrays: [['Estado', 'Envíos'], ['MX-VER', 5], ...]
+        function actualizarMapa(datosJson) {
+            var data = google.visualization.arrayToDataTable(datosJson);
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+<body>
+<div id="regions_div"></div>
+</body>
+</html>

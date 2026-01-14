@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.packetworld.controller.FormularioAsignacionController"
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white; -fx-min-width: 400;">
+
+    <Label text="Asignar Conductor" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFB347;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="No. Guía:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+        <Label fx:id="lblGuia" text="---" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Conductor:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="cbConductores" promptText="Seleccione Conductor..." prefWidth="250"
+                  GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <Label text="* Solo se muestran colaboradores activos con rol de 'Conductor'."
+           style="-fx-font-size: 10px; -fx-text-fill: #888;" wrapText="true"/>
+
+    <Separator />
+
+    <HBox alignment="CENTER_RIGHT" spacing="15">
+        <Button text="Cancelar" onAction="#cerrar" styleClass="button"/>
+
+        <Button text="Asignar" onAction="#guardar" styleClass="btn-warning"/>
+    </HBox>
+
+</VBox>

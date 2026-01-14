@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.packetworld.controller.FormularioPaqueteController"
+      spacing="15"
+      stylesheets="@../../styles/estilos.css"
+      style="-fx-padding: 20; -fx-background-color: white;">
+
+    <Label fx:id="lblTitulo" text="Agregar Paquete Extra" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #B39CD0;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Descripción:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtDescripcion" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Peso (kg):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtPeso" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Dimensiones (cm):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <HBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <TextField fx:id="txtAlto" promptText="Alto" prefWidth="60"/>
+            <TextField fx:id="txtAncho" promptText="Ancho" prefWidth="60"/>
+            <TextField fx:id="txtProf" promptText="Prof." prefWidth="60"/>
+        </HBox>
+    </GridPane>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button text="Cancelar" onAction="#cerrar" styleClass="button"/>
+
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardar" styleClass="btn-primary"/>
+    </HBox>
+</VBox>
